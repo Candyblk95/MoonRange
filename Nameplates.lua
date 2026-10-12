@@ -90,7 +90,7 @@ local function Setup(plate)
  light:SetTexture(MR.path .. "Frame_Moon_Light.tga")
  light:Hide()
 
- local entry = {frame=art, foreground=foreground, border=border,
+ -- Experimental shimmer: follow the native StatusBar fill texture geometry.\n -- This is decorative only; Blizzard still controls the health amount.\n local nativeFill=bar:GetStatusBarTexture()\n local shimmer\n if nativeFill then\n  shimmer=bar:CreateTexture(nil,"ARTWORK",nil,2)\n  shimmer:SetTexture(MR.path.."Fill_Moon.tga")\n  shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)\n  shimmer:SetAllPoints(nativeFill)\n  shimmer:SetAlpha(0.24)\n  shimmer:SetBlendMode("ADD")\n end\n\n local entry = {frame=art, foreground=foreground, border=border, shimmer=shimmer,
                 light=light, bar=bar, filename="", unit=nil}
  plate.moonRangeArt = entry
 
@@ -153,7 +153,7 @@ local function Update(unit, plate)
  entry.unit = unit
  local object=IsObject(unit)
  if object or not MR.db.enabled then
-  entry.frame:Hide();entry.foreground:Hide();entry.textLayer:Hide()
+  entry.frame:Hide();entry.foreground:Hide();entry.textLayer:Hide()\n  if entry.shimmer then entry.shimmer:Hide() end
   if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
   if entry.blizzardLevel then entry.blizzardLevel:SetAlpha(1) end
   return
@@ -195,7 +195,7 @@ function MR:StartNameplates()
    local plate=active[unit]
    if plate and plate.moonRangeArt then
     local e=plate.moonRangeArt
-    e.frame:Hide();e.foreground:Hide();e.textLayer:Hide()
+    e.frame:Hide();e.foreground:Hide();e.textLayer:Hide()\n    if e.shimmer then e.shimmer:Hide() end
    end
    active[unit] = nil
   elseif event == "PLAYER_TARGET_CHANGED" then
