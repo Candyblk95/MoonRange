@@ -178,7 +178,7 @@ function MR:ToggleConfig()
    local db=MR.db
    local theme=db.theme=="Herbalism" and "Herbalism" or "Moon"
    local frameName=theme=="Moon" and "Frame_Moon" or "Frame_Herbalism_01"
-   local font=({FRIZQT="Fonts\\\\FRIZQT__.TTF",ARIAL="Fonts\\\\ARIALN.TTF",MORPHEUS="Fonts\\\\MORPHEUS.TTF",SKURRI="Fonts\\\\SKURRI.TTF"})[db.nameFont] or "Fonts\\\\FRIZQT__.TTF"
+   local font=({FRIZQT="Fonts\\FRIZQT__.TTF",ARIAL="Fonts\\FRIZQT__.TTF",MORPHEUS="Fonts\\MORPHEUS.TTF",SKURRI="Fonts\\SKURRI.TTF"})[db.nameFont] or "Fonts\\FRIZQT__.TTF"
    if frameName~=lastPreview then
     lastPreview=frameName
     art:SetTexture(MR.path..theme.."\\\\"..frameName..".tga")
