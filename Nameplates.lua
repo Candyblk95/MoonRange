@@ -255,15 +255,22 @@ local function ApplyTheme(entry)
  end
 end
 
+local function HexRGB(hex)
+ if type(hex)~="string" or not hex:match("^%x%x%x%x%x%x$") then return 1,1,1 end
+ return tonumber(hex:sub(1,2),16)/255,tonumber(hex:sub(3,4),16)/255,tonumber(hex:sub(5,6),16)/255
+end
+
 local function UpdateText(entry,unit)
  local db=MR.db
  local font=FONT_PATHS[db.nameFont] or FONT_PATHS.FRIZQT
  if not entry.nameText:SetFont(font,db.nameSize or 14,"OUTLINE") then entry.nameText:SetFont(FONT_PATHS.FRIZQT,db.nameSize or 14,"OUTLINE") end
+ entry.nameText:SetTextColor(HexRGB(db.nameColor))
  entry.nameText:ClearAllPoints()
  entry.nameText:SetPoint("CENTER",entry.frame,"CENTER",db.nameX or 0,db.nameY or 24)
  local name=UnitName(unit)
  if name and Plain(name) then entry.nameText:SetText(name) else entry.nameText:SetText("") end
  if not entry.levelText:SetFont(font,db.levelSize or 11,"OUTLINE") then entry.levelText:SetFont(FONT_PATHS.FRIZQT,db.levelSize or 11,"OUTLINE") end
+ entry.levelText:SetTextColor(HexRGB(db.levelColor))
  entry.levelText:ClearAllPoints()
  entry.levelText:SetPoint("CENTER",entry.frame,"CENTER",db.levelX or 0,db.levelY or -12)
  local level=UnitLevel(unit)
