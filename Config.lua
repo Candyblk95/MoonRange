@@ -18,6 +18,7 @@ function MR:ToggleConfig()
   panel=CreateFrame("Frame","MoonRangeConfig",UIParent,"BackdropTemplate")
   panel:SetSize(460,900)
   panel:SetScale(0.82) -- fit the expanded controls on shorter displays
+  panel:Hide() -- newly created frames start visible; first /moonrange must open it
   panel:SetPoint("CENTER")
   panel:SetFrameStrata("DIALOG")
   panel:SetMovable(true)
