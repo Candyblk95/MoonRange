@@ -45,6 +45,13 @@ local function Setup(plate)
  bar:SetSize(148,15)
  bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
  bar:SetStatusBarColor(1,1,1,1)
+ -- Blizzard recolours nameplates based on reaction; keep the moon fill untinted.
+ if hooksecurefunc then
+  hooksecurefunc(bar,"SetStatusBarColor",function(self)
+   local t=self:GetStatusBarTexture()
+   if t then t:SetVertexColor(1,1,1,1) end
+  end)
+ end
  local texture=bar:GetStatusBarTexture()
  if texture then texture:SetTexCoord(UV_L,UV_R,UV_T,UV_B) end
 
@@ -54,6 +61,13 @@ local function Setup(plate)
  local frame=plate.UnitFrame
  if frame.PlayerLevelDiffFrame then frame.PlayerLevelDiffFrame:SetAlpha(0) end
  if frame.LevelFrame then frame.LevelFrame:SetAlpha(0) end
+ -- Blizzard can resize bars when nameplate selection/scale changes.
+ -- Restore only the geometry, not the protected health value.
+ if frame.UpdateAnchors and hooksecurefunc then
+  hooksecurefunc(frame,"UpdateAnchors",function()
+   if bar:GetWidth()~=148 or bar:GetHeight()~=15 then bar:SetSize(148,15) end
+  end)
+ end
 
  local entry={frame=art,foreground=foreground,border=border,light=light,bar=bar,filename=""}
  plate.moonRangeArt=entry
