@@ -15,7 +15,7 @@ end
 function MR:ToggleConfig()
  if not self.db then return end
  if not panel then
-  panel=CreateFrame("Frame","MoonRangeConfig",UIParent)
+  panel=CreateFrame("Frame","MoonRangeConfig",UIParent,"BackdropTemplate")
   panel:SetSize(420,230)
   panel:SetPoint("CENTER")
   panel:SetFrameStrata("DIALOG")
@@ -27,7 +27,7 @@ function MR:ToggleConfig()
   if panel.SetBackdrop then
    panel:SetBackdrop({bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",edgeSize=24})
   end
-  local title=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
+  if not panel.SetBackdrop then\n   local background=panel:CreateTexture(nil,"BACKGROUND")\n   background:SetAllPoints(panel)\n   background:SetColorTexture(0.035,0.06,0.13,0.96)\n  end\n  local title=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
   title:SetPoint("TOP",0,-23)
   title:SetText("MoonRange | "..(MR.className or "Class"))
   local instruction=panel:CreateFontString(nil,"OVERLAY","GameFontNormal")
@@ -74,5 +74,5 @@ function MR:ToggleConfig()
   close:SetScript("OnClick",function() panel:Hide() end)
   panel:SetScript("OnShow",RefreshSpells)
  end
- if panel:IsShown() then panel:Hide() else RefreshSpells();panel:Show() end
+ if panel:IsShown() then panel:Hide() else panel:Show();RefreshSpells() end
 end
