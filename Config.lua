@@ -16,7 +16,7 @@ function MR:ToggleConfig()
  if not self.db then return end
  if not panel then
   panel=CreateFrame("Frame","MoonRangeConfig",UIParent,"BackdropTemplate")
-  panel:SetSize(460,510)
+  panel:SetSize(460,590)
   panel:SetPoint("CENTER")
   panel:SetFrameStrata("DIALOG")
   panel:SetMovable(true)
@@ -72,12 +72,32 @@ function MR:ToggleConfig()
   local hint=panel:CreateFontString(nil,"OVERLAY","GameFontDisableSmall")
   hint:SetPoint("TOPLEFT",25,-164)
   hint:SetText("Includes General tab attacks such as Throw and Shoot.")
+  local themeLabel=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
+  themeLabel:SetPoint("TOPLEFT",25,-195)
+  themeLabel:SetText("Nameplate Theme")
+  local themeDrop=CreateFrame("Frame","MoonRangeThemeDropdown",panel,"UIDropDownMenuTemplate")
+  themeDrop:SetPoint("TOPLEFT",4,-215)
+  UIDropDownMenu_SetWidth(themeDrop,210)
+  UIDropDownMenu_Initialize(themeDrop,function(_,level)
+   for _,theme in ipairs({"Moon","Herbalism"}) do
+    local choice=theme
+    local info=UIDropDownMenu_CreateInfo()
+    info.text=choice
+    info.checked=MR.db.theme==choice
+    info.func=function()
+     MR.db.theme=choice
+     UIDropDownMenu_SetText(themeDrop,choice)
+     CloseDropDownMenus()
+    end
+    UIDropDownMenu_AddButton(info,level)
+   end
+  end)
   local section=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
-  section:SetPoint("TOPLEFT",25,-199)
+  section:SetPoint("TOPLEFT",25,-277)
   section:SetText("Nameplate Text")
   local fonts={{id="FRIZQT",label="Friz Quadrata"},{id="ARIAL",label="Arial Narrow"},{id="MORPHEUS",label="Morpheus"},{id="SKURRI",label="Skurri"}}
   local fontDrop=CreateFrame("Frame","MoonRangeFontDropdown",panel,"UIDropDownMenuTemplate")
-  fontDrop:SetPoint("TOPLEFT",4,-220)
+  fontDrop:SetPoint("TOPLEFT",4,-298)
   UIDropDownMenu_SetWidth(fontDrop,210)
   UIDropDownMenu_Initialize(fontDrop,function(_,level)
    for _,f in ipairs(fonts) do
@@ -114,10 +134,10 @@ function MR:ToggleConfig()
    slide:SetValue(MR.db[key] or min)
    return slide
   end
-  Slider("nameSize","Name font size",8,26,1,26,-286)
-  Slider("nameX","Name horizontal", -60,60,1,254,-286)
-  Slider("nameY","Name vertical", -40,75,1,26,-359)
-  Slider("levelSize","Level font size",8,22,1,254,-359)
+  Slider("nameSize","Name font size",8,26,1,26,-364)
+  Slider("nameX","Name horizontal", -60,60,1,254,-364)
+  Slider("nameY","Name vertical", -40,75,1,26,-437)
+  Slider("levelSize","Level font size",8,22,1,254,-437)
   local levelCheck=CreateFrame("CheckButton",nil,panel,"UICheckButtonTemplate")
   levelCheck:SetPoint("BOTTOMLEFT",22,48)
   levelCheck:SetChecked(MR.db.showLevel)
@@ -130,6 +150,7 @@ function MR:ToggleConfig()
   hint2:SetText("Text updates live. /reload if Blizzard resets a nameplate.")
   panel:SetScript("OnShow",function()
    RefreshSpells()
+   UIDropDownMenu_SetText(themeDrop,MR.db.theme or "Moon")
    for _,f in ipairs(fonts) do
     if MR.db.nameFont==f.id then UIDropDownMenu_SetText(fontDrop,f.label) end
    end
