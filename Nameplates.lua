@@ -18,10 +18,10 @@ local PURPLE = {0.45, 0.22, 0.65, 1}
 local PINK = {0.70, 0.09, 0.39, 1}
 local ORANGE_PINK = {0.78, 0.30, 0.34, 1}
 -- Herbalism uses forest/jewel tones so its green-and-gold frame stays cohesive.
-local HERB_BLUE = {0.10, 0.48, 0.43, 1}
-local HERB_PURPLE = {0.37, 0.30, 0.52, 1}
-local HERB_PINK = {0.58, 0.30, 0.32, 1}
-local HERB_CORAL = {0.69, 0.39, 0.30, 1}
+local HERB_BLUE = {0.08, 0.30, 0.24, 1}
+local HERB_PURPLE = {0.18, 0.28, 0.23, 1}
+local HERB_PINK = {0.12, 0.30, 0.19, 1}
+local HERB_CORAL = {0.24, 0.31, 0.18, 1}
 
 local function UnitColour(unit)
  if not unit or not UnitExists(unit) then return BLUE end
@@ -181,8 +181,12 @@ local function ApplyTheme(entry)
  if entry.shimmer then
   entry.shimmer:SetTexture(Asset(theme,theme=="Moon" and "Fill_Moon" or "Fill_Herbalism"))
   if theme=="Moon" then
+   entry.shimmer:SetBlendMode("ADD")
+   entry.shimmer:SetAlpha(0.45)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   else
+   -- The original Herbalism fill is green artwork. Blend it over a dark\n   -- green native fill instead of adding it over pink/purple solid colours.\n   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(0.88)
    entry.shimmer:SetTexCoord(144/1024,905/1024,175/512,305/512)
   end
  end
