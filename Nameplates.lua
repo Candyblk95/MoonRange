@@ -32,6 +32,15 @@ local function Setup(plate)
  -- Replace Blizzard's bar fill without reading protected health values.
  bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
  if bar.bgTexture then bar.bgTexture:SetAlpha(0) end
+ -- Suppress Blizzard's default border/selection art on this exact bar.
+ if bar.selectedBorder then bar.selectedBorder:SetAlpha(0) end
+ if bar.deselectedOverlay then bar.deselectedOverlay:SetAlpha(0) end
+ local frame=plate.UnitFrame
+ if frame.PlayerLevelDiffFrame then frame.PlayerLevelDiffFrame:SetAlpha(0) end
+ if frame.LevelFrame then frame.LevelFrame:SetAlpha(0) end
+ if frame.HealthBarsContainer and frame.HealthBarsContainer.border then
+  frame.HealthBarsContainer.border:SetAlpha(0)
+ end
 
  local art = {bar=bar, bg=bg, border=border, light=light, filename=""}
  plate.moonRangeArt=art
