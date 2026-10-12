@@ -80,27 +80,35 @@ local function Resize(entry)
 end
 
 local function FindCastBar(frame)
- return frame.castBar or frame.CastBar or
-  (frame.castBarContainer and frame.castBarContainer.castBar) or
-  (frame.CastBarContainer and frame.CastBarContainer.CastBar)
+ if not frame then return nil end
+ -- Forever's Blizzard nameplates can expose the bar directly or in a container.
+ local containers={frame,frame.castBarContainer,frame.CastBarContainer,frame.SpellCastBarContainer}
+ for _,owner in pairs(containers) do
+  if owner then
+   for _,key in ipairs({"castBar","CastBar","spellCastBar","SpellCastBar","castingBar","CastingBar"}) do
+    local candidate=owner[key]
+    if candidate and candidate.SetSize and candidate.SetPoint then return candidate end
+   end
+  end
+ end
+ return nil
 end
 
 local function PositionCastBar(entry)
  local cast=entry.castBar
  if not cast or (cast.IsForbidden and cast:IsForbidden()) then return end
  local db=MR.db
- local w=db.castWidth or 130
- local h=db.castHeight or 10
- -- Only change geometry: Blizzard retains casting progress and spell state.
- if entry.castWidth~=w or entry.castHeight~=h then
-  entry.castWidth=w;entry.castHeight=h
-  cast:SetSize(w,h)
- end
+ local w,h=db.castWidth or 130,db.castHeight or 10
  local x,y=db.castX or 0,db.castY or -32
- if entry.castX~=x or entry.castY~=y then
-  entry.castX=x;entry.castY=y
-  cast:ClearAllPoints()
-  cast:SetPoint("CENTER",entry.frame,"CENTER",x,y)
+ -- Blizzard may reset cast geometry when a spell starts; reapply only when needed.
+ local cw,ch=cast:GetSize()
+ if Plain(cw) and Plain(ch) and (cw~=w or ch~=h) then cast:SetSize(w,h) end
+ local point,relative,relativePoint,ox,oy=cast:GetPoint(1)
+ if Plain(point) and Plain(relative) and Plain(relativePoint) and Plain(ox) and Plain(oy) then
+  if point~="CENTER" or relative~=entry.frame or relativePoint~="CENTER" or ox~=x or oy~=y then
+   cast:ClearAllPoints()
+   cast:SetPoint("CENTER",entry.frame,"CENTER",x,y)
+  end
  end
 end
 
@@ -108,7 +116,11 @@ local function Setup(plate)
  if not plate or (plate.IsForbidden and plate:IsForbidden()) then return end
  local bar = GetBar(plate)
  if not bar then return end
- if plate.moonRangeArt then return plate.moonRangeArt end
+ if plate.moonRangeArt then
+  local existing=plate.moonRangeArt
+  existing.castBar=FindCastBar(plate.UnitFrame) or existing.castBar
+  return existing
+ end
 
  -- Never force the native bar's dimensions. Blizzard owns the size slider.
  local art = CreateFrame("Frame", nil, plate.UnitFrame)
