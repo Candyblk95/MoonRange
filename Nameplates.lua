@@ -1,5 +1,8 @@
 local _, MR = ...
 local active, elapsed = {}, 0
+local THEMES={Moon=true,Herbalism=true}
+local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
+local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\ARIALN.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
 local function Plain(v) return not (issecretvalue and issecretvalue(v)) end
 local function IsObject(unit)
@@ -74,7 +77,7 @@ local function Setup(plate)
 
  local background = art:CreateTexture(nil, "BACKGROUND")
  background:SetAllPoints(art)
- background:SetTexture(MR.path .. "BG_Moon.tga")
+ background:SetTexture(Asset("Moon","BG_Moon"))
 
  local foreground = CreateFrame("Frame", nil, plate.UnitFrame)
  foreground:SetAllPoints(art)
@@ -83,11 +86,11 @@ local function Setup(plate)
 
  local border = foreground:CreateTexture(nil, "OVERLAY", nil, 2)
  border:SetAllPoints(art)
- border:SetTexture(MR.path .. "Frame_NoMoon.tga")
+ border:SetTexture(Asset("Moon","Frame_NoMoon"))
 
  local light = foreground:CreateTexture(nil, "OVERLAY", nil, 3)
  light:SetAllPoints(art)
- light:SetTexture(MR.path .. "Frame_Moon_Light.tga")
+ light:SetTexture(Asset("Moon","Frame_Moon_Light"))
  light:Hide()
 
  -- Experimental shimmer: follow the native StatusBar fill texture geometry.
@@ -96,14 +99,14 @@ local function Setup(plate)
  local shimmer
  if nativeFill then
   shimmer=bar:CreateTexture(nil,"ARTWORK",nil,2)
-  shimmer:SetTexture(MR.path.."Fill_Moon.tga")
+  shimmer:SetTexture(Asset("Moon","Fill_Moon"))
   shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   shimmer:SetAllPoints(nativeFill)
   shimmer:SetAlpha(0.45)
   shimmer:SetBlendMode("ADD")
  end
 
- local entry = {frame=art, foreground=foreground, border=border, shimmer=shimmer,
+ local entry = {frame=art, foreground=foreground, border=border, background=background, shimmer=shimmer,
                 light=light, bar=bar, filename="", unit=nil}
  plate.moonRangeArt = entry
 
@@ -158,6 +161,25 @@ local function RefreshShimmer(entry)
  if not fill:IsShown() then shimmer:Hide() else shimmer:Show() end
 end
 
+local function ApplyTheme(entry)
+ local theme=Theme()
+ if entry.theme==theme then return end
+ entry.theme=theme
+ entry.filename=""
+ entry.background:SetTexture(Asset(theme,theme=="Moon" and "BG_Moon" or "BG_Herbalism"))
+ if entry.shimmer then
+  entry.shimmer:SetTexture(Asset(theme,theme=="Moon" and "Fill_Moon" or "Fill_Herbalism"))
+ end
+ if theme=="Moon" then
+  entry.light:SetTexture(Asset("Moon","Frame_Moon_Light"))
+ else
+  -- An additive copy of the current Herbalism animation frame lights up
+  -- when in range. No separate glow artwork required.
+  entry.light:SetBlendMode("ADD")
+  entry.light:SetAlpha(0.32)
+ end
+end
+
 local function UpdateText(entry,unit)
  local db=MR.db
  local font=FONT_PATHS[db.nameFont] or FONT_PATHS.FRIZQT
@@ -198,18 +220,31 @@ local function Update(unit, plate)
  end
  entry.frame:Show()
  entry.foreground:Show()
+ ApplyTheme(entry)
  RefreshShimmer(entry)
  Resize(entry)
  SetMoonColour(entry, unit)
 
  local selected = UnitExists("target") and UnitIsUnit(unit, "target")
  local inRange = selected and MR:RangeState()
- local filename = inRange == true and "Frame_Moon.tga" or "Frame_NoMoon.tga"
- if entry.filename ~= filename then
-  entry.filename = filename
-  entry.border:SetTexture(MR.path .. filename)
+ if entry.theme=="Herbalism" then
+  -- Three supplied animation frames, cycling in order.
+  local frameNumber=math.floor((GetTime()*6)%3)+1
+  local frameName=string.format("Frame_Herbalism_%02d",frameNumber)
+  if entry.filename~=frameName then
+   entry.filename=frameName
+   local texture=Asset("Herbalism",frameName)
+   entry.border:SetTexture(texture)
+   entry.light:SetTexture(texture)
+  end
+ else
+  local filename=inRange==true and "Frame_Moon" or "Frame_NoMoon"
+  if entry.filename~=filename then
+   entry.filename=filename
+   entry.border:SetTexture(Asset("Moon",filename))
+  end
  end
- if inRange == true then entry.light:Show() else entry.light:Hide() end
+ if inRange==true then entry.light:Show() else entry.light:Hide() end
 end
 
 function MR:StartNameplates()
