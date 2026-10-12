@@ -61,7 +61,9 @@ MoonRange was designed with **Opulent Casting Bars** in mind, because a beautifu
 - **MoonRange** focuses on **overhead nameplates**, their appearance, and spell-aware range visuals.
 - MoonRange keeps the **native Blizzard nameplate health and cast bars** rather than replacing their underlying behaviour.
 
-**A huge thank-you and full credit to SimonPdv** for creating Opulent Casting Bars and inspiring the fantasy UI aesthetic I love. 💙
+**Artwork credit:** The original nameplate artwork and visual assets used by MoonRange belong to **SimonPdv, creator of Opulent Casting Bars**. Candy Black adapted the artwork for MoonRange and added extra elements, including the **custom configuration GUI** and **Herbalism range icon**. 💙
+
+**A huge thank-you to SimonPdv** for creating Opulent Casting Bars and for the artwork that makes MoonRange's look possible.
 
 *Opulent Casting Bars is a separate addon, not a required dependency. MoonRange is an independent fan project and is not an official extension of, or endorsed by, its creator.*
 
@@ -122,9 +124,11 @@ For the curious little code goblins:
 
 <div align="center">
 
-### ✧ Crafted with love by Candy Black ✧
+### ✧ Adapted with love by Candy Black ✧
 
 *For the moon children, the forest witches, the Night Elves, and everyone who wants their UI to look a little more magical.*
+
+**Original artwork: SimonPdv (Opulent Casting Bars)** · **MoonRange additions: Candy Black**
 
 **Elune-adore, lovely.** 🌙💙
 
