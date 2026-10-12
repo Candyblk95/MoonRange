@@ -42,24 +42,17 @@ local function Setup(plate)
  -- Use the full 2:1 artwork canvas, exactly like the moon background.
  -- Blizzard still controls the fill percentage via the native StatusBar.
  bar:SetSize(148,15)
- -- Use a dedicated texture object as the native StatusBar fill, rather than
- -- a file path that Blizzard may replace with its reaction-coloured texture.
- local moonFill=bar:CreateTexture(nil,"ARTWORK")
- moonFill:SetTexture(MR.path.."Fill_Moon.tga")
- moonFill:SetTexCoord(129/1024,886/1024,203/512,281/512)
- bar:SetStatusBarTexture(moonFill)
- bar:SetStatusBarColor(1,1,1,1)
- -- Blizzard recolours nameplates based on reaction; keep the moon fill untinted.
- if hooksecurefunc then
-  hooksecurefunc(bar,"SetStatusBarColor",function(self)
-   local t=self:GetStatusBarTexture()
-   if t then t:SetVertexColor(1,1,1,1) end
-  end)
+ -- Keep Blizzard's own health fill and its automatic health animation.
+ -- Tint the native texture moon-blue instead of replacing it.
+ local moonBlue={0.12,0.65,1,1}
+ local function TintNative()
+  local t=bar:GetStatusBarTexture()
+  if t then t:SetVertexColor(unpack(moonBlue)) end
  end
- -- Blizzard may retain an older independent barTexture alongside its fill.
- -- Only hide it when it is not the texture driving the StatusBar.
- if bar.barTexture and bar.barTexture~=moonFill then bar.barTexture:SetAlpha(0) end
-
+ TintNative()
+ if hooksecurefunc then
+  hooksecurefunc(bar,"SetStatusBarColor",function() TintNative() end)
+ end
  if bar.bgTexture then bar.bgTexture:SetAlpha(0) end
  if bar.selectedBorder then bar.selectedBorder:SetAlpha(0) end
  if bar.deselectedOverlay then bar.deselectedOverlay:SetAlpha(0) end
@@ -74,7 +67,7 @@ local function Setup(plate)
   end)
  end
 
- local entry={frame=art,foreground=foreground,border=border,light=light,bar=bar,moonFill=moonFill,filename=""}
+ local entry={frame=art,foreground=foreground,border=border,light=light,bar=bar,filename=""}
  plate.moonRangeArt=entry
  return entry
 end
