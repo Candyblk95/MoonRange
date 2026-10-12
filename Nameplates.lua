@@ -20,25 +20,31 @@ local function Setup(plate)
  local art=CreateFrame("Frame",nil,plate.UnitFrame)
  art:SetSize(200,100)
  art:SetPoint("CENTER",bar,"CENTER",0,0)
- art:SetFrameLevel(bar:GetFrameLevel()+1)
+ art:SetFrameLevel(math.max(0,bar:GetFrameLevel()-1))
  art:EnableMouse(false)
 
  local background=art:CreateTexture(nil,"BACKGROUND")
  background:SetAllPoints(art)
  background:SetTexture(MR.path.."BG_Moon.tga")
 
- local border=art:CreateTexture(nil,"OVERLAY",nil,2)
+ local foreground=CreateFrame("Frame",nil,plate.UnitFrame)
+ foreground:SetAllPoints(art)
+ foreground:SetFrameLevel(bar:GetFrameLevel()+2)
+ foreground:EnableMouse(false)
+ local border=foreground:CreateTexture(nil,"OVERLAY",nil,2)
  border:SetAllPoints(art)
  border:SetTexture(MR.path.."Frame_NoMoon.tga")
 
- local light=art:CreateTexture(nil,"OVERLAY",nil,3)
+ local light=foreground:CreateTexture(nil,"OVERLAY",nil,3)
  light:SetAllPoints(art)
  light:SetTexture(MR.path.."Frame_Moon_Light.tga")
  light:Hide()
 
  -- Preserve the Blizzard status bar so it alone handles secret health values.
  -- Crop the huge transparent padding from the bar-fill source image.
+ bar:SetSize(148,15)
  bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
+ bar:SetStatusBarColor(1,1,1,1)
  local texture=bar:GetStatusBarTexture()
  if texture then texture:SetTexCoord(UV_L,UV_R,UV_T,UV_B) end
 
@@ -49,7 +55,7 @@ local function Setup(plate)
  if frame.PlayerLevelDiffFrame then frame.PlayerLevelDiffFrame:SetAlpha(0) end
  if frame.LevelFrame then frame.LevelFrame:SetAlpha(0) end
 
- local entry={frame=art,border=border,light=light,bar=bar,filename=""}
+ local entry={frame=art,foreground=foreground,border=border,light=light,bar=bar,filename=""}
  plate.moonRangeArt=entry
  return entry
 end
@@ -57,8 +63,17 @@ end
 local function Update(unit,plate)
  local a=Setup(plate)
  if not a then return end
- if not MR.db.enabled then a.frame:Hide();return end
+ if not MR.db.enabled then a.frame:Hide();a.foreground:Hide();return end
  a.frame:Show()
+ a.foreground:Show()
+ -- Blizzard may restore its own status-bar texture during unit updates.
+ local texture=a.bar:GetStatusBarTexture()
+ if texture and texture:GetTexture()~=MR.path.."Fill_Moon.tga" then
+  a.bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
+  texture=a.bar:GetStatusBarTexture()
+ end
+ if texture then texture:SetTexCoord(UV_L,UV_R,UV_T,UV_B) end
+ a.bar:SetStatusBarColor(1,1,1,1)
  local selected=UnitExists("target") and UnitIsUnit(unit,"target")
  local range=selected and MR:RangeState()
  local filename=(range==true) and "Frame_Moon.tga" or "Frame_NoMoon.tga"
