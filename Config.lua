@@ -141,12 +141,12 @@ local function ToggleTest()
   root:SetScript("OnUpdate",function(self,dt)
    if not MR.db then return end
    local d=MR.db
-   local theme=(d.theme=="Herbalism" or d.theme=="Shadow") and d.theme or "Moon"
+   local theme=(d.theme=="Herbalism" or d.theme=="Shadow" or d.theme=="Arcaneum") and d.theme or "Moon"
    if theme~=self.lastTheme then
     self.lastTheme=theme
-    self.background:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or "BG_Herbalism")..".tga")
-    self.border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_Moon" or theme=="Shadow" and "Frame_Shadow" or "Frame_Herbalism_01")..".tga")
-    self.hp:SetStatusBarColor(theme=="Moon" and .20 or theme=="Shadow" and .50 or .35,theme=="Moon" and .50 or theme=="Shadow" and .22 or .55,theme=="Moon" and .80 or theme=="Shadow" and .66 or .25)
+    self.background:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or theme).."\\"..(theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or "BG_Herbalism")..".tga")
+    self.border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_Moon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or "Frame_Herbalism_01")..".tga")
+    self.hp:SetStatusBarColor(theme=="Moon" and .20 or theme=="Shadow" and .50 or theme=="Arcaneum" and .52 or .35,theme=="Moon" and .50 or theme=="Shadow" and .22 or theme=="Arcaneum" and .43 or .55,theme=="Moon" and .80 or theme=="Shadow" and .66 or theme=="Arcaneum" and .79 or .25)
    end
    self.clock=(self.clock+dt)%3
    self.cast:SetValue(self.clock/3)
@@ -231,7 +231,7 @@ local function Build()
  local nameplate=MakePage("Nameplates")
  Section(nameplate,"- Nameplate Atelier",-8)
  Font(nameplate,"Theme",17,30,-55,355,C.ice)
- local themeRefresh=Dropdown(nameplate,"ThemePage",30,-80,290,{{label="Moon"},{label="Herbalism"},{label="Shadow"}},function()return MR.db.theme end,function(v)MR.db.theme=v end)
+ local themeRefresh=Dropdown(nameplate,"ThemePage",30,-80,290,{{label="Moon"},{label="Herbalism"},{label="Shadow"},{label="Arcaneum"}},function()return MR.db.theme end,function(v)MR.db.theme=v end)
  Register(themeRefresh)
  Font(nameplate,"Font",17,30,-139,355,C.ice)
  local fonts={{label="Friz Quadrata",value="FRIZQT"},{label="Arial Narrow",value="ARIAL"},{label="Morpheus",value="MORPHEUS"},{label="Skurri",value="SKURRI"}}
@@ -253,19 +253,20 @@ local function Build()
  local mode="hostile"
  local modes={{label="Hostile NPC",value="hostile"},{label="Neutral NPC",value="neutral"},{label="Friendly Player",value="friendly"},{label="Hostile Player",value="enemy"}}
  Register(Dropdown(nameplate,"PreviewMode",30,-298,290,modes,function()return mode end,function(v)mode=v end))
- local colors={Shadow={hostile={193/255,61/255,130/255},neutral={134/255,112/255,200/255},friendly={66/255,169/255,167/255},enemy={225/255,107/255,80/255}},Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},Moon={hostile={.70,.09,.39},neutral={.10,.40,.68},friendly={.45,.22,.65},enemy={.78,.30,.34}}}
+ local colors={Arcaneum={hostile={.78,.33,.69},neutral={.52,.43,.79},friendly={.37,.72,.83},enemy={.91,.56,.34}},Shadow={hostile={193/255,61/255,130/255},neutral={134/255,112/255,200/255},friendly={66/255,169/255,167/255},enemy={225/255,107/255,80/255}},Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},Moon={hostile={.70,.09,.39},neutral={.10,.40,.68},friendly={.45,.22,.65},enemy={.78,.30,.34}}}
  local fontPaths={FRIZQT="Fonts\\FRIZQT__.TTF",ARIAL="Fonts\\FRIZQT__.TTF",MORPHEUS="Fonts\\MORPHEUS.TTF",SKURRI="Fonts\\SKURRI.TTF"}
  local lastTheme,lastFont,lastNameSize,lastLevelSize
  local function UpdatePreview()
   if not MR.db then return end
-  local d=MR.db;local theme=(d.theme=="Herbalism" or d.theme=="Shadow") and d.theme or "Moon"
+  local d=MR.db;local theme=(d.theme=="Herbalism" or d.theme=="Shadow" or d.theme=="Arcaneum") and d.theme or "Moon"
   if theme~=lastTheme then
    lastTheme=theme
-   bg:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or "BG_Herbalism")..".tga")
-   border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_NoMoon" or theme=="Shadow" and "Frame_Shadow" or "Frame_Herbalism_01")..".tga")
-   fill:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or "Fill_Herbalism")..".tga")
+   bg:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or theme).."\\"..(theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or "BG_Herbalism")..".tga")
+   border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_NoMoon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or "Frame_Herbalism_01")..".tga")
+   fill:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or "Fill_Herbalism")..".tga")
    if theme=="Moon" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("ADD");fill:SetAlpha(.45)
-   elseif theme=="Shadow" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.32)
+   elseif theme=="Arcaneum" then fill:SetTexCoord(182/1024,850/1024,201/512,271/512);fill:SetBlendMode("ADD");fill:SetAlpha(.65)
+    elseif theme=="Shadow" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.32)
    else fill:SetTexCoord(144/1024,905/1024,175/512,305/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.20)end
   end
   local c=colors[theme][mode];health:SetStatusBarColor(c[1],c[2],c[3])
