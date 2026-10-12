@@ -48,16 +48,39 @@ function MR:SetSpell(name)
   self.db.spell=name;self:Print("Range spell: "..(name~="" and name or "none"))
  else self:Print("Spell not found in your spellbook: "..tostring(name)) end
 end
+-- Forever range API takes a spell ID, not a spell name.
+local SPELL_IDS={["Throw"]=2764,["Shoot"]=5019,["Auto Shot"]=75}
+local function ResolveSpellID(name)
+ if not name or name=="" then return nil end
+ if SPELL_IDS[name] then return SPELL_IDS[name] end
+ if C_Spell and C_Spell.GetSpellInfo then
+  local ok,info=pcall(C_Spell.GetSpellInfo,name)
+  if ok and type(info)=="table" then return info.spellID end
+ end
+ if GetSpellInfo then
+  local ok,_,_,_,_,_,_,id=pcall(GetSpellInfo,name)
+  if ok then return id end
+ end
+ return nil
+end
 function MR:RangeState()
  if not self.db or not self.db.enabled or not UnitExists("target") then return nil end
- if not self:IsKnownSpell(self.db.spell) then return nil end
- local check = (C_Spell and C_Spell.IsSpellInRange) or IsSpellInRange
- if not check then return nil end
- local ok,v=pcall(check,self.db.spell,"target")
- if not ok then return nil end
- if v==1 or v==true then return true end
- if v==0 or v==false then return false end
+ local id=ResolveSpellID(self.db.spell)
+ if not id then return nil end
+ local fn=C_Spell and C_Spell.IsSpellInRange or IsSpellInRange
+ if not fn then return nil end
+ local ok,v=pcall(fn,id,"target")
+ if not ok or (issecretvalue and issecretvalue(v)) then return nil end
+ if v==true or v==1 then return true end
+ if v==false or v==0 then return false end
  return nil
+end
+function MR:RangeDebug()
+ local name=self.db and self.db.spell or ""
+ local id=ResolveSpellID(name)
+ local state=self:RangeState()
+ self:Print("Spell="..tostring(name).." | ID="..tostring(id).." | Range="..tostring(state))
+ if not id then self:Print("No spell ID resolved. Choose Throw, Shoot or a ranged spell from /moonrange.") end
 end
 local events=CreateFrame("Frame")
 events:RegisterEvent("PLAYER_LOGIN")
@@ -78,7 +101,7 @@ SlashCmdList.MOONRANGE=function(msg)
  local command,rest=msg:match("^(%S+)%s*(.*)$")
  command=command and command:lower() or ""
  if command=="spell" then MR:SetSpell(rest)
- elseif command=="debug" then MR:Print("Class: "..tostring(MR.classToken).." / Known: "..#MR:KnownSpells().." / Spell: "..tostring(MR.db and MR.db.spell).." / Range: "..tostring(MR:RangeState()))
+ elseif command=="debug" then MR:Print("Class: "..tostring(MR.classToken).." / Known: "..#MR:KnownSpells());MR:RangeDebug()
  elseif command=="on" or command=="off" then if MR.db then MR.db.enabled=(command=="on") end
  elseif MR.ToggleConfig then MR:ToggleConfig() end
 end
