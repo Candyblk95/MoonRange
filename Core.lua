@@ -2,7 +2,7 @@ local _, MR = ...
 _G.MoonRange = MR
 MR.path = "Interface\\AddOns\\MoonRange\\Textures\\"
 MR.className, MR.classToken = UnitClass("player")
-local defaults = { theme="Moon", spell="", width=190, height=30, enabled=true, update=0.15, nameFont="FRIZQT", nameSize=14, nameX=0, nameY=24, showLevel=true, levelSize=11, levelX=0, levelY=-12, castWidth=130, castHeight=10, castX=0, castY=-32 }
+local defaults = { theme="Moon", spell="", width=190, height=30, enabled=true, update=0.15, nameFont="FRIZQT", nameColor="FFFFFF", levelColor="FFFFFF", nameSize=14, nameX=0, nameY=24, showLevel=true, levelSize=11, levelX=0, levelY=-12, castWidth=130, castHeight=10, castX=0, castY=-32 }
 function MR:Print(text) DEFAULT_CHAT_FRAME:AddMessage("|cff67cfffMoonRange|r: "..tostring(text)) end
 function MR:KnownSpells()
  local out,seen={},{}
