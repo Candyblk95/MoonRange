@@ -258,7 +258,7 @@ local function Build()
  local lastTheme,lastFont,lastNameSize,lastLevelSize
  local function UpdatePreview()
   if not MR.db then return end
-  local d=MR.db;local theme=d.theme=="Herbalism" and "Herbalism" or "Moon"
+  local d=MR.db;local theme=(d.theme=="Herbalism" or d.theme=="Shadow") and d.theme or "Moon"
   if theme~=lastTheme then
    lastTheme=theme
    bg:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or "BG_Herbalism")..".tga")
