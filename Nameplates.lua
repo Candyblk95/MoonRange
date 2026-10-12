@@ -17,6 +17,11 @@ local BLUE = {0.10, 0.40, 0.68, 1}
 local PURPLE = {0.45, 0.22, 0.65, 1}
 local PINK = {0.70, 0.09, 0.39, 1}
 local ORANGE_PINK = {0.78, 0.30, 0.34, 1}
+-- Herbalism uses forest/jewel tones so its green-and-gold frame stays cohesive.
+local HERB_BLUE = {0.10, 0.48, 0.43, 1}
+local HERB_PURPLE = {0.37, 0.30, 0.52, 1}
+local HERB_PINK = {0.58, 0.30, 0.32, 1}
+local HERB_CORAL = {0.69, 0.39, 0.30, 1}
 
 local function UnitColour(unit)
  if not unit or not UnitExists(unit) then return BLUE end
@@ -48,6 +53,12 @@ end
 
 local function SetMoonColour(entry, unit)
  local colour = UnitColour(unit)
+ if entry.theme=="Herbalism" then
+  if colour==BLUE then colour=HERB_BLUE
+  elseif colour==PURPLE then colour=HERB_PURPLE
+  elseif colour==PINK then colour=HERB_PINK
+  else colour=HERB_CORAL end
+ end
  local texture = entry.bar:GetStatusBarTexture()
  if texture then texture:SetVertexColor(unpack(colour)) end
 end
@@ -180,10 +191,10 @@ local function ApplyTheme(entry)
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  else
-  -- An additive copy of the current Herbalism animation frame lights up
-  -- when in range. No separate glow artwork required.
-  entry.light:SetBlendMode("ADD")
-  entry.light:SetAlpha(0.32)
+  -- User-supplied standalone range indicator, above all animation frames.
+  entry.light:SetTexture(Asset("Herbalism","Frame_Range"))
+  entry.light:SetBlendMode("BLEND")
+  entry.light:SetAlpha(1)
  end
 end
 
@@ -242,7 +253,6 @@ local function Update(unit, plate)
    entry.filename=frameName
    local texture=Asset("Herbalism",frameName)
    entry.border:SetTexture(texture)
-   entry.light:SetTexture(texture)
   end
  else
   local filename=inRange==true and "Frame_Moon" or "Frame_NoMoon"
