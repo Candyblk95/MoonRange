@@ -1,6 +1,6 @@
 local _, MR = ...
 local active, elapsed = {}, 0
-local THEMES={Moon=true,Herbalism=true}
+local THEMES={Moon=true,Herbalism=true,Shadow=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
@@ -53,7 +53,12 @@ end
 
 local function SetMoonColour(entry, unit)
  local colour = UnitColour(unit)
- if entry.theme=="Herbalism" then
+ if entry.theme=="Shadow" then
+  if colour==BLUE then colour={0.40,0.25,0.70,1}
+  elseif colour==PURPLE then colour={0.56,0.31,0.78,1}
+  elseif colour==PINK then colour={0.68,0.18,0.54,1}
+  else colour={0.78,0.26,0.60,1} end
+ elseif entry.theme=="Herbalism" then
   if colour==BLUE then colour=HERB_BLUE
   elseif colour==PURPLE then colour=HERB_PURPLE
   elseif colour==PINK then colour=HERB_PINK
@@ -64,7 +69,7 @@ local function SetMoonColour(entry, unit)
  -- Tint the Herbalism artwork too: at 88% opacity its original green
  -- otherwise masks the unit-type colour on the Blizzard fill below.
  if entry.shimmer then
-  if entry.theme=="Herbalism" then entry.shimmer:SetVertexColor(unpack(colour))
+  if entry.theme=="Herbalism" or entry.theme=="Shadow" then entry.shimmer:SetVertexColor(unpack(colour))
   else entry.shimmer:SetVertexColor(1,1,1,1) end
  end
 end
@@ -151,6 +156,8 @@ local function Setup(plate)
  border:SetAllPoints(art)
  border:SetTexture(Asset("Moon","Frame_NoMoon"))
 
+ local flame = foreground:CreateTexture(nil,"OVERLAY",nil,1)
+ flame:SetAllPoints(art);flame:Hide()
  local light = foreground:CreateTexture(nil, "OVERLAY", nil, 3)
  light:SetAllPoints(art)
  light:SetTexture(Asset("Moon","Frame_Moon_Light"))
@@ -170,7 +177,7 @@ local function Setup(plate)
  end
 
  local entry = {frame=art, foreground=foreground, border=border, background=background, shimmer=shimmer,
-                light=light, bar=bar, filename="", unit=nil}
+                light=light, flame=flame, bar=bar, filename="", unit=nil}
  entry.castBar=FindCastBar(plate.UnitFrame)
  plate.moonRangeArt = entry
 
@@ -230,12 +237,17 @@ local function ApplyTheme(entry)
  if entry.theme==theme then return end
  entry.theme=theme
  entry.filename=""
- entry.background:SetTexture(Asset(theme,theme=="Moon" and "BG_Moon" or "BG_Herbalism"))
+ entry.flame:SetShown(theme=="Shadow")
+ entry.background:SetTexture(Asset(theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or "BG_Herbalism"))
  if entry.shimmer then
-  entry.shimmer:SetTexture(Asset(theme,theme=="Moon" and "Fill_Moon" or "Fill_Herbalism"))
+  entry.shimmer:SetTexture(Asset(theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or "Fill_Herbalism"))
   if theme=="Moon" then
    entry.shimmer:SetBlendMode("ADD")
    entry.shimmer:SetAlpha(0.45)
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  elseif theme=="Shadow" then
+   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(0.32)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   else
    -- The original Herbalism fill is green artwork. Blend it over a dark\n   -- green native fill instead of adding it over pink/purple solid colours.\n   entry.shimmer:SetBlendMode("BLEND")
@@ -247,6 +259,10 @@ local function ApplyTheme(entry)
   entry.light:SetTexture(Asset("Moon","Frame_Moon_Light"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
+ elseif theme=="Shadow" then
+  entry.light:SetTexture(Asset("Shadow","Circle_Shadow"))
+  entry.light:SetBlendMode("ADD")
+  entry.light:SetAlpha(0.85)
  else
   -- User-supplied standalone range indicator, above all animation frames.
   entry.light:SetTexture(Asset("Herbalism","Frame_Range"))
@@ -310,7 +326,14 @@ local function Update(unit, plate)
 
  local selected = UnitExists("target") and UnitIsUnit(unit, "target")
  local inRange = selected and MR:RangeState()
- if entry.theme=="Herbalism" then
+ if entry.theme=="Shadow" then
+  entry.border:SetTexture(Asset("Shadow","Frame_Shadow"))
+  local flameName=string.format("Flame_Shadow_%02d",math.floor((GetTime()*8)%5)+1)
+  if entry.filename~=flameName then
+   entry.filename=flameName
+   entry.flame:SetTexture(Asset("Shadow",flameName))
+  end
+ elseif entry.theme=="Herbalism" then
   -- Three supplied animation frames, cycling in order.
   local frameNumber=math.floor((GetTime()*6)%3)+1
   local frameName=string.format("Frame_Herbalism_%02d",frameNumber)
