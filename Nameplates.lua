@@ -1,5 +1,14 @@
 local _, MR = ...
 local active, elapsed = {}, 0
+local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\ARIALN.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
+local function Plain(v) return not (issecretvalue and issecretvalue(v)) end
+local function IsObject(unit)
+ if not unit or not UnitExists(unit) then return true end
+ if UnitIsGameObject and UnitIsGameObject(unit) then return true end
+ local guid=UnitGUID(unit)
+ if guid and Plain(guid) and (guid:match("^GameObject") or guid:match("^Vignette")) then return true end
+ return false
+end
 
 local BLUE = {0.12, 0.65, 1, 1}
 local PURPLE = {0.67, 0.24, 0.94, 1}
@@ -99,23 +108,60 @@ local function Setup(plate)
   end)
  end
 
- -- Position name relative to the actual art, not the native bar height.
- local name = bar.unitNameFontString or frame.name or frame.Name
- if name and name.ClearAllPoints and name.SetPoint then
-  entry.name = name
-  name:ClearAllPoints()
-  name:SetPoint("BOTTOM", art, "CENTER", 0, 23)
-  if name.SetDrawLayer then name:SetDrawLayer("OVERLAY", 7) end
- end
+ -- MoonRange owns the text; Blizzard's name and level stay invisible.
+ local oldName=bar.unitNameFontString or frame.name or frame.Name
+ entry.blizzardName=oldName
+ entry.blizzardLevel=frame.LevelFrame
+ local textLayer=CreateFrame("Frame",nil,plate.UnitFrame)
+ textLayer:SetAllPoints(art)
+ textLayer:SetFrameLevel(bar:GetFrameLevel()+5)
+ entry.textLayer=textLayer
+ entry.nameText=textLayer:CreateFontString(nil,"OVERLAY")
+ entry.nameText:SetJustifyH("CENTER")
+ entry.nameText:SetWidth(400)
+ entry.nameText:SetWordWrap(false)
+ entry.levelText=textLayer:CreateFontString(nil,"OVERLAY")
+ entry.levelText:SetJustifyH("CENTER")
+ entry.levelText:SetWidth(80)
+ if oldName then oldName:SetAlpha(0) end
+ if frame.LevelFrame then frame.LevelFrame:SetAlpha(0) end
 
  Resize(entry)
  return entry
+end
+
+local function UpdateText(entry,unit)
+ local db=MR.db
+ local font=FONT_PATHS[db.nameFont] or FONT_PATHS.FRIZQT
+ entry.nameText:SetFont(font,db.nameSize or 14,"OUTLINE")
+ entry.nameText:ClearAllPoints()
+ entry.nameText:SetPoint("CENTER",entry.frame,"CENTER",db.nameX or 0,db.nameY or 24)
+ local name=UnitName(unit)
+ if name and Plain(name) then entry.nameText:SetText(name) else entry.nameText:SetText("") end
+ entry.levelText:SetFont(font,db.levelSize or 11,"OUTLINE")
+ entry.levelText:ClearAllPoints()
+ entry.levelText:SetPoint("CENTER",entry.frame,"CENTER",db.levelX or 0,db.levelY or -12)
+ local level=UnitLevel(unit)
+ if db.showLevel and level and Plain(level) then
+  entry.levelText:SetText(level < 0 and "??" or tostring(level))
+ else entry.levelText:SetText("") end
 end
 
 local function Update(unit, plate)
  local entry = Setup(plate)
  if not entry then return end
  entry.unit = unit
+ local object=IsObject(unit)
+ if object or not MR.db.enabled then
+  entry.frame:Hide();entry.foreground:Hide();entry.textLayer:Hide()
+  if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
+  if entry.blizzardLevel then entry.blizzardLevel:SetAlpha(1) end
+  return
+ end
+ if entry.blizzardName then entry.blizzardName:SetAlpha(0) end
+ if entry.blizzardLevel then entry.blizzardLevel:SetAlpha(0) end
+ entry.textLayer:Show()
+ UpdateText(entry,unit)
  if not MR.db.enabled then
   entry.frame:Hide()
   entry.foreground:Hide()
@@ -146,6 +192,11 @@ function MR:StartNameplates()
    local plate = C_NamePlate.GetNamePlateForUnit(unit)
    if plate then active[unit] = plate; Update(unit, plate) end
   elseif event == "NAME_PLATE_UNIT_REMOVED" then
+   local plate=active[unit]
+   if plate and plate.moonRangeArt then
+    local e=plate.moonRangeArt
+    e.frame:Hide();e.foreground:Hide();e.textLayer:Hide()
+   end
    active[unit] = nil
   elseif event == "PLAYER_TARGET_CHANGED" then
    for token, plate in pairs(active) do Update(token, plate) end
