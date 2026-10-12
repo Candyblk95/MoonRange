@@ -50,6 +50,43 @@ MoonRange checks the selected spell using **`C_Spell.IsSpellInRange`**. It follo
 
 ---
 
+## 🌸 More magical range styles are coming!
+
+<div align="center">
+
+### ✨ Currently available ✨
+
+**🌙 Moon** · **🌿 Herbalism**
+
+*Just the beginning, darling!* 💗
+
+</div>
+
+Right now, MoonRange supports **two selectable range-indicator models: Moon and Herbalism**. But I plan to bring more of the beautiful visual models from **Opulent Casting Bars** into MoonRange in future updates.
+
+### 🔮 Coming soon — planned models
+
+These are the additional model names shown in the Opulent Casting Bars artwork collection. **They are planned, not yet available in MoonRange**, and the list is a roadmap rather than a release promise.
+
+| ✨ Magic & elements | 🌿 Nature & gathering | ⚔️ Factions & combat | 🌌 Other styles |
+|---|---|---|---|
+| Arcane | Earth | Alliance | Aim |
+| Arcaneum | Engrenages | Horde | Bronze |
+| Arctic | Fishing | Paladin | Chiji |
+| Chaos | Honey | Fists | Eye |
+| Felfire | Lumber | Viking | Metal |
+| Fire | Mining | Sacred | Metal Icon |
+| Fire 2 | Mossystone | Shadow | Mistweaver |
+| Frost | Nature | Thunder | Neutral |
+| Frostfire | Skinning | Void | Neutral 2 |
+| Holy | Water | Inferno | Neutral 3 |
+
+**Also planned:** MoonRange will continue to refine its own **Moon** and **Herbalism** range indicators while exploring these additional styles.
+
+> 💙 **A note about the artwork:** These additional models originate from **Opulent Casting Bars by SimonPdv**. Their implementation in MoonRange is a future plan and will depend on the appropriate permission/licensing and compatibility work. Full original artwork credit remains with SimonPdv.
+
+---
+
 ## 💜 Made to pair with Opulent Casting Bars
 
 <div align="center">
