@@ -4,10 +4,10 @@
 
 ### 𓆩 ✦ A little moonlight for your nameplates ✦ 𓆪
 
-**A whimsical, moon-kissed nameplate addon for WoW Forever**  
+**A cute, spell-based range detection addon for WoW Forever**  
 *Made with love, a little magic, and probably too much pink by Candy Black* 💗
 
-🌙 **Moonlit magic** · 🌿 **Herbal enchantments** · ✨ **Spell-aware range**
+🎯 **Know when you're in range** · 🌙 **Moonlit magic** · 🌿 **Herbal enchantments**
 
 [**✧ Report a Bug ✧**](https://candyblk95.github.io/MoonRange/bug-portal/) · [**✧ Download the Addon ✧**](https://github.com/Candyblk95/MoonRange) · [**✧ GitHub Issues ✧**](https://github.com/Candyblk95/MoonRange/issues)
 
@@ -17,31 +17,36 @@
 
 ---
 
-## 🌙 Welcome to my little corner of Azeroth
+## 🎯 First and foremost: a cute little range detector!
 
-You know when your UI is *almost* perfect, but those plain old nameplates just aren't giving **enchanted forest, moonlit goddess, main-character energy**?
+Ever been standing there, looking *adorable*, wondering whether your spell will actually reach that mob? Same, darling. 💗
 
-**That is exactly why I made MoonRange.** 💕
+**MoonRange was created primarily to make spell range detection cute, clear, and easy to see.** That's the whole heart of the addon. The pretty nameplates are there to make that range feedback feel magical — not to turn MoonRange into a complicated nameplate replacement.
 
-MoonRange is a custom nameplate addon for **World of Warcraft: Forever (1.60.1)**. It dresses up the overhead nameplates you see above characters and creatures, while keeping the important Blizzard bits doing their jobs underneath.
+### ✨ How the range magic works
 
-Think **pretty fantasy artwork on the outside, familiar Blizzard functionality on the inside.**
+1. **Pick a spell** from your character's spellbook in MoonRange's **Spells** settings.
+2. **Target an enemy** with a supported nameplate.
+3. **Watch the visual range indicator** on its nameplate respond to whether your chosen spell can reach it.
+4. **Move into range** and cast away, moon child! 🌙
 
-> ✧ **Made by Candy Black** — because even our enemies deserve a gorgeous nameplate before we bonk them.
+MoonRange checks the selected spell using **`C_Spell.IsSpellInRange`**. It follows the spell you choose, so the range being checked is relevant to *your class, your spell, and your character*.
 
-## ✨ What makes it magical?
+> 💙 **The important bit:** MoonRange's **main feature is range detection**. The artwork, themes, and nameplate customisation are the cute packaging around that one job.
 
-| ✧ | Feature | What it means |
+### 🌸 A little extra sparkle
+
+| ✧ | Feature | What it does |
 |:--:|---|---|
-| 🌙 | **Moon theme** | Dreamy, celestial nameplates with a touch of Night Elf magic. |
-| 🌿 | **Herbalism theme** | A nature-inspired look for the woodland witches and herb-gathering girlies. |
-| 🎯 | **Spell-aware range** | Pick a spell you know; MoonRange uses the client's range check to respond to that spell's reach. |
-| 🖋️ | **Make it yours** | Tweak name and level fonts, sizes, and positions. |
-| 🔮 | **Live preview** | Try out your changes in the settings window before heading back into battle. |
-| ✨ | **Blizzard cast bars** | Adjust the position and size of nameplate cast bars without replacing Blizzard's casting system. |
-| 🦋 | **Character-specific settings** | Your hunter can have one look and your druid another. No fighting over the wardrobe. |
+| 🎯 | **Spell-based range detection** | The star of the show! Visual feedback based on the range of a spell you choose. |
+| 📖 | **Your own spellbook** | Select a spell your character actually knows instead of relying on a one-size-fits-all distance. |
+| 🌙 | **Moon theme** | Dress your range indicator in dreamy, moonlit fantasy artwork. |
+| 🌿 | **Herbalism theme** | A nature-inspired alternative, including Candy's extra Herbalism range icon. |
+| 🔮 | **Live preview** | See how your nameplates look while you adjust them. |
+| 🖋️ | **Optional customisation** | Fine-tune names, levels, fonts, and the placement of native Blizzard nameplate cast bars. |
+| 🦋 | **Per-character settings** | Your hunter, mage, and druid can each use their own spell and look. |
 
-<sub>Range detection uses `C_Spell.IsSpellInRange`. It depends on the client providing a valid result for the selected spell and unit.</sub>
+<sub>Range checks depend on the client returning a valid result for the chosen spell and unit. MoonRange doesn't promise range information when the API can't determine it.</sub>
 
 ---
 
@@ -55,10 +60,10 @@ Think **pretty fantasy artwork on the outside, familiar Blizzard functionality o
 
 </div>
 
-MoonRange was designed with **Opulent Casting Bars** in mind, because a beautifully themed casting bar deserves equally beautiful nameplates.
+MoonRange is **first and foremost a range detection addon**. Its decorative nameplates were designed with **Opulent Casting Bars** in mind, because a useful range indicator can be pretty too!
 
 - **Opulent Casting Bars** handles its own magical casting-bar experience.
-- **MoonRange** focuses on **overhead nameplates**, their appearance, and spell-aware range visuals.
+- **MoonRange** focuses on **spell-based range detection**, displayed through pretty overhead nameplate visuals.
 - MoonRange keeps the **native Blizzard nameplate health and cast bars** rather than replacing their underlying behaviour.
 
 **Artwork credit:** The original nameplate artwork and visual assets used by MoonRange belong to **SimonPdv, creator of Opulent Casting Bars**. Candy Black adapted the artwork for MoonRange and added extra elements, including the **custom configuration GUI** and **Herbalism range icon**. 💙
@@ -81,11 +86,11 @@ MoonRange was designed with **Opulent Casting Bars** in mind, because a beautifu
 
 | Page | The fun stuff |
 |---|---|
-| **🌙 Nameplates** | Pick Moon or Herbalism, customise fonts, preview your changes, and position names, levels, and native cast bars. |
-| **✨ Spells** | Choose a known spell from your spellbook for range detection. |
+| **🌙 Nameplates** | Pick Moon or Herbalism, customise fonts, preview your range indicator's appearance, and position names, levels, and native cast bars. |
+| **✨ Spells** | **The main event:** choose the spell MoonRange uses for its range checks. |
 | **💗 Profiles** | See the current character's settings. Each character has their own saved setup. |
 
-**Candy tip:** Choose the spell whose range you actually want to check. Different spells can reach different distances!
+**Candy tip:** The spell you select is the entire point! Pick the ability whose range you care about most — different spells can reach different distances.
 
 ---
 
