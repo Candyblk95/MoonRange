@@ -102,8 +102,8 @@ local function PositionCastBar(entry)
  local x,y=db.castX or 0,db.castY or -32
  -- Never query protected cast-bar anchors or dimensions (GetPoint/GetSize).
  -- Attempt geometry only when settings change, and stop if Forever restricts it.
- if entry.castAppliedBar==cast and entry.castAppliedW==w and entry.castAppliedH==h
-  and entry.castAppliedX==x and entry.castAppliedY==y then return end
+ -- Blizzard can reset the cast bar's anchor when casting begins.
+ -- Reapply geometry while visible; protected frames are handled by pcall below.
  local ok=pcall(function()
   cast:SetSize(w,h)
   cast:ClearAllPoints()
