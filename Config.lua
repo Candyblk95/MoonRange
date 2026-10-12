@@ -145,8 +145,8 @@ local function ToggleTest()
    if theme~=self.lastTheme then
     self.lastTheme=theme
     self.background:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or "BG_Herbalism")..".tga")
-    self.border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_Moon" or "Frame_Herbalism_01")..".tga")
-    self.hp:SetStatusBarColor(theme=="Moon" and .20 or .35,theme=="Moon" and .50 or .55,theme=="Moon" and .80 or .25)
+    self.border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_Moon" or theme=="Shadow" and "Frame_Shadow" or "Frame_Herbalism_01")..".tga")
+    self.hp:SetStatusBarColor(theme=="Moon" and .20 or theme=="Shadow" and .50 or .35,theme=="Moon" and .50 or theme=="Shadow" and .22 or .55,theme=="Moon" and .80 or theme=="Shadow" and .66 or .25)
    end
    self.clock=(self.clock+dt)%3
    self.cast:SetValue(self.clock/3)
