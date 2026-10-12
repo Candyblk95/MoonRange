@@ -5,14 +5,32 @@ MR.className, MR.classToken = UnitClass("player")
 local defaults = { spell="", width=190, height=30, enabled=true, update=0.15 }
 function MR:Print(text) DEFAULT_CHAT_FRAME:AddMessage("|cff67cfffMoonRange|r: "..tostring(text)) end
 function MR:KnownSpells()
- local out, seen = {}, {}
- if not GetNumSpellTabs then return out end
- for t=1,GetNumSpellTabs() do
-  local _,_,offset,count=GetSpellTabInfo(t)
-  if offset and count then
-   for i=offset+1,offset+count do
-    local name=GetSpellBookItemName(i,BOOKTYPE_SPELL or "spell")
-    if name and not seen[name] then seen[name]=true;out[#out+1]=name end
+ local out,seen={},{}
+ if GetNumSpellTabs and GetSpellTabInfo and GetSpellBookItemName then
+  for t=1,GetNumSpellTabs() do
+   local _,_,offset,count=GetSpellTabInfo(t)
+   if offset and count then
+    for slot=offset+1,offset+count do
+     local name=GetSpellBookItemName(slot,BOOKTYPE_SPELL or "spell")
+     if name and not seen[name] then seen[name]=true;out[#out+1]=name end
+    end
+   end
+  end
+ end
+ -- Forever exposes the modern spellbook API on some builds.
+ if #out==0 and C_SpellBook and C_SpellBook.GetNumSpellBookSkillLines then
+  local book=Enum and Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or 0
+  local tabs=C_SpellBook.GetNumSpellBookSkillLines()
+  for tab=1,tabs do
+   local info=C_SpellBook.GetSpellBookSkillLineInfo(tab)
+   if info then
+    local offset=info.itemIndexOffset or 0
+    local count=info.numSpellBookItems or 0
+    for slot=offset+1,offset+count do
+     local item=C_SpellBook.GetSpellBookItemInfo(slot,book)
+     local name=item and (item.name or (item.spellID and C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(item.spellID)))
+     if name and not seen[name] then seen[name]=true;out[#out+1]=name end
+    end
    end
   end
  end
@@ -58,7 +76,7 @@ SlashCmdList.MOONRANGE=function(msg)
  local command,rest=msg:match("^(%S+)%s*(.*)$")
  command=command and command:lower() or ""
  if command=="spell" then MR:SetSpell(rest)
- elseif command=="debug" then MR:Print("Class: "..tostring(MR.classToken).." / Spell: "..tostring(MR.db and MR.db.spell).." / Range: "..tostring(MR:RangeState()))
+ elseif command=="debug" then MR:Print("Class: "..tostring(MR.classToken).." / Known: "..#MR:KnownSpells().." / Spell: "..tostring(MR.db and MR.db.spell).." / Range: "..tostring(MR:RangeState()))
  elseif command=="on" or command=="off" then if MR.db then MR.db.enabled=(command=="on") end
  elseif MR.ToggleConfig then MR:ToggleConfig() end
 end
