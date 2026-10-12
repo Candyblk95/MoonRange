@@ -169,9 +169,16 @@ local function ApplyTheme(entry)
  entry.background:SetTexture(Asset(theme,theme=="Moon" and "BG_Moon" or "BG_Herbalism"))
  if entry.shimmer then
   entry.shimmer:SetTexture(Asset(theme,theme=="Moon" and "Fill_Moon" or "Fill_Herbalism"))
+  if theme=="Moon" then
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  else
+   entry.shimmer:SetTexCoord(144/1024,905/1024,175/512,305/512)
+  end
  end
  if theme=="Moon" then
   entry.light:SetTexture(Asset("Moon","Frame_Moon_Light"))
+  entry.light:SetBlendMode("BLEND")
+  entry.light:SetAlpha(1)
  else
   -- An additive copy of the current Herbalism animation frame lights up
   -- when in range. No separate glow artwork required.
