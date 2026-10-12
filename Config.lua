@@ -16,6 +16,7 @@ function MR:ToggleConfig()
   label:SetPoint("TOPLEFT",25,-60);label:SetText("Choose a spell from your spellbook:")
   local edit=CreateFrame("EditBox",nil,panel,"InputBoxTemplate")
   edit:SetSize(220,24);edit:SetPoint("TOPLEFT",30,-85);edit:SetAutoFocus(false)
+  MR.spellEdit=edit
   local index=0
   local function button(text,x,y,width,fn)
    local b=CreateFrame("Button",nil,panel,"UIPanelButtonTemplate")
@@ -35,4 +36,51 @@ function MR:ToggleConfig()
   panel:SetScript("OnShow",function() edit:SetText(MR.db.spell or "") end)
  else end
  if panel:IsShown() then panel:Hide() else panel:Show() end
+end
+
+-- Spellbook selection: hook the spellbook's click handler without replacing it.
+-- Classic spellbook buttons use an index within the active spellbook tab.
+local function chooseSpell(button, mouseButton)
+ if not panel or not panel:IsShown() or not IsShiftKeyDown or not IsShiftKeyDown() then return end
+ if mouseButton and mouseButton~="LeftButton" then return end
+ if not button then return end
+ local slot
+ if SpellBook_GetSpellBookSlot then
+  local ok,value=pcall(SpellBook_GetSpellBookSlot,button)
+  if ok then slot=value end
+ end
+ if not slot and button.GetID then
+  local index=button:GetID()
+  local tab=SpellBookFrame and SpellBookFrame.selectedSkillLine
+  if tab and GetSpellTabInfo then
+   local _,_,offset=GetSpellTabInfo(tab)
+   if offset then slot=offset+index end
+  end
+ end
+ if not slot then return end
+ local name=GetSpellBookItemName(slot,BOOKTYPE_SPELL or "spell")
+ if name and MR:IsKnownSpell(name) then
+  MR:SetSpell(name)
+  if MR.spellEdit then MR.spellEdit:SetText(name) end
+ end
+end
+if hooksecurefunc then
+ if type(SpellButton_OnClick)=="function" then
+  hooksecurefunc("SpellButton_OnClick",function(button,mouseButton) chooseSpell(button,mouseButton) end)
+ end
+ if type(SpellButton_OnModifiedClick)=="function" then
+  hooksecurefunc("SpellButton_OnModifiedClick",function(button,mouseButton) chooseSpell(button,mouseButton) end)
+ end
+ -- Some Forever clients route modified spell clicks through the chat-link handler.
+ if type(ChatEdit_InsertLink)=="function" then
+  hooksecurefunc("ChatEdit_InsertLink",function(link)
+   if not panel or not panel:IsShown() or not IsShiftKeyDown or not IsShiftKeyDown() then return end
+   if type(link)~="string" then return end
+   local name=link:match("%[([^%]]+)%]")
+   if name and MR:IsKnownSpell(name) then
+    MR:SetSpell(name)
+    if MR.spellEdit then MR.spellEdit:SetText(name) end
+   end
+  end)
+ end
 end
