@@ -16,7 +16,7 @@ function MR:ToggleConfig()
  if not self.db then return end
  if not panel then
   panel=CreateFrame("Frame","MoonRangeConfig",UIParent,"BackdropTemplate")
-  panel:SetSize(420,230)
+  panel:SetSize(460,510)
   panel:SetPoint("CENTER")
   panel:SetFrameStrata("DIALOG")
   panel:SetMovable(true)
@@ -72,12 +72,75 @@ function MR:ToggleConfig()
   local hint=panel:CreateFontString(nil,"OVERLAY","GameFontDisableSmall")
   hint:SetPoint("TOPLEFT",25,-164)
   hint:SetText("Includes General tab attacks such as Throw and Shoot.")
+  local section=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
+  section:SetPoint("TOPLEFT",25,-199)
+  section:SetText("Nameplate Text")
+  local fonts={{id="FRIZQT",label="Friz Quadrata"},{id="ARIAL",label="Arial Narrow"},{id="MORPHEUS",label="Morpheus"},{id="SKURRI",label="Skurri"}}
+  local fontDrop=CreateFrame("Frame","MoonRangeFontDropdown",panel,"UIDropDownMenuTemplate")
+  fontDrop:SetPoint("TOPLEFT",4,-220)
+  UIDropDownMenu_SetWidth(fontDrop,210)
+  UIDropDownMenu_Initialize(fontDrop,function(_,level)
+   for _,f in ipairs(fonts) do
+    local choice=f
+    local info=UIDropDownMenu_CreateInfo()
+    info.text=choice.label
+    info.checked=MR.db.nameFont==choice.id
+    info.func=function()
+     MR.db.nameFont=choice.id
+     UIDropDownMenu_SetText(fontDrop,choice.label)
+    end
+    UIDropDownMenu_AddButton(info,level)
+   end
+  end)
+  local function Slider(key,label,min,max,step,x,y)
+   local title=panel:CreateFontString(nil,"OVERLAY","GameFontNormal")
+   title:SetPoint("TOPLEFT",x,y)
+   title:SetText(label)
+   local slide=CreateFrame("Slider","MoonRangeSlider"..key,panel,"OptionsSliderTemplate")
+   slide:SetPoint("TOPLEFT",x+8,y-22)
+   slide:SetSize(175,16)
+   slide:SetMinMaxValues(min,max)
+   slide:SetValueStep(step)
+   if slide.SetObeyStepOnDrag then slide:SetObeyStepOnDrag(true) end
+   _G[slide:GetName().."Low"]:SetText(tostring(min))
+   _G[slide:GetName().."High"]:SetText(tostring(max))
+   local value=panel:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+   value:SetPoint("LEFT",slide,"RIGHT",12,0)
+   slide:SetScript("OnValueChanged",function(_,v)
+    v=math.floor(v+0.5)
+    MR.db[key]=v
+    value:SetText(tostring(v))
+   end)
+   slide:SetValue(MR.db[key] or min)
+   return slide
+  end
+  Slider("nameSize","Name font size",8,26,1,26,-286)
+  Slider("nameX","Name horizontal", -60,60,1,254,-286)
+  Slider("nameY","Name vertical", -40,75,1,26,-359)
+  Slider("levelSize","Level font size",8,22,1,254,-359)
+  local levelCheck=CreateFrame("CheckButton",nil,panel,"UICheckButtonTemplate")
+  levelCheck:SetPoint("BOTTOMLEFT",22,48)
+  levelCheck:SetChecked(MR.db.showLevel)
+  levelCheck:SetScript("OnClick",function(self) MR.db.showLevel=self:GetChecked() end)
+  local levelLabel=panel:CreateFontString(nil,"OVERLAY","GameFontNormal")
+  levelLabel:SetPoint("LEFT",levelCheck,"RIGHT",2,0)
+  levelLabel:SetText("Show unit level")
+  local hint2=panel:CreateFontString(nil,"OVERLAY","GameFontDisableSmall")
+  hint2:SetPoint("BOTTOMLEFT",26,18)
+  hint2:SetText("Text updates live. /reload if Blizzard resets a nameplate.")
+  panel:SetScript("OnShow",function()
+   RefreshSpells()
+   for _,f in ipairs(fonts) do
+    if MR.db.nameFont==f.id then UIDropDownMenu_SetText(fontDrop,f.label) end
+   end
+   levelCheck:SetChecked(MR.db.showLevel)
+  end)
   local close=CreateFrame("Button",nil,panel,"UIPanelButtonTemplate")
   close:SetSize(90,24)
   close:SetPoint("BOTTOMRIGHT",-22,18)
   close:SetText("Close")
   close:SetScript("OnClick",function() panel:Hide() end)
-  panel:SetScript("OnShow",RefreshSpells)
+
  end
  if panel:IsShown() then panel:Hide() else panel:Show();RefreshSpells() end
 end
