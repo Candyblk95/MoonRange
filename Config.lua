@@ -141,10 +141,10 @@ local function ToggleTest()
   root:SetScript("OnUpdate",function(self,dt)
    if not MR.db then return end
    local d=MR.db
-   local theme=d.theme=="Herbalism" and "Herbalism" or "Moon"
+   local theme=(d.theme=="Herbalism" or d.theme=="Shadow") and d.theme or "Moon"
    if theme~=self.lastTheme then
     self.lastTheme=theme
-    self.background:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or "BG_Herbalism")..".tga")
+    self.background:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or "BG_Herbalism")..".tga")
     self.border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_Moon" or "Frame_Herbalism_01")..".tga")
     self.hp:SetStatusBarColor(theme=="Moon" and .20 or .35,theme=="Moon" and .50 or .55,theme=="Moon" and .80 or .25)
    end
@@ -231,7 +231,7 @@ local function Build()
  local nameplate=MakePage("Nameplates")
  Section(nameplate,"- Nameplate Atelier",-8)
  Font(nameplate,"Theme",17,30,-55,355,C.ice)
- local themeRefresh=Dropdown(nameplate,"ThemePage",30,-80,290,{{label="Moon"},{label="Herbalism"}},function()return MR.db.theme end,function(v)MR.db.theme=v end)
+ local themeRefresh=Dropdown(nameplate,"ThemePage",30,-80,290,{{label="Moon"},{label="Herbalism"},{label="Shadow"}},function()return MR.db.theme end,function(v)MR.db.theme=v end)
  Register(themeRefresh)
  Font(nameplate,"Font",17,30,-139,355,C.ice)
  local fonts={{label="Friz Quadrata",value="FRIZQT"},{label="Arial Narrow",value="ARIAL"},{label="Morpheus",value="MORPHEUS"},{label="Skurri",value="SKURRI"}}
@@ -253,7 +253,7 @@ local function Build()
  local mode="hostile"
  local modes={{label="Hostile NPC",value="hostile"},{label="Neutral NPC",value="neutral"},{label="Friendly Player",value="friendly"},{label="Hostile Player",value="enemy"}}
  Register(Dropdown(nameplate,"PreviewMode",30,-298,290,modes,function()return mode end,function(v)mode=v end))
- local colors={Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},Moon={hostile={.70,.09,.39},neutral={.10,.40,.68},friendly={.45,.22,.65},enemy={.78,.30,.34}}}
+ local colors={Shadow={hostile={.68,.18,.54},neutral={.40,.25,.70},friendly={.56,.31,.78},enemy={.78,.26,.60}},Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},Moon={hostile={.70,.09,.39},neutral={.10,.40,.68},friendly={.45,.22,.65},enemy={.78,.30,.34}}}
  local fontPaths={FRIZQT="Fonts\\FRIZQT__.TTF",ARIAL="Fonts\\FRIZQT__.TTF",MORPHEUS="Fonts\\MORPHEUS.TTF",SKURRI="Fonts\\SKURRI.TTF"}
  local lastTheme,lastFont,lastNameSize,lastLevelSize
  local function UpdatePreview()
@@ -262,13 +262,14 @@ local function Build()
   if theme~=lastTheme then
    lastTheme=theme
    bg:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or "BG_Herbalism")..".tga")
-   border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_NoMoon" or "Frame_Herbalism_01")..".tga")
-   fill:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Fill_Moon" or "Fill_Herbalism")..".tga")
+   border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_NoMoon" or theme=="Shadow" and "Frame_Shadow" or "Frame_Herbalism_01")..".tga")
+   fill:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or "Fill_Herbalism")..".tga")
    if theme=="Moon" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("ADD");fill:SetAlpha(.45)
+   elseif theme=="Shadow" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.32)
    else fill:SetTexCoord(144/1024,905/1024,175/512,305/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.20)end
   end
   local c=colors[theme][mode];health:SetStatusBarColor(c[1],c[2],c[3])
-  fill:SetVertexColor(theme=="Herbalism" and c[1] or 1,theme=="Herbalism" and c[2] or 1,theme=="Herbalism" and c[3] or 1)
+  fill:SetVertexColor(theme~="Moon" and c[1] or 1,theme~="Moon" and c[2] or 1,theme~="Moon" and c[3] or 1)
   local font=fontPaths[d.nameFont] or fontPaths.FRIZQT
   if font~=lastFont or d.nameSize~=lastNameSize then if not name:SetFont(font,d.nameSize or 14,"OUTLINE")then name:SetFont(fontPaths.FRIZQT,d.nameSize or 14,"OUTLINE")end;lastNameSize=d.nameSize end
   if font~=lastFont or d.levelSize~=lastLevelSize then if not level:SetFont(font,d.levelSize or 11,"OUTLINE")then level:SetFont(fontPaths.FRIZQT,d.levelSize or 11,"OUTLINE")end;lastLevelSize=d.levelSize end
