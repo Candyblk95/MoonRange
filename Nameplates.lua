@@ -198,6 +198,7 @@ local function Update(unit, plate)
  end
  entry.frame:Show()
  entry.foreground:Show()
+ RefreshShimmer(entry)
  Resize(entry)
  SetMoonColour(entry, unit)
 
