@@ -192,7 +192,7 @@ local function ApplyTheme(entry)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   else
    -- The original Herbalism fill is green artwork. Blend it over a dark\n   -- green native fill instead of adding it over pink/purple solid colours.\n   entry.shimmer:SetBlendMode("BLEND")
-   entry.shimmer:SetAlpha(0.88)
+   entry.shimmer:SetAlpha(0.48)
    entry.shimmer:SetTexCoord(144/1024,905/1024,175/512,305/512)
   end
  end
