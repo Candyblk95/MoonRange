@@ -1,60 +1,60 @@
-local _,MR=...
-local active={}
-local elapsed=0
+local _, MR = ...
+local active = {}
+local elapsed = 0
 
 local function GetBar(plate)
- local frame=plate and plate.UnitFrame
+ local frame = plate and plate.UnitFrame
  return frame and (frame.healthBar or (frame.HealthBarsContainer and frame.HealthBarsContainer.healthBar))
 end
 
 local function Setup(plate)
  if not plate or (plate.IsForbidden and plate:IsForbidden()) then return end
- local bar=GetBar(plate)
+ local bar = GetBar(plate)
  if not bar then return end
  if plate.moonRangeArt then return plate.moonRangeArt end
- local art=CreateFrame("Frame",nil,plate.UnitFrame)
- art:SetPoint("CENTER",bar,"CENTER",0,0)
- art:SetSize(110,18)
- art:SetFrameLevel(bar:GetFrameLevel()+3)
- art:EnableMouse(false)
- local bg=art:CreateTexture(nil,"BACKGROUND")
- bg:SetAllPoints(art)
+
+ -- Decorate Blizzard's actual status bar, not a second health bar.
+ -- The native bar owns its protected health values and fill width.
+ local bg = bar:CreateTexture(nil, "BACKGROUND", nil, 1)
+ bg:SetAllPoints(bar)
  bg:SetTexture(MR.path.."BG_Moon.tga")
- local fill=art:CreateTexture(nil,"ARTWORK")
- fill:SetTexture(MR.path.."Fill_Moon.tga")
- fill:SetPoint("LEFT",art,"LEFT")
- fill:SetHeight(18)
- local border=art:CreateTexture(nil,"OVERLAY")
- border:SetAllPoints(art)
+
+ local border = bar:CreateTexture(nil, "OVERLAY", nil, 6)
+ border:SetPoint("TOPLEFT", bar, "TOPLEFT", -6, 5)
+ border:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 6, -5)
  border:SetTexture(MR.path.."Frame_NoMoon.tga")
- local light=art:CreateTexture(nil,"OVERLAY")
- light:SetAllPoints(art)
+
+ local light = bar:CreateTexture(nil, "OVERLAY", nil, 7)
+ light:SetAllPoints(border)
  light:SetTexture(MR.path.."Frame_Moon_Light.tga")
- local entry={frame=art,bar=bar,fill=fill,border=border,filename=""}
- plate.moonRangeArt=entry
- return entry
+ light:Hide()
+
+ -- Replace Blizzard's bar fill without reading protected health values.
+ bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
+ if bar.bgTexture then bar.bgTexture:SetAlpha(0) end
+
+ local art = {bar=bar, bg=bg, border=border, light=light, filename=""}
+ plate.moonRangeArt=art
+ return art
 end
 
-local function Update(unit,plate)
+local function Update(unit, plate)
  local art=Setup(plate)
  if not art then return end
- if not MR.db.enabled then art.frame:Hide();return end
- art.frame:Show()
- -- Enemy health is a secret value in Forever. Let Blizzard render it.
- art.fill:Hide()
- local width=art.bar:GetWidth()
- local height=art.bar:GetHeight()
- art.frame:SetSize(110,18)
- if not art.nativeStyled then
-  art.nativeStyled=true
-  art.bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
+ if not MR.db.enabled then
+  art.bg:Hide(); art.border:Hide(); art.light:Hide()
+  return
  end
+ art.bg:Show()
+ art.border:Show()
  local selected=UnitExists("target") and UnitIsUnit(unit,"target")
- local filename=selected and MR:RangeState()==true and "Frame_Moon.tga" or "Frame_NoMoon.tga"
- if filename~=art.filename then
+ local inRange=selected and MR:RangeState()
+ local filename=(inRange==true) and "Frame_Moon.tga" or "Frame_NoMoon.tga"
+ if art.filename~=filename then
   art.filename=filename
   art.border:SetTexture(MR.path..filename)
  end
+ if inRange==true then art.light:Show() else art.light:Hide() end
 end
 
 function MR:StartNameplates()
@@ -67,17 +67,11 @@ function MR:StartNameplates()
    local plate=C_NamePlate.GetNamePlateForUnit(unit)
    if plate then active[unit]=plate;Update(unit,plate) end
   elseif event=="NAME_PLATE_UNIT_REMOVED" then
-   local plate=active[unit]
-   if plate and plate.moonRangeArt then plate.moonRangeArt.frame:Hide() end
    active[unit]=nil
+  elseif event=="PLAYER_TARGET_CHANGED" then
+   for token,plate in pairs(active) do Update(token,plate) end
   end
  end)
- if C_NamePlate and C_NamePlate.GetNamePlates then
-  for _,plate in ipairs(C_NamePlate.GetNamePlates() or {}) do
-   local unit=plate.UnitFrame and plate.UnitFrame.unit
-   if unit then active[unit]=plate;Update(unit,plate) end
-  end
- end
  driver:SetScript("OnUpdate",function(_,dt)
   elapsed=elapsed+dt
   if elapsed<(MR.db.update or .15) then return end
