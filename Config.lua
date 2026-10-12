@@ -253,7 +253,7 @@ local function Build()
  local mode="hostile"
  local modes={{label="Hostile NPC",value="hostile"},{label="Neutral NPC",value="neutral"},{label="Friendly Player",value="friendly"},{label="Hostile Player",value="enemy"}}
  Register(Dropdown(nameplate,"PreviewMode",30,-298,290,modes,function()return mode end,function(v)mode=v end))
- local colors={Shadow={hostile={.68,.18,.54},neutral={.40,.25,.70},friendly={.56,.31,.78},enemy={.78,.26,.60}},Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},Moon={hostile={.70,.09,.39},neutral={.10,.40,.68},friendly={.45,.22,.65},enemy={.78,.30,.34}}}
+ local colors={Shadow={hostile={193/255,61/255,130/255},neutral={134/255,112/255,200/255},friendly={66/255,169/255,167/255},enemy={225/255,107/255,80/255}},Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},Moon={hostile={.70,.09,.39},neutral={.10,.40,.68},friendly={.45,.22,.65},enemy={.78,.30,.34}}}
  local fontPaths={FRIZQT="Fonts\\FRIZQT__.TTF",ARIAL="Fonts\\FRIZQT__.TTF",MORPHEUS="Fonts\\MORPHEUS.TTF",SKURRI="Fonts\\SKURRI.TTF"}
  local lastTheme,lastFont,lastNameSize,lastLevelSize
  local function UpdatePreview()
