@@ -82,7 +82,7 @@ end
 local function FindCastBar(frame)
  if not frame then return nil end
  -- Forever's Blizzard nameplates can expose the bar directly or in a container.
- local containers={frame,frame.castBarContainer,frame.CastBarContainer,frame.SpellCastBarContainer}
+ local containers={frame,frame.CastBarsContainer,frame.castBarsContainer,frame.castBarContainer,frame.CastBarContainer,frame.SpellCastBarContainer}
  for _,owner in pairs(containers) do
   if owner then
    for _,key in ipairs({"castBar","CastBar","spellCastBar","SpellCastBar","castingBar","CastingBar"}) do
