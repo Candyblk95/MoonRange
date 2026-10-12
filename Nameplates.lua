@@ -14,7 +14,7 @@ local function Setup(plate)
  if plate.moonRangeArt then return plate.moonRangeArt end
  local art=CreateFrame("Frame",nil,plate.UnitFrame)
  art:SetPoint("CENTER",bar,"CENTER",0,0)
- art:SetSize(MR.db.width,MR.db.height)
+ art:SetSize(110,18)
  art:SetFrameLevel(bar:GetFrameLevel()+3)
  art:EnableMouse(false)
  local bg=art:CreateTexture(nil,"BACKGROUND")
@@ -23,7 +23,7 @@ local function Setup(plate)
  local fill=art:CreateTexture(nil,"ARTWORK")
  fill:SetTexture(MR.path.."Fill_Moon.tga")
  fill:SetPoint("LEFT",art,"LEFT")
- fill:SetHeight(MR.db.height)
+ fill:SetHeight(18)
  local border=art:CreateTexture(nil,"OVERLAY")
  border:SetAllPoints(art)
  border:SetTexture(MR.path.."Frame_NoMoon.tga")
@@ -40,10 +40,15 @@ local function Update(unit,plate)
  if not art then return end
  if not MR.db.enabled then art.frame:Hide();return end
  art.frame:Show()
- local low,high=art.bar:GetMinMaxValues()
- local current=art.bar:GetValue()
- local fraction=high and low and high>low and current and math.max(0,math.min(1,(current-low)/(high-low))) or 1
- art.fill:SetWidth(math.max(.01,MR.db.width*fraction))
+ -- Enemy health is a secret value in Forever. Let Blizzard render it.
+ art.fill:Hide()
+ local width=art.bar:GetWidth()
+ local height=art.bar:GetHeight()
+ art.frame:SetSize(110,18)
+ if not art.nativeStyled then
+  art.nativeStyled=true
+  art.bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
+ end
  local selected=UnitExists("target") and UnitIsUnit(unit,"target")
  local filename=selected and MR:RangeState()==true and "Frame_Moon.tga" or "Frame_NoMoon.tga"
  if filename~=art.filename then
