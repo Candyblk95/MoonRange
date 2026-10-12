@@ -169,8 +169,15 @@ local function Setup(plate)
   shimmer:SetBlendMode("ADD")
  end
 
+ -- Separate Moon overlay allows the in-range frame to fade over the no-range frame.
+ local rangeMoonOverlay=foreground:CreateTexture(nil,"OVERLAY",nil,2)
+ rangeMoonOverlay:SetAllPoints(art)
+ rangeMoonOverlay:SetTexture(Asset("Moon","Frame_Moon"))
+ rangeMoonOverlay:SetAlpha(0)
+ rangeMoonOverlay:Hide()
+
  local entry = {frame=art, foreground=foreground, border=border, background=background, shimmer=shimmer,
-                light=light, bar=bar, filename="", unit=nil}
+                light=light, rangeMoonOverlay=rangeMoonOverlay, rangeAlpha=0, bar=bar, filename="", unit=nil}
  entry.castBar=FindCastBar(plate.UnitFrame)
  plate.moonRangeArt = entry
 
@@ -230,6 +237,11 @@ local function ApplyTheme(entry)
  if entry.theme==theme then return end
  entry.theme=theme
  entry.filename=""
+ entry.rangeAlpha=0
+ entry.light:SetAlpha(0)
+ entry.light:Hide()
+ entry.rangeMoonOverlay:SetAlpha(0)
+ entry.rangeMoonOverlay:Hide()
  entry.background:SetTexture(Asset(theme,theme=="Moon" and "BG_Moon" or "BG_Herbalism"))
  if entry.shimmer then
   entry.shimmer:SetTexture(Asset(theme,theme=="Moon" and "Fill_Moon" or "Fill_Herbalism"))
@@ -244,6 +256,7 @@ local function ApplyTheme(entry)
   end
  end
  if theme=="Moon" then
+  entry.rangeMoonOverlay:SetTexture(Asset("Moon","Frame_Moon"))
   entry.light:SetTexture(Asset("Moon","Frame_Moon_Light"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
@@ -270,6 +283,24 @@ local function UpdateText(entry,unit)
  if db.showLevel and level and Plain(level) then
   entry.levelText:SetText(level < 0 and "??" or tostring(level))
  else entry.levelText:SetText("") end
+end
+
+-- Smooth range visuals only; spell detection remains unchanged.
+local FADE_IN, FADE_OUT = 0.25, 0.20
+local function SetRangeFade(entry, inRange, dt)
+ local target = inRange and 1 or 0
+ local current = entry.rangeAlpha or 0
+ local duration = target==1 and FADE_IN or FADE_OUT
+ local step = math.min(1, (dt or 0) / duration)
+ current = current + (target-current)*step
+ if math.abs(current-target)<0.01 then current=target end
+ entry.rangeAlpha=current
+ entry.light:SetAlpha(current)
+ if current>0 then entry.light:Show() else entry.light:Hide() end
+ if entry.theme=="Moon" and entry.rangeMoonOverlay then
+  entry.rangeMoonOverlay:SetAlpha(current)
+  if current>0 then entry.rangeMoonOverlay:Show() else entry.rangeMoonOverlay:Hide() end
+ end
 end
 
 local function Update(unit, plate)
@@ -313,13 +344,13 @@ local function Update(unit, plate)
    entry.border:SetTexture(texture)
   end
  else
-  local filename=inRange==true and "Frame_Moon" or "Frame_NoMoon"
+  local filename="Frame_NoMoon"
   if entry.filename~=filename then
    entry.filename=filename
    entry.border:SetTexture(Asset("Moon",filename))
   end
  end
- if inRange==true then entry.light:Show() else entry.light:Hide() end
+ entry.rangeTarget = inRange==true
 end
 
 -- Diagnostic only: reports nameplate frame structure without modifying Blizzard UI.
@@ -378,6 +409,8 @@ function MR:StartNameplates()
    if plate and plate.moonRangeArt then
     local e=plate.moonRangeArt
     e.frame:Hide();e.foreground:Hide();e.textLayer:Hide()
+    e.rangeAlpha=0;e.rangeTarget=false;e.light:SetAlpha(0);e.light:Hide()
+    e.rangeMoonOverlay:SetAlpha(0);e.rangeMoonOverlay:Hide()
     if e.shimmer then e.shimmer:Hide() end
    end
    active[unit] = nil
@@ -386,6 +419,11 @@ function MR:StartNameplates()
   end
  end)
  driver:SetScript("OnUpdate", function(_, dt)
+  -- Animate every frame, independent of the slower range polling interval.
+  for unit, plate in pairs(active) do
+   local e=plate.moonRangeArt
+   if e and e.rangeTarget~=nil then SetRangeFade(e,e.rangeTarget,dt) end
+  end
   elapsed = elapsed + dt
   if elapsed < (MR.db.update or .15) then return end
   elapsed = 0
