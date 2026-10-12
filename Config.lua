@@ -27,7 +27,12 @@ function MR:ToggleConfig()
   if panel.SetBackdrop then
    panel:SetBackdrop({bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",edgeSize=24})
   end
-  if not panel.SetBackdrop then\n   local background=panel:CreateTexture(nil,"BACKGROUND")\n   background:SetAllPoints(panel)\n   background:SetColorTexture(0.035,0.06,0.13,0.96)\n  end\n  local title=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
+  if not panel.SetBackdrop then
+   local background=panel:CreateTexture(nil,"BACKGROUND")
+   background:SetAllPoints(panel)
+   background:SetColorTexture(0.035,0.06,0.13,0.96)
+  end
+  local title=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
   title:SetPoint("TOP",0,-23)
   title:SetText("MoonRange | "..(MR.className or "Class"))
   local instruction=panel:CreateFontString(nil,"OVERLAY","GameFontNormal")
