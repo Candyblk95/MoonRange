@@ -10,10 +10,10 @@ local function IsObject(unit)
  return false
 end
 
-local BLUE = {0.12, 0.65, 1, 1}
-local PURPLE = {0.67, 0.24, 0.94, 1}
-local PINK = {0.94, 0, 0.51, 1}
-local ORANGE_PINK = {1, 0.39, 0.42, 1}
+local BLUE = {0.10, 0.40, 0.68, 1}
+local PURPLE = {0.45, 0.22, 0.65, 1}
+local PINK = {0.70, 0.09, 0.39, 1}
+local ORANGE_PINK = {0.78, 0.30, 0.34, 1}
 
 local function UnitColour(unit)
  if not unit or not UnitExists(unit) then return BLUE end
@@ -99,7 +99,7 @@ local function Setup(plate)
   shimmer:SetTexture(MR.path.."Fill_Moon.tga")
   shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   shimmer:SetAllPoints(nativeFill)
-  shimmer:SetAlpha(0.24)
+  shimmer:SetAlpha(0.45)
   shimmer:SetBlendMode("ADD")
  end
 
