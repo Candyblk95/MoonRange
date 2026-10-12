@@ -183,11 +183,11 @@ function MR:ToggleConfig()
     lastPreview=frameName
     art:SetTexture(MR.path..theme.."\\\\"..frameName..".tga")
    end
-   previewName:SetFont(font,db.nameSize or 14,"OUTLINE")
+   if not previewName:SetFont(font,db.nameSize or 14,"OUTLINE") then previewName:SetFont("Fonts\\FRIZQT__.TTF",db.nameSize or 14,"OUTLINE") end
    previewName:SetText("Timberling")
    previewName:ClearAllPoints()
    previewName:SetPoint("CENTER",plate,"CENTER",db.nameX or 0,db.nameY or 24)
-   previewLevel:SetFont(font,db.levelSize or 11,"OUTLINE")
+   if not previewLevel:SetFont(font,db.levelSize or 11,"OUTLINE") then previewLevel:SetFont("Fonts\\FRIZQT__.TTF",db.levelSize or 11,"OUTLINE") end
    previewLevel:SetText(db.showLevel and "6" or "")
    previewLevel:ClearAllPoints()
    previewLevel:SetPoint("CENTER",plate,"CENTER",db.levelX or 0,db.levelY or -12)
