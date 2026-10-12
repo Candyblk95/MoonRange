@@ -17,6 +17,7 @@ function MR:ToggleConfig()
  if not panel then
   panel=CreateFrame("Frame","MoonRangeConfig",UIParent,"BackdropTemplate")
   panel:SetSize(460,900)
+  panel:SetScale(0.82) -- fit the expanded controls on shorter displays
   panel:SetPoint("CENTER")
   panel:SetFrameStrata("DIALOG")
   panel:SetMovable(true)
