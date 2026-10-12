@@ -96,20 +96,29 @@ end
 
 local function PositionCastBar(entry)
  local cast=entry.castBar
- if not cast or (cast.IsForbidden and cast:IsForbidden()) then return end
+ if not cast or (cast.IsForbidden and cast:IsForbidden()) or entry.castBarRestricted then return end
  local db=MR.db
  local w,h=db.castWidth or 130,db.castHeight or 10
  local x,y=db.castX or 0,db.castY or -32
- -- Blizzard may reset cast geometry when a spell starts; reapply only when needed.
- local cw,ch=cast:GetSize()
- if Plain(cw) and Plain(ch) and (cw~=w or ch~=h) then cast:SetSize(w,h) end
- local point,relative,relativePoint,ox,oy=cast:GetPoint(1)
- if Plain(point) and Plain(relative) and Plain(relativePoint) and Plain(ox) and Plain(oy) then
-  if point~="CENTER" or relative~=entry.frame or relativePoint~="CENTER" or ox~=x or oy~=y then
-   cast:ClearAllPoints()
-   cast:SetPoint("CENTER",entry.frame,"CENTER",x,y)
+ -- Never query protected cast-bar anchors or dimensions (GetPoint/GetSize).
+ -- Attempt geometry only when settings change, and stop if Forever restricts it.
+ if entry.castAppliedBar==cast and entry.castAppliedW==w and entry.castAppliedH==h
+  and entry.castAppliedX==x and entry.castAppliedY==y then return end
+ local ok=pcall(function()
+  cast:SetSize(w,h)
+  cast:ClearAllPoints()
+  cast:SetPoint("CENTER",entry.frame,"CENTER",x,y)
+ end)
+ if not ok then
+  entry.castBarRestricted=true
+  if not MR.castRestrictionWarned then
+   MR.castRestrictionWarned=true
+   MR:Print("Blizzard protects cast-bar geometry on this client; leaving its native placement intact.")
   end
+  return
  end
+ entry.castAppliedBar,entry.castAppliedW,entry.castAppliedH=cast,w,h
+ entry.castAppliedX,entry.castAppliedY=x,y
 end
 
 local function Setup(plate)
