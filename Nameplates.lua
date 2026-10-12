@@ -313,6 +313,48 @@ local function Update(unit, plate)
  if inRange==true then entry.light:Show() else entry.light:Hide() end
 end
 
+-- Diagnostic only: reports nameplate frame structure without modifying Blizzard UI.
+function MR:DebugCastBars()
+ local unit="target"
+ local plate=C_NamePlate and C_NamePlate.GetNamePlateForUnit and C_NamePlate.GetNamePlateForUnit(unit)
+ if not plate then self:Print("Target a visible casting mob with its nameplate showing, then /mr castdebug");return end
+ local root=plate.UnitFrame
+ if not root then self:Print("No UnitFrame on target nameplate");return end
+ local function Describe(obj)
+  if not obj then return "nil" end
+  local ok,name=pcall(function() return obj:GetName() end)
+  local ok2,kind=pcall(function() return obj:GetObjectType() end)
+  return tostring(ok2 and kind or "?").." "..tostring(ok and name or "?")
+ end
+ self:Print("Cast debug: UnitFrame="..Describe(root))
+ local found=0
+ local function Walk(parent,path,depth)
+  if depth>3 or found>=25 then return end
+  local ok,children=pcall(function() return {parent:GetChildren()} end)
+  if not ok then return end
+  for i,child in ipairs(children) do
+   local label=path.."/"..i
+   local name=child.GetName and child:GetName() or ""
+   local lower=tostring(name):lower()
+   local isStatus=child.IsObjectType and child:IsObjectType("StatusBar")
+   if isStatus or lower:find("cast") or lower:find("spell") then
+    found=found+1
+    local w,h=child:GetSize()
+    if Plain(w) and Plain(h) then
+     self:Print(label.." "..Describe(child).." "..math.floor(w).."x"..math.floor(h))
+    else self:Print(label.." "..Describe(child).." (protected dimensions)") end
+   end
+   Walk(child,label,depth+1)
+  end
+ end
+ Walk(root,"UnitFrame",0)
+ for _,key in ipairs({"castBar","CastBar","spellCastBar","SpellCastBar","castingBar","CastingBar","healthBar"}) do
+  local obj=root[key]
+  if obj then self:Print("field "..key.." = "..Describe(obj)) end
+ end
+ self:Print("Cast debug complete; "..found.." candidate frames.")
+end
+
 function MR:StartNameplates()
  local driver = CreateFrame("Frame")
  driver:RegisterEvent("NAME_PLATE_UNIT_ADDED")
