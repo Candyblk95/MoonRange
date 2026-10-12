@@ -1,78 +1,133 @@
-# MoonRange 🌙
+<div align="center">
 
-**Enchanted, spell-aware nameplates for World of Warcraft: Forever (1.60.1)**  
-*NamePlater made by Candy Black*
+# ☾ ✧ M O O N R A N G E ✧ ☽
 
-MoonRange gives Blizzard's overhead unit nameplates a magical makeover. Inspired by moonlit Night Elf aesthetics, it adds ornate frames and custom colours while keeping the underlying Blizzard nameplate health and cast bars in place.
+### 𓆩 ✦ A little moonlight for your nameplates ✦ 𓆪
 
-## ✨ What MoonRange does
+**A whimsical, moon-kissed nameplate addon for WoW Forever**  
+*Made with love, a little magic, and probably too much pink by Candy Black* 💗
 
-- **Two visual themes:** **Moon** (blue, moonlit fantasy) and **Herbalism** (nature-inspired).
-- **Spell-based range feedback:** choose a known spell from your character's spellbook. MoonRange checks its range using the WoW client API `C_Spell.IsSpellInRange` and changes the nameplate's visual range indication. Range behaviour depends on what the client API can determine about the unit.
-- **Custom nameplate presentation:** adjust name and level font sizes and positions.
-- **Blizzard cast-bar positioning:** adjust the size and placement of the cast bar displayed with nameplates without replacing its underlying Blizzard functionality.
-- **Live preview:** experiment with theme, fonts, and friendly/hostile preview targets from the settings window.
-- **Per-character settings:** each character keeps their own spell choice, theme, and layout.
+🌙 **Moonlit magic** · 🌿 **Herbal enchantments** · ✨ **Spell-aware range**
 
-MoonRange is a **nameplate addon**, not a player casting-bar replacement. It is designed to complement, rather than compete with, a dedicated casting-bar addon.
+[**✧ Report a Bug ✧**](https://candyblk95.github.io/MoonRange/bug-portal/) · [**✧ Download the Addon ✧**](https://github.com/Candyblk95/MoonRange) · [**✧ GitHub Issues ✧**](https://github.com/Candyblk95/MoonRange/issues)
 
-## 🌙 Designed to pair with Opulent Casting Bars
+<sub>❝ Elune light your path, darling. ❞</sub>
 
-MoonRange was designed with **[Opulent Casting Bars by SimonPdv](https://www.curseforge.com/wow/addons/opulent-casting-bars)** in mind.
-
-**Opulent Casting Bars** provides richly animated, spell-school-themed casting bars for the player's casting experience. **MoonRange** focuses on overhead unit nameplates and range-aware visuals. Together they can create a consistent, magical UI without MoonRange attempting to replace Opulent Casting Bars.
-
-**Credit and thanks to SimonPdv**, creator of Opulent Casting Bars, for the inspiration and beautiful fantasy UI aesthetic. Opulent Casting Bars is a separate addon by its own author; MoonRange is an independent project, not an official extension or endorsement.
-
-Opulent Casting Bars is **optional**, not a dependency. Both addons can be used independently.
-
-## ⚙️ Installation
-
-1. Download the MoonRange addon from this repository.
-2. Put the **MoonRange** folder in your WoW Forever installation's `Interface/AddOns/` directory.
-3. Make sure the included `Textures/` directory and its TGA artwork are kept inside the addon folder.
-4. Enable MoonRange from the in-game AddOns menu, then enter the world.
-5. Open the MoonRange settings window using `/moonrange` (or `/moonr` if supported by your installed build).
-
-## 🎨 Settings
-
-The MoonRange configuration window has three pages:
-
-| Page | What it controls |
-| --- | --- |
-| **Nameplates** | Theme, font, live preview, name and level placement, and Blizzard nameplate cast-bar sizing and positioning |
-| **Spells** | Choose which known spell determines your range indicator |
-| **Profiles** | View the current character's settings; settings are saved separately per character |
-
-Select the spell you actually want to measure range against. For example, different classes and spells can have different effective ranges.
-
-## 🐛 Bug reports and support
-
-**[🌙 Open the MoonRange Bug Report Portal](https://candyblk95.github.io/MoonRange/bug-portal/)**
-
-If you encounter a Blizzard Lua error:
-
-1. Copy the full error text and stack trace.
-2. Open the Bug Report Portal and paste the error.
-3. Add your MoonRange version, selected theme, and steps to reproduce the problem.
-4. Select **Prepare GitHub bug report** and submit the issue on GitHub.
-
-You can also [view existing issues or report a bug directly](https://github.com/Candyblk95/MoonRange/issues).
-
-The portal prepares a GitHub issue; it does **not** automatically modify your addon files or push unreviewed code. GitHub sign-in is required to submit an issue. Please remove any personal information from logs before posting them publicly.
-
-## 🔧 Development notes
-
-- Target client: **WoW Forever 1.60.1**.
-- Range checks use **`C_Spell.IsSpellInRange`**.
-- MoonRange preserves Blizzard's underlying nameplate health and cast bars, rather than replacing the cast-bar implementation.
-- The addon is actively evolving; please report compatibility issues with full Lua errors and reproduction steps.
-
-## 💙 Credits
-
-**MoonRange** — created by **Candy Black**.  
-**[Opulent Casting Bars](https://www.curseforge.com/wow/addons/opulent-casting-bars)** — created by **SimonPdv**; inspiration for the complementary fantasy casting-bar aesthetic.
+</div>
 
 ---
 
-*Walk beneath Elune's light.* 🌙
+## 🌙 Welcome to my little corner of Azeroth
+
+You know when your UI is *almost* perfect, but those plain old nameplates just aren't giving **enchanted forest, moonlit goddess, main-character energy**?
+
+**That is exactly why I made MoonRange.** 💕
+
+MoonRange is a custom nameplate addon for **World of Warcraft: Forever (1.60.1)**. It dresses up the overhead nameplates you see above characters and creatures, while keeping the important Blizzard bits doing their jobs underneath.
+
+Think **pretty fantasy artwork on the outside, familiar Blizzard functionality on the inside.**
+
+> ✧ **Made by Candy Black** — because even our enemies deserve a gorgeous nameplate before we bonk them.
+
+## ✨ What makes it magical?
+
+| ✧ | Feature | What it means |
+|:--:|---|---|
+| 🌙 | **Moon theme** | Dreamy, celestial nameplates with a touch of Night Elf magic. |
+| 🌿 | **Herbalism theme** | A nature-inspired look for the woodland witches and herb-gathering girlies. |
+| 🎯 | **Spell-aware range** | Pick a spell you know; MoonRange uses the client's range check to respond to that spell's reach. |
+| 🖋️ | **Make it yours** | Tweak name and level fonts, sizes, and positions. |
+| 🔮 | **Live preview** | Try out your changes in the settings window before heading back into battle. |
+| ✨ | **Blizzard cast bars** | Adjust the position and size of nameplate cast bars without replacing Blizzard's casting system. |
+| 🦋 | **Character-specific settings** | Your hunter can have one look and your druid another. No fighting over the wardrobe. |
+
+<sub>Range detection uses `C_Spell.IsSpellInRange`. It depends on the client providing a valid result for the selected spell and unit.</sub>
+
+---
+
+## 💜 Made to pair with Opulent Casting Bars
+
+<div align="center">
+
+### ✧ Two addons. One enchanted aesthetic. ✧
+
+**[🌟 Opulent Casting Bars — by SimonPdv](https://www.curseforge.com/wow/addons/opulent-casting-bars)**
+
+</div>
+
+MoonRange was designed with **Opulent Casting Bars** in mind, because a beautifully themed casting bar deserves equally beautiful nameplates.
+
+- **Opulent Casting Bars** handles its own magical casting-bar experience.
+- **MoonRange** focuses on **overhead nameplates**, their appearance, and spell-aware range visuals.
+- MoonRange keeps the **native Blizzard nameplate health and cast bars** rather than replacing their underlying behaviour.
+
+**A huge thank-you and full credit to SimonPdv** for creating Opulent Casting Bars and inspiring the fantasy UI aesthetic I love. 💙
+
+*Opulent Casting Bars is a separate addon, not a required dependency. MoonRange is an independent fan project and is not an official extension of, or endorsed by, its creator.*
+
+---
+
+## 🪄 Let's get you set up!
+
+1. Download the MoonRange files from this repository.
+2. Put the **`MoonRange`** folder into your WoW Forever **`Interface/AddOns/`** folder.
+3. Keep the **`Textures/`** folder and all its included **`.tga`** artwork inside MoonRange.
+4. Enable the addon from your in-game AddOns list.
+5. Enter the world and open the settings with **`/moonrange`**.
+
+### 🦋 A little tour of the settings
+
+| Page | The fun stuff |
+|---|---|
+| **🌙 Nameplates** | Pick Moon or Herbalism, customise fonts, preview your changes, and position names, levels, and native cast bars. |
+| **✨ Spells** | Choose a known spell from your spellbook for range detection. |
+| **💗 Profiles** | See the current character's settings. Each character has their own saved setup. |
+
+**Candy tip:** Choose the spell whose range you actually want to check. Different spells can reach different distances!
+
+---
+
+## 🐛 Oh no, a gremlin!
+
+Bugs happen. Even moon magic has its moments. 🫠
+
+<div align="center">
+
+### 🌙 [✧ OPEN THE MOONRANGE BUG REPORT PORTAL ✧](https://candyblk95.github.io/MoonRange/bug-portal/)
+
+**Found a Blizzard Lua error? Please send it my way!**
+
+</div>
+
+Just **copy the full Blizzard Lua error**, paste it into the portal, tell me what you were doing when it happened, and select **Prepare GitHub bug report**.
+
+The portal helps you format a report for [GitHub Issues](https://github.com/Candyblk95/MoonRange/issues), where I can investigate and fix it.
+
+<sub>You'll need a GitHub account to submit the issue. Reports are public, so please remove any private information. The portal doesn't automatically change anyone's Lua files.</sub>
+
+---
+
+## 🔧 A peek behind the moonlight
+
+For the curious little code goblins:
+
+- **Client:** WoW Forever **1.60.1**
+- **Range API:** `C_Spell.IsSpellInRange`
+- **Bars:** Blizzard's underlying nameplate health and cast bars are preserved.
+- **Themes:** Moon and Herbalism.
+- **Settings:** Saved separately for each character.
+- **Status:** A growing addon — bug reports and testing feedback are always appreciated!
+
+---
+
+<div align="center">
+
+### ✧ Crafted with love by Candy Black ✧
+
+*For the moon children, the forest witches, the Night Elves, and everyone who wants their UI to look a little more magical.*
+
+**Elune-adore, lovely.** 🌙💙
+
+[**MoonRange Home**](https://candyblk95.github.io/MoonRange/) · [**Bug Portal**](https://candyblk95.github.io/MoonRange/bug-portal/) · [**Opulent Casting Bars**](https://www.curseforge.com/wow/addons/opulent-casting-bars)
+
+</div>
