@@ -140,62 +140,131 @@ function MR:ToggleConfig()
   Slider("nameX","Name horizontal", -60,60,1,254,-364)
   Slider("nameY","Name vertical", -40,75,1,26,-437)
   Slider("levelSize","Level font size",8,22,1,254,-437)
-  -- Live layout preview; it is deliberately a mock, not a real nameplate.
+  -- Independent preview of the real theme layers; never modifies protected unit frames.
   local previewLabel=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
-  previewLabel:SetPoint("TOPLEFT",25,-508)
-  previewLabel:SetText("Live Layout Preview")
+  previewLabel:SetPoint("TOPLEFT",25,-495)
+  previewLabel:SetText("Live Nameplate Preview")
   local preview=CreateFrame("Frame",nil,panel)
-  preview:SetSize(405,125)
-  preview:SetPoint("TOP",0,-530)
+  preview:SetSize(405,156)
+  preview:SetPoint("TOP",0,-516)
   local previewBG=preview:CreateTexture(nil,"BACKGROUND")
-  previewBG:SetAllPoints(preview)
-  previewBG:SetColorTexture(0.06,0.09,0.10,0.8)
+  previewBG:SetAllPoints()
+  previewBG:SetColorTexture(0.025,0.045,0.055,0.92)
   local plate=CreateFrame("Frame",nil,preview)
-  plate:SetSize(200,100)
-  plate:SetPoint("CENTER",preview,"CENTER",0,-4)
-  local art=plate:CreateTexture(nil,"ARTWORK")
-  art:SetAllPoints(plate)
-  local previewName=plate:CreateFontString(nil,"OVERLAY")
-  previewName:SetWidth(350)
-  local previewLevel=plate:CreateFontString(nil,"OVERLAY")
-  local previewCast=CreateFrame("StatusBar",nil,plate)
-  previewCast:SetStatusBarTexture("Interface\\\\TargetingFrame\\\\UI-StatusBar")
-  previewCast:SetMinMaxValues(0,1)
-  previewCast:SetValue(0.65)
-  previewCast:SetStatusBarColor(0.78,0.45,0.20,1)
-  local previewCastText=previewCast:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
-  previewCastText:SetPoint("CENTER")
-  previewCastText:SetText("Wrath")
+  plate:SetSize(250,125)
+  plate:SetPoint("CENTER",preview,"CENTER",0,4)
+  local backdrop=plate:CreateTexture(nil,"BACKGROUND")
+  backdrop:SetAllPoints()
+  local health=CreateFrame("StatusBar",nil,plate)
+  health:SetSize(185,19)
+  health:SetPoint("CENTER",plate,"CENTER",0,0)
+  health:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+  health:SetMinMaxValues(0,100)
+  health:SetValue(70)
+  local fill=health:CreateTexture(nil,"ARTWORK",nil,1)
+  fill:SetAllPoints(health:GetStatusBarTexture())
+  fill:SetBlendMode("BLEND")
+  fill:SetAlpha(0.20)
+  local border=plate:CreateTexture(nil,"OVERLAY")
+  border:SetAllPoints()
+  local name=plate:CreateFontString(nil,"OVERLAY")
+  name:SetWidth(350)
+  name:SetJustifyH("CENTER")
+  local level=plate:CreateFontString(nil,"OVERLAY")
+  level:SetWidth(80)
+  local cast=CreateFrame("StatusBar",nil,plate)
+  cast:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+  cast:SetMinMaxValues(0,100)
+  cast:SetValue(65)
+  cast:SetStatusBarColor(0.8,0.45,0.22)
+  local castBG=cast:CreateTexture(nil,"BACKGROUND")
+  castBG:SetAllPoints()
+  castBG:SetColorTexture(0.08,0.07,0.06,0.9)
+  local castText=cast:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+  castText:SetPoint("CENTER")
+  castText:SetText("Wrath")
   local castTitle=panel:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
-  castTitle:SetPoint("TOPLEFT",25,-667)
+  castTitle:SetPoint("TOPLEFT",25,-685)
   castTitle:SetText("Nameplate Cast Bar")
-  Slider("castWidth","Cast width",60,250,1,26,-698)
-  Slider("castHeight","Cast height",4,30,1,254,-698)
-  Slider("castX","Cast horizontal",-100,100,1,26,-773)
-  Slider("castY","Cast vertical",-90,50,1,254,-773)
-  local lastPreview=""
-  preview:SetScript("OnUpdate",function()
+  Slider("castWidth","Cast width",60,250,1,26,-713)
+  Slider("castHeight","Cast height",4,30,1,254,-713)
+  Slider("castX","Cast horizontal",-100,100,1,26,-788)
+  Slider("castY","Cast vertical",-90,50,1,254,-788)
+  local previewMode="hostile"
+  local modes={
+   {id="hostile",label="Hostile NPC"},
+   {id="neutral",label="Neutral NPC"},
+   {id="friendly",label="Friendly Player"},
+   {id="enemy",label="Hostile Player"}
+  }
+  local modeDrop=CreateFrame("Frame","MoonRangePreviewModeDropdown",panel,"UIDropDownMenuTemplate")
+  modeDrop:SetPoint("TOPRIGHT",panel,"TOPRIGHT",-8,-477)
+  UIDropDownMenu_SetWidth(modeDrop,125)
+  UIDropDownMenu_Initialize(modeDrop,function(_,menuLevel)
+   if menuLevel~=1 then return end
+   for _,m in ipairs(modes) do
+    local choice=m
+    local info=UIDropDownMenu_CreateInfo()
+    info.text=choice.label
+    info.checked=previewMode==choice.id
+    info.func=function()
+     previewMode=choice.id
+     UIDropDownMenu_SetText(modeDrop,choice.label)
+     CloseDropDownMenus()
+    end
+    UIDropDownMenu_AddButton(info,menuLevel)
+   end
+  end)
+  UIDropDownMenu_SetText(modeDrop,"Hostile NPC")
+  local lastTheme,lastFont,lastNameSize,lastLevelSize
+  local colourSets={
+   Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},
+   Moon={hostile={0.70,0.09,0.39},neutral={0.10,0.40,0.68},friendly={0.45,0.22,0.65},enemy={0.78,0.30,0.34}}
+  }
+  local fontsByID={FRIZQT="Fonts\\FRIZQT__.TTF",ARIAL="Fonts\\FRIZQT__.TTF",MORPHEUS="Fonts\\MORPHEUS.TTF",SKURRI="Fonts\\SKURRI.TTF"}
+  local function RefreshPreview()
    if not MR.db then return end
    local db=MR.db
    local theme=db.theme=="Herbalism" and "Herbalism" or "Moon"
-   local frameName=theme=="Moon" and "Frame_Moon" or "Frame_Herbalism_01"
-   local font=({FRIZQT="Fonts\\FRIZQT__.TTF",ARIAL="Fonts\\FRIZQT__.TTF",MORPHEUS="Fonts\\MORPHEUS.TTF",SKURRI="Fonts\\SKURRI.TTF"})[db.nameFont] or "Fonts\\FRIZQT__.TTF"
-   if frameName~=lastPreview then
-    lastPreview=frameName
-    art:SetTexture(MR.path..theme.."\\\\"..frameName..".tga")
+   if lastTheme~=theme then
+    lastTheme=theme
+    backdrop:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or "BG_Herbalism")..".tga")
+    border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_NoMoon" or "Frame_Herbalism_01")..".tga")
+    fill:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Fill_Moon" or "Fill_Herbalism")..".tga")
+    if theme=="Moon" then
+     fill:SetTexCoord(129/1024,886/1024,203/512,281/512)
+     fill:SetBlendMode("ADD")
+     fill:SetAlpha(0.45)
+    else
+     fill:SetTexCoord(144/1024,905/1024,175/512,305/512)
+     fill:SetBlendMode("BLEND")
+     fill:SetAlpha(0.20)
+    end
    end
-   if not previewName:SetFont(font,db.nameSize or 14,"OUTLINE") then previewName:SetFont("Fonts\\FRIZQT__.TTF",db.nameSize or 14,"OUTLINE") end
-   previewName:SetText("Timberling")
-   previewName:ClearAllPoints()
-   previewName:SetPoint("CENTER",plate,"CENTER",db.nameX or 0,db.nameY or 24)
-   if not previewLevel:SetFont(font,db.levelSize or 11,"OUTLINE") then previewLevel:SetFont("Fonts\\FRIZQT__.TTF",db.levelSize or 11,"OUTLINE") end
-   previewLevel:SetText(db.showLevel and "6" or "")
-   previewLevel:ClearAllPoints()
-   previewLevel:SetPoint("CENTER",plate,"CENTER",db.levelX or 0,db.levelY or -12)
-   previewCast:SetSize(db.castWidth or 130,db.castHeight or 10)
-   previewCast:ClearAllPoints()
-   previewCast:SetPoint("CENTER",plate,"CENTER",db.castX or 0,db.castY or -32)
-  end)
+   local c=colourSets[theme][previewMode]
+   health:SetStatusBarColor(c[1],c[2],c[3])
+   fill:SetVertexColor(theme=="Herbalism" and c[1] or 1,theme=="Herbalism" and c[2] or 1,theme=="Herbalism" and c[3] or 1)
+   local font=fontsByID[db.nameFont] or fontsByID.FRIZQT
+   if font~=lastFont or db.nameSize~=lastNameSize then
+    if not name:SetFont(font,db.nameSize or 14,"OUTLINE") then name:SetFont(fontsByID.FRIZQT,db.nameSize or 14,"OUTLINE") end
+    lastNameSize=db.nameSize
+   end
+   if font~=lastFont or db.levelSize~=lastLevelSize then
+    if not level:SetFont(font,db.levelSize or 11,"OUTLINE") then level:SetFont(fontsByID.FRIZQT,db.levelSize or 11,"OUTLINE") end
+    lastLevelSize=db.levelSize
+   end
+   lastFont=font
+   name:SetText(previewMode=="friendly" and "Moonwhisper" or "Timberling")
+   name:ClearAllPoints()
+   name:SetPoint("CENTER",plate,"CENTER",db.nameX or 0,db.nameY or 24)
+   level:SetText(db.showLevel and "6" or "")
+   level:ClearAllPoints()
+   level:SetPoint("CENTER",plate,"CENTER",db.levelX or 0,db.levelY or -12)
+   cast:SetSize(db.castWidth or 130,db.castHeight or 10)
+   cast:ClearAllPoints()
+   cast:SetPoint("CENTER",plate,"CENTER",db.castX or 0,db.castY or -32)
+  end
+  preview:SetScript("OnUpdate",function() RefreshPreview() end)
   local levelCheck=CreateFrame("CheckButton",nil,panel,"UICheckButtonTemplate")
   levelCheck:SetPoint("BOTTOMLEFT",22,48)
   levelCheck:SetChecked(MR.db.showLevel)
