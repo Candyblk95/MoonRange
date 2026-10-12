@@ -20,7 +20,7 @@ local ORANGE_PINK = {0.78, 0.30, 0.34, 1}
 -- Herbalism uses forest/jewel tones so its green-and-gold frame stays cohesive.
 local HERB_BLUE = {190/255, 147/255, 57/255, 1} -- neutral NPC muted antique gold #BE9339
 local HERB_PURPLE = {62/255, 102/255, 65/255, 1} -- friendly player deep forest green #3E6641
-local HERB_PINK = {150/255, 99/255, 92/255, 1} -- hostile NPC deep dusty rose #96635C
+local HERB_PINK = {117/255, 70/255, 67/255, 1} -- hostile NPC dark rosewood #754643
 local HERB_CORAL = {225/255, 141/255, 1/255, 1} -- hostile player #E18D01
 
 local function UnitColour(unit)
@@ -79,6 +79,31 @@ local function Resize(entry)
  entry.frame:SetSize(canvasWidth, canvasWidth / 2)
 end
 
+local function FindCastBar(frame)
+ return frame.castBar or frame.CastBar or
+  (frame.castBarContainer and frame.castBarContainer.castBar) or
+  (frame.CastBarContainer and frame.CastBarContainer.CastBar)
+end
+
+local function PositionCastBar(entry)
+ local cast=entry.castBar
+ if not cast or (cast.IsForbidden and cast:IsForbidden()) then return end
+ local db=MR.db
+ local w=db.castWidth or 130
+ local h=db.castHeight or 10
+ -- Only change geometry: Blizzard retains casting progress and spell state.
+ if entry.castWidth~=w or entry.castHeight~=h then
+  entry.castWidth=w;entry.castHeight=h
+  cast:SetSize(w,h)
+ end
+ local x,y=db.castX or 0,db.castY or -32
+ if entry.castX~=x or entry.castY~=y then
+  entry.castX=x;entry.castY=y
+  cast:ClearAllPoints()
+  cast:SetPoint("CENTER",entry.frame,"CENTER",x,y)
+ end
+end
+
 local function Setup(plate)
  if not plate or (plate.IsForbidden and plate:IsForbidden()) then return end
  local bar = GetBar(plate)
@@ -125,6 +150,7 @@ local function Setup(plate)
 
  local entry = {frame=art, foreground=foreground, border=border, background=background, shimmer=shimmer,
                 light=light, bar=bar, filename="", unit=nil}
+ entry.castBar=FindCastBar(plate.UnitFrame)
  plate.moonRangeArt = entry
 
  if bar.bgTexture then bar.bgTexture:SetAlpha(0) end
@@ -252,6 +278,7 @@ local function Update(unit, plate)
  RefreshShimmer(entry)
  Resize(entry)
  SetMoonColour(entry, unit)
+ PositionCastBar(entry)
 
  local selected = UnitExists("target") and UnitIsUnit(unit, "target")
  local inRange = selected and MR:RangeState()
