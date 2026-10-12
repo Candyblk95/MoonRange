@@ -143,6 +143,21 @@ local function Setup(plate)
  return entry
 end
 
+local function RefreshShimmer(entry)
+ local shimmer=entry.shimmer
+ if not shimmer then return end
+ local fill=entry.bar:GetStatusBarTexture()
+ if not fill then shimmer:Hide();return end
+ if fill~=entry.shimmerSource then
+  entry.shimmerSource=fill
+  shimmer:ClearAllPoints()
+  shimmer:SetAllPoints(fill)
+ end
+ -- Some Blizzard layouts reuse the fill texture and reset its geometry.
+ -- Keep the overlay tied to the live fill rather than to a fixed bar width.
+ if not fill:IsShown() then shimmer:Hide() else shimmer:Show() end
+end
+
 local function UpdateText(entry,unit)
  local db=MR.db
  local font=FONT_PATHS[db.nameFont] or FONT_PATHS.FRIZQT
