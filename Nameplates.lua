@@ -3,7 +3,7 @@ local active, elapsed = {}, 0
 local THEMES={Moon=true,Herbalism=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
-local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\ARIALN.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
+local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
 local function Plain(v) return not (issecretvalue and issecretvalue(v)) end
 local function IsObject(unit)
  if not unit or not UnitExists(unit) then return true end
@@ -237,12 +237,12 @@ end
 local function UpdateText(entry,unit)
  local db=MR.db
  local font=FONT_PATHS[db.nameFont] or FONT_PATHS.FRIZQT
- entry.nameText:SetFont(font,db.nameSize or 14,"OUTLINE")
+ if not entry.nameText:SetFont(font,db.nameSize or 14,"OUTLINE") then entry.nameText:SetFont(FONT_PATHS.FRIZQT,db.nameSize or 14,"OUTLINE") end
  entry.nameText:ClearAllPoints()
  entry.nameText:SetPoint("CENTER",entry.frame,"CENTER",db.nameX or 0,db.nameY or 24)
  local name=UnitName(unit)
  if name and Plain(name) then entry.nameText:SetText(name) else entry.nameText:SetText("") end
- entry.levelText:SetFont(font,db.levelSize or 11,"OUTLINE")
+ if not entry.levelText:SetFont(font,db.levelSize or 11,"OUTLINE") then entry.levelText:SetFont(FONT_PATHS.FRIZQT,db.levelSize or 11,"OUTLINE") end
  entry.levelText:ClearAllPoints()
  entry.levelText:SetPoint("CENTER",entry.frame,"CENTER",db.levelX or 0,db.levelY or -12)
  local level=UnitLevel(unit)
