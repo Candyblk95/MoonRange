@@ -95,7 +95,7 @@ events:SetScript("OnEvent",function(_,event)
  end
 end)
 SLASH_MOONRANGE1="/moonrange"
-SLASH_MOONRANGE2="/mr"
+SLASH_MOONRANGE2="/moonr"
 SlashCmdList.MOONRANGE=function(msg)
  msg=(msg or ""):match("^%s*(.-)%s*$")
  local command,rest=msg:match("^(%S+)%s*(.*)$")
