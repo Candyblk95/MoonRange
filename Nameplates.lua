@@ -66,14 +66,7 @@ local function Update(unit,plate)
  if not MR.db.enabled then a.frame:Hide();a.foreground:Hide();return end
  a.frame:Show()
  a.foreground:Show()
- -- Blizzard may restore its own status-bar texture during unit updates.
- local texture=a.bar:GetStatusBarTexture()
- if texture and texture:GetTexture()~=MR.path.."Fill_Moon.tga" then
-  a.bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
-  texture=a.bar:GetStatusBarTexture()
- end
- if texture then texture:SetTexCoord(UV_L,UV_R,UV_T,UV_B) end
- a.bar:SetStatusBarColor(1,1,1,1)
+ -- Do not repeatedly reset the fill: Blizzard owns health updates.
  local selected=UnitExists("target") and UnitIsUnit(unit,"target")
  local range=selected and MR:RangeState()
  local filename=(range==true) and "Frame_Moon.tga" or "Frame_NoMoon.tga"
