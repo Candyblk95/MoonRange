@@ -19,8 +19,8 @@ local PINK = {0.70, 0.09, 0.39, 1}
 local ORANGE_PINK = {0.78, 0.30, 0.34, 1}
 -- Herbalism uses forest/jewel tones so its green-and-gold frame stays cohesive.
 local HERB_BLUE = {251/255, 217/255, 119/255, 1} -- neutral NPC #FBD977
-local HERB_PURPLE = {144/255, 168/255, 142/255, 1} -- friendly player #90A88E
-local HERB_PINK = {189/255, 144/255, 131/255, 1} -- hostile NPC #BD9083
+local HERB_PURPLE = {105/255, 132/255, 103/255, 1} -- friendly player deep sage #698467
+local HERB_PINK = {150/255, 99/255, 92/255, 1} -- hostile NPC deep dusty rose #96635C
 local HERB_CORAL = {225/255, 141/255, 1/255, 1} -- hostile player #E18D01
 
 local function UnitColour(unit)
