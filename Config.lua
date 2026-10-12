@@ -73,7 +73,7 @@ local function MakePage(name)
  if name=="Nameplates" then
   local scroll=CreateFrame("ScrollFrame","MoonRangeSettingsScroll",panel,"UIPanelScrollFrameTemplate")
   scroll:SetPoint("TOPLEFT",panel,"TOPLEFT",165,-215);scroll:SetSize(435,690);scroll:SetScale(0.88)
-  local content=CreateFrame("Frame",nil,scroll);content:SetSize(448,1080)
+  local content=CreateFrame("Frame",nil,scroll);content:SetSize(448,1230)
   scroll:SetScrollChild(content);pages[name]=scroll
   return content
  end
@@ -192,6 +192,11 @@ local function Build()
   if font~=lastFont or d.nameSize~=lastNameSize then if not name:SetFont(font,d.nameSize or 14,"OUTLINE")then name:SetFont(fontPaths.FRIZQT,d.nameSize or 14,"OUTLINE")end;lastNameSize=d.nameSize end
   if font~=lastFont or d.levelSize~=lastLevelSize then if not level:SetFont(font,d.levelSize or 11,"OUTLINE")then level:SetFont(fontPaths.FRIZQT,d.levelSize or 11,"OUTLINE")end;lastLevelSize=d.levelSize end
   lastFont=font
+  local function rgb(hex)
+   if type(hex)~="string" or not hex:match("^%x%x%x%x%x%x$") then return 1,1,1 end
+   return tonumber(hex:sub(1,2),16)/255,tonumber(hex:sub(3,4),16)/255,tonumber(hex:sub(5,6),16)/255
+  end
+  name:SetTextColor(rgb(d.nameColor));level:SetTextColor(rgb(d.levelColor))
   name:SetText(mode=="friendly" and "Moonwhisper" or "Timberling");name:ClearAllPoints();name:SetPoint("CENTER",plate,"CENTER",d.nameX or 0,d.nameY or 24)
   level:SetText(d.showLevel and "6" or "");level:ClearAllPoints();level:SetPoint("CENTER",plate,"CENTER",d.levelX or 0,d.levelY or -12)
   cast:SetSize(d.castWidth or 130,d.castHeight or 10);cast:ClearAllPoints();cast:SetPoint("CENTER",plate,"CENTER",d.castX or 0,d.castY or -32)
@@ -208,8 +213,33 @@ local function Build()
  check:SetScript("OnClick",function(self)MR.db.showLevel=self:GetChecked()end)
  Font(nameplate,"Show unit level",16,65,-797,230,C.muted)
  Register(function()check:SetChecked(MR.db.showLevel)end)
+ local function ColourField(key,label,x,y)
+  Font(nameplate,label,16,x,y,165,C.ice)
+  local edit=CreateFrame("EditBox",nil,nameplate,"InputBoxTemplate")
+  edit:SetSize(112,24);edit:SetPoint("TOPLEFT",nameplate,"TOPLEFT",x+6,y-26)
+  edit:SetAutoFocus(false);edit:SetMaxLetters(7)
+  local swatch=nameplate:CreateTexture(nil,"ARTWORK")
+  swatch:SetSize(23,23);swatch:SetPoint("LEFT",edit,"RIGHT",12,0)
+  local function Refresh()
+   local hex=MR.db[key] or "FFFFFF"
+   edit:SetText("#"..hex)
+   swatch:SetColorTexture(tonumber(hex:sub(1,2),16)/255,tonumber(hex:sub(3,4),16)/255,tonumber(hex:sub(5,6),16)/255,1)
+  end
+  local function Apply()
+   local hex=(edit:GetText() or ""):gsub("#",""):upper()
+   if hex:match("^%x%x%x%x%x%x$") then MR.db[key]=hex end
+   edit:ClearFocus();Refresh()
+  end
+  edit:SetScript("OnEnterPressed",Apply)
+  edit:SetScript("OnEscapePressed",function(self)self:ClearFocus();Refresh()end)
+  Button(nameplate,"Apply",x+4,y-57,112,Apply)
+  Register(Refresh)
+ end
+ Section(nameplate,"- Text Colours",-840)
+ ColourField("nameColor","Name colour (hex)",30,-884)
+ ColourField("levelColor","Level colour (hex)",210,-884)
  local castPage=CreateFrame("Frame",nil,nameplate)
- castPage:SetSize(448,245);castPage:SetPoint("TOPLEFT",nameplate,"TOPLEFT",0,-840)
+ castPage:SetSize(448,245);castPage:SetPoint("TOPLEFT",nameplate,"TOPLEFT",0,-1010)
  Section(castPage,"- Blizzard Cast Bar",0)
  Register(Slider(castPage,"castWidth","Cast width",60,250,30,-42,170))
  Register(Slider(castPage,"castHeight","Cast height",4,30,210,-42,165))
