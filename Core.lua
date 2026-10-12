@@ -101,6 +101,7 @@ SlashCmdList.MOONRANGE=function(msg)
  local command,rest=msg:match("^(%S+)%s*(.*)$")
  command=command and command:lower() or ""
  if command=="spell" then MR:SetSpell(rest)
+ elseif command=="castdebug" then if MR.DebugCastBars then MR:DebugCastBars() end
  elseif command=="debug" then MR:Print("Class: "..tostring(MR.classToken).." / Known: "..#MR:KnownSpells());MR:RangeDebug()
  elseif command=="on" or command=="off" then if MR.db then MR.db.enabled=(command=="on") end
  elseif MR.ToggleConfig then MR:ToggleConfig() end
