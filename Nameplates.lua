@@ -41,7 +41,7 @@ local function Setup(plate)
  -- Preserve the Blizzard status bar so it alone handles secret health values.
  -- Use the full 2:1 artwork canvas, exactly like the moon background.
  -- Blizzard still controls the fill percentage via the native StatusBar.
- bar:SetSize(200,100)
+ bar:SetSize(148,15)
  bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
  bar:SetStatusBarColor(1,1,1,1)
  -- Blizzard recolours nameplates based on reaction; keep the moon fill untinted.
@@ -52,7 +52,7 @@ local function Setup(plate)
   end)
  end
  local texture=bar:GetStatusBarTexture()
- if texture then texture:SetTexCoord(0,1,0,1) end
+ if texture then texture:SetTexCoord(129/1024,886/1024,203/512,281/512) end
 
  if bar.bgTexture then bar.bgTexture:SetAlpha(0) end
  if bar.selectedBorder then bar.selectedBorder:SetAlpha(0) end
@@ -64,7 +64,7 @@ local function Setup(plate)
  -- Restore only the geometry, not the protected health value.
  if frame.UpdateAnchors and hooksecurefunc then
   hooksecurefunc(frame,"UpdateAnchors",function()
-   bar:SetSize(200,100)
+   bar:SetSize(148,15)
   end)
  end
 
