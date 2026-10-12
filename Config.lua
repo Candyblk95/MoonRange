@@ -144,7 +144,7 @@ local function ToggleTest()
    local theme=(d.theme=="Herbalism" or d.theme=="Shadow" or d.theme=="Arcaneum") and d.theme or "Moon"
    if theme~=self.lastTheme then
     self.lastTheme=theme
-    self.background:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or theme).."\\"..(theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or "BG_Herbalism")..".tga")
+    self.background:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or theme).."\\"..((theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or "BG_Herbalism"))..".tga")
     self.border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_Moon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or "Frame_Herbalism_01")..".tga")
     self.hp:SetStatusBarColor(theme=="Moon" and .20 or theme=="Shadow" and .50 or theme=="Arcaneum" and .52 or .35,theme=="Moon" and .50 or theme=="Shadow" and .22 or theme=="Arcaneum" and .43 or .55,theme=="Moon" and .80 or theme=="Shadow" and .66 or theme=="Arcaneum" and .79 or .25)
    end
@@ -261,7 +261,7 @@ local function Build()
   local d=MR.db;local theme=(d.theme=="Herbalism" or d.theme=="Shadow" or d.theme=="Arcaneum") and d.theme or "Moon"
   if theme~=lastTheme then
    lastTheme=theme
-   bg:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or theme).."\\"..(theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or "BG_Herbalism")..".tga")
+   bg:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or theme).."\\"..((theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or "BG_Herbalism"))..".tga")
    border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_NoMoon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or "Frame_Herbalism_01")..".tga")
    fill:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or "Fill_Herbalism")..".tga")
    if theme=="Moon" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("ADD");fill:SetAlpha(.45)
