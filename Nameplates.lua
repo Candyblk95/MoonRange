@@ -3,6 +3,24 @@ local active, elapsed = {}, 0
 
 local BLUE = {0.12, 0.65, 1, 1}
 local PURPLE = {0.67, 0.24, 0.94, 1}
+local PINK = {0.94, 0, 0.51, 1}
+local ORANGE_PINK = {1, 0.39, 0.42, 1}
+
+local function UnitColour(unit)
+ if not unit or not UnitExists(unit) then return BLUE end
+ -- PvP opponents take precedence over NPC reaction colours.
+ if UnitIsPlayer(unit) then
+  if UnitCanAttack("player", unit) then return ORANGE_PINK end
+  return PURPLE
+ end
+ local reaction = UnitReaction("player", unit)
+ if reaction and not (issecretvalue and issecretvalue(reaction)) then
+  if reaction <= 3 then return PINK end
+  return BLUE
+ end
+ if UnitCanAttack("player", unit) then return PINK end
+ return BLUE
+end
 
 local function GetBar(plate)
  local f = plate and plate.UnitFrame
@@ -17,7 +35,7 @@ local function SafeWidth(bar)
 end
 
 local function SetMoonColour(entry, unit)
- local colour = (unit and UnitCanAttack("player", unit)) and PURPLE or BLUE
+ local colour = UnitColour(unit)
  local texture = entry.bar:GetStatusBarTexture()
  if texture then texture:SetVertexColor(unpack(colour)) end
 end
