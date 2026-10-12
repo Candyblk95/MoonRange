@@ -18,10 +18,10 @@ local PURPLE = {0.45, 0.22, 0.65, 1}
 local PINK = {0.70, 0.09, 0.39, 1}
 local ORANGE_PINK = {0.78, 0.30, 0.34, 1}
 -- Herbalism uses forest/jewel tones so its green-and-gold frame stays cohesive.
-local HERB_BLUE = {0.08, 0.30, 0.24, 1}
-local HERB_PURPLE = {0.18, 0.28, 0.23, 1}
-local HERB_PINK = {0.12, 0.30, 0.19, 1}
-local HERB_CORAL = {0.24, 0.31, 0.18, 1}
+local HERB_BLUE = {251/255, 217/255, 119/255, 1} -- neutral NPC #FBD977
+local HERB_PURPLE = {144/255, 168/255, 142/255, 1} -- friendly player #90A88E
+local HERB_PINK = {189/255, 144/255, 131/255, 1} -- hostile NPC #BD9083
+local HERB_CORAL = {225/255, 141/255, 1/255, 1} -- hostile player #E18D01
 
 local function UnitColour(unit)
  if not unit or not UnitExists(unit) then return BLUE end
@@ -61,6 +61,12 @@ local function SetMoonColour(entry, unit)
  end
  local texture = entry.bar:GetStatusBarTexture()
  if texture then texture:SetVertexColor(unpack(colour)) end
+ -- Tint the Herbalism artwork too: at 88% opacity its original green
+ -- otherwise masks the unit-type colour on the Blizzard fill below.
+ if entry.shimmer then
+  if entry.theme=="Herbalism" then entry.shimmer:SetVertexColor(unpack(colour))
+  else entry.shimmer:SetVertexColor(1,1,1,1) end
+ end
 end
 
 local function Resize(entry)
