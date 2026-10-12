@@ -26,6 +26,7 @@ local function Button(parent,label,x,y,w,fn)
  b:SetScript("OnEnter",function(self)self:SetBackdropColor(0.09,0.25,0.42,0.96);t:SetTextColor(1,1,1)end)
  b:SetScript("OnLeave",function(self)self:SetBackdropColor(0.025,0.10,0.22,0.88);t:SetTextColor(0.71,0.87,1)end)
  b:SetScript("OnClick",fn)
+ b.label=t
  return b
 end
 local function Dropdown(parent,name,x,y,width,options,get,set)
@@ -96,6 +97,85 @@ local function SelectPage(name)
  end
  if refreshAll then refreshAll()end
 end
+-- Standalone test plate: never touches real Blizzard nameplates.
+local testPlate, testButton
+local function StopTest()
+ if testPlate then testPlate:Hide() end
+ if testButton then testButton.label:SetText("Test In Game") end
+end
+local function ToggleTest()
+ if testPlate and testPlate:IsShown() then StopTest();return end
+ if not MR.db then return end
+ if not testPlate then
+  local root=CreateFrame("Frame","MoonRangeTestPlate",UIParent)
+  root:SetSize(300,165);root:SetPoint("CENTER",UIParent,"CENTER",0,145)
+  root:SetFrameStrata("DIALOG");root:SetMovable(true);root:EnableMouse(true)
+  root:RegisterForDrag("LeftButton")
+  root:SetScript("OnDragStart",root.StartMoving)
+  root:SetScript("OnDragStop",root.StopMovingOrSizing)
+  local art=CreateFrame("Frame",nil,root);art:SetSize(260,130);art:SetPoint("TOP",root,"TOP",0,0)
+  local background=art:CreateTexture(nil,"BACKGROUND");background:SetAllPoints()
+  local hp=CreateFrame("StatusBar",nil,art)
+  hp:SetSize(185,19);hp:SetPoint("CENTER",art,"CENTER",0,0)
+  hp:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+  hp:SetMinMaxValues(0,100);hp:SetValue(75)
+  local border=art:CreateTexture(nil,"OVERLAY");border:SetAllPoints()
+  local name=art:CreateFontString(nil,"OVERLAY")
+  name:SetWidth(280);name:SetJustifyH("CENTER")
+  local level=art:CreateFontString(nil,"OVERLAY")
+  level:SetWidth(80);level:SetJustifyH("CENTER")
+  local cast=CreateFrame("StatusBar",nil,root)
+  cast:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+  cast:SetStatusBarColor(0.42,0.72,1)
+  cast:SetMinMaxValues(0,1)
+  local castText=cast:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+  castText:SetPoint("CENTER");castText:SetText("Preview Cast")
+  local castBack=cast:CreateTexture(nil,"BACKGROUND")
+  castBack:SetAllPoints();castBack:SetColorTexture(0.02,0.06,0.16,0.85)
+  local hint=root:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+  hint:SetPoint("BOTTOM",root,"BOTTOM",0,0)
+  hint:SetText("MoonRange test  -  drag to move")
+  root.art=art;root.background=background;root.hp=hp;root.border=border
+  root.nameText=name;root.levelText=level;root.cast=cast
+  root.clock=0;root.lastTheme=nil
+  root:SetScript("OnUpdate",function(self,dt)
+   if not MR.db then return end
+   local d=MR.db
+   local theme=d.theme=="Herbalism" and "Herbalism" or "Moon"
+   if theme~=self.lastTheme then
+    self.lastTheme=theme
+    self.background:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "BG_Moon" or "BG_Herbalism")..".tga")
+    self.border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_Moon" or "Frame_Herbalism_01")..".tga")
+    self.hp:SetStatusBarColor(theme=="Moon" and .20 or .35,theme=="Moon" and .50 or .55,theme=="Moon" and .80 or .25)
+   end
+   self.clock=(self.clock+dt)%3
+   self.cast:SetValue(self.clock/3)
+   local font=({FRIZQT="Fonts\\FRIZQT__.TTF",ARIAL="Fonts\\FRIZQT__.TTF",MORPHEUS="Fonts\\MORPHEUS.TTF",SKURRI="Fonts\\SKURRI.TTF"})[d.nameFont] or "Fonts\\FRIZQT__.TTF"
+   self.nameText:SetFont(font,d.nameSize or 14,"OUTLINE")
+   self.levelText:SetFont(font,d.levelSize or 11,"OUTLINE")
+   local function rgb(hex)
+    if type(hex)~="string" or not hex:match("^%x%x%x%x%x%x$") then return 1,1,1 end
+    return tonumber(hex:sub(1,2),16)/255,tonumber(hex:sub(3,4),16)/255,tonumber(hex:sub(5,6),16)/255
+   end
+   self.nameText:SetTextColor(rgb(d.nameColor))
+   self.levelText:SetTextColor(rgb(d.levelColor))
+   self.nameText:SetText("MoonRange Test")
+   self.levelText:SetText(d.showLevel and "30" or "")
+   self.nameText:ClearAllPoints()
+   self.nameText:SetPoint("CENTER",self.art,"CENTER",d.nameX or 0,d.nameY or 24)
+   self.levelText:ClearAllPoints()
+   self.levelText:SetPoint("CENTER",self.art,"CENTER",d.levelX or 0,d.levelY or -12)
+   self.cast:SetSize(d.castWidth or 130,d.castHeight or 10)
+   self.cast:ClearAllPoints()
+   self.cast:SetPoint("CENTER",self.art,"CENTER",d.castX or 0,d.castY or -32)
+  end)
+  testPlate=root
+ end
+ testPlate.clock=0
+ testPlate:Show()
+ if testButton then testButton.label:SetText("Stop Preview") end
+end
+
 local function Build()
  panel=CreateFrame("Frame","MoonRangeConfig",UIParent,"BackdropTemplate")
  panel:SetSize(650,1000);panel:SetScale(0.75);panel:SetPoint("CENTER")
@@ -147,6 +227,7 @@ local function Build()
  Body(spell,"The glowing nameplate reacts to your chosen spell's range.",-255)
  Body(spell,"Your spell selection is saved for this character.",-336)
  Button(spell,"Refresh spellbook",30,-425,185,function()spellRefresh()end)
+ testButton=Button(spell,"Test In Game",30,-485,185,ToggleTest)
  local nameplate=MakePage("Nameplates")
  Section(nameplate,"- Nameplate Atelier",-8)
  Font(nameplate,"Theme",17,30,-55,355,C.ice)
