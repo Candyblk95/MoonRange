@@ -54,10 +54,10 @@ end
 local function SetMoonColour(entry, unit)
  local colour = UnitColour(unit)
  if entry.theme=="Shadow" then
-  if colour==BLUE then colour={0.40,0.25,0.70,1}
-  elseif colour==PURPLE then colour={0.56,0.31,0.78,1}
-  elseif colour==PINK then colour={0.68,0.18,0.54,1}
-  else colour={0.78,0.26,0.60,1} end
+  if colour==BLUE then colour={134/255,112/255,200/255,1}
+  elseif colour==PURPLE then colour={66/255,169/255,167/255,1}
+  elseif colour==PINK then colour={193/255,61/255,130/255,1}
+  else colour={225/255,107/255,80/255,1} end
  elseif entry.theme=="Herbalism" then
   if colour==BLUE then colour=HERB_BLUE
   elseif colour==PURPLE then colour=HERB_PURPLE
