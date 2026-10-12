@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: MoonRange
+## Notes: Opulent overhead nameplates with class-aware range moon
+## Version: 0.1.0-beta
+## SavedVariablesPerCharacter: MoonRangeDB
+Core.lua
+Nameplates.lua
+Config.lua
