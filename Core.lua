@@ -50,8 +50,10 @@ function MR:SetSpell(name)
 end
 function MR:RangeState()
  if not self.db or not self.db.enabled or not UnitExists("target") then return nil end
- if not self:IsKnownSpell(self.db.spell) or not IsSpellInRange then return nil end
- local ok,v=pcall(IsSpellInRange,self.db.spell,"target")
+ if not self:IsKnownSpell(self.db.spell) then return nil end
+ local check = (C_Spell and C_Spell.IsSpellInRange) or IsSpellInRange
+ if not check then return nil end
+ local ok,v=pcall(check,self.db.spell,"target")
  if not ok then return nil end
  if v==1 or v==true then return true end
  if v==0 or v==false then return false end
