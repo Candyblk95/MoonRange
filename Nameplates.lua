@@ -1,69 +1,72 @@
 local _, MR = ...
-local active = {}
-local elapsed = 0
+local active, elapsed = {}, 0
+local UV_L, UV_R = 129/1024, 886/1024
+local UV_T, UV_B = 203/512, 281/512
 
 local function GetBar(plate)
- local frame = plate and plate.UnitFrame
- return frame and (frame.healthBar or (frame.HealthBarsContainer and frame.HealthBarsContainer.healthBar))
+ local f=plate and plate.UnitFrame
+ return f and (f.healthBar or (f.HealthBarsContainer and f.HealthBarsContainer.healthBar))
 end
 
 local function Setup(plate)
  if not plate or (plate.IsForbidden and plate:IsForbidden()) then return end
- local bar = GetBar(plate)
+ local bar=GetBar(plate)
  if not bar then return end
  if plate.moonRangeArt then return plate.moonRangeArt end
 
- -- Decorate Blizzard's actual status bar, not a second health bar.
- -- The native bar owns its protected health values and fill width.
- local bg = bar:CreateTexture(nil, "BACKGROUND", nil, 1)
- bg:SetAllPoints(bar)
- bg:SetTexture(MR.path.."BG_Moon.tga")
+ -- Source TGAs are 1024x512 with a lot of transparent padding.
+ -- Draw the entire texture at 200x100, centred on the native health bar.
+ -- The artwork's central opening is only 74% of the source width.
+ local art=CreateFrame("Frame",nil,plate.UnitFrame)
+ art:SetSize(200,100)
+ art:SetPoint("CENTER",bar,"CENTER",0,0)
+ art:SetFrameLevel(bar:GetFrameLevel()+1)
+ art:EnableMouse(false)
 
- local border = bar:CreateTexture(nil, "OVERLAY", nil, 6)
- border:SetPoint("TOPLEFT", bar, "TOPLEFT", -6, 5)
- border:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 6, -5)
+ local background=art:CreateTexture(nil,"BACKGROUND")
+ background:SetAllPoints(art)
+ background:SetTexture(MR.path.."BG_Moon.tga")
+
+ local border=art:CreateTexture(nil,"OVERLAY",nil,2)
+ border:SetAllPoints(art)
  border:SetTexture(MR.path.."Frame_NoMoon.tga")
 
- local light = bar:CreateTexture(nil, "OVERLAY", nil, 7)
- light:SetAllPoints(border)
+ local light=art:CreateTexture(nil,"OVERLAY",nil,3)
+ light:SetAllPoints(art)
  light:SetTexture(MR.path.."Frame_Moon_Light.tga")
  light:Hide()
 
- -- Replace Blizzard's bar fill without reading protected health values.
+ -- Preserve the Blizzard status bar so it alone handles secret health values.
+ -- Crop the huge transparent padding from the bar-fill source image.
  bar:SetStatusBarTexture(MR.path.."Fill_Moon.tga")
+ local texture=bar:GetStatusBarTexture()
+ if texture then texture:SetTexCoord(UV_L,UV_R,UV_T,UV_B) end
+
  if bar.bgTexture then bar.bgTexture:SetAlpha(0) end
- -- Suppress Blizzard's default border/selection art on this exact bar.
  if bar.selectedBorder then bar.selectedBorder:SetAlpha(0) end
  if bar.deselectedOverlay then bar.deselectedOverlay:SetAlpha(0) end
  local frame=plate.UnitFrame
  if frame.PlayerLevelDiffFrame then frame.PlayerLevelDiffFrame:SetAlpha(0) end
  if frame.LevelFrame then frame.LevelFrame:SetAlpha(0) end
- if frame.HealthBarsContainer and frame.HealthBarsContainer.border then
-  frame.HealthBarsContainer.border:SetAlpha(0)
- end
 
- local art = {bar=bar, bg=bg, border=border, light=light, filename=""}
- plate.moonRangeArt=art
- return art
+ local entry={frame=art,border=border,light=light,bar=bar,filename=""}
+ plate.moonRangeArt=entry
+ return entry
 end
 
-local function Update(unit, plate)
- local art=Setup(plate)
- if not art then return end
- if not MR.db.enabled then
-  art.bg:Hide(); art.border:Hide(); art.light:Hide()
-  return
- end
- art.bg:Show()
- art.border:Show()
+local function Update(unit,plate)
+ local a=Setup(plate)
+ if not a then return end
+ if not MR.db.enabled then a.frame:Hide();return end
+ a.frame:Show()
  local selected=UnitExists("target") and UnitIsUnit(unit,"target")
- local inRange=selected and MR:RangeState()
- local filename=(inRange==true) and "Frame_Moon.tga" or "Frame_NoMoon.tga"
- if art.filename~=filename then
-  art.filename=filename
-  art.border:SetTexture(MR.path..filename)
+ local range=selected and MR:RangeState()
+ local filename=(range==true) and "Frame_Moon.tga" or "Frame_NoMoon.tga"
+ if filename~=a.filename then
+  a.filename=filename
+  a.border:SetTexture(MR.path..filename)
  end
- if inRange==true then art.light:Show() else art.light:Hide() end
+ if range==true then a.light:Show() else a.light:Hide() end
 end
 
 function MR:StartNameplates()
