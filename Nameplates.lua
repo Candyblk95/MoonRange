@@ -260,7 +260,7 @@ local function Setup(plate)
   local eased=1-(1-t)^3
   local w,h=art:GetSize()
   arcticFrost:SetSize(w*(.82+.34*eased),h*(.82+.34*eased))
-  arcticLight:SetSize(w*(.86+.22*eased),h*(.86+.22*eased))
+  arcticLight:SetSize(w,h) -- match Frame_Arctic exactly; never stretch the overlay
  end
  local function SetArcticBloom(active)
   if active then
