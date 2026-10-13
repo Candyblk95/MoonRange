@@ -4,5 +4,6 @@
 ## Version: 0.1.7-beta
 ## SavedVariablesPerCharacter: MoonRangeDB
 Core.lua
+Particles_Arcaneum.lua
 Nameplates.lua
 Config.lua
