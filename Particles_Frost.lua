@@ -17,9 +17,9 @@ local function Make(entry)
   local tex=holder:CreateTexture(nil,"ARTWORK",nil,1)
   tex:SetTexture(MR.path.."frost\\Mist_Frost_01.tga")
   tex:SetBlendMode("ADD")
-  tex:SetSize(120,65)
+  tex:SetSize(225,110)
   tex:SetAlpha(0)
-  mist[i]={tex=tex,x=(i-2)*55,phase=(i-1)*2.1,scale=rand(.85,1.15)}
+  mist[i]={tex=tex,x=(i-2)*55,phase=(i-1)*2.1,scale=rand(.88,1.12)}
  end
  local particles={}
  for i=1,42 do
@@ -38,7 +38,7 @@ local function Make(entry)
     p.x=rand(-94,94);p.y=rand(-9,9)
     p.vx=rand(-22,22)*(state.ice and 1.6 or 1)
     p.vy=state.ice and rand(38,84) or rand(14,38)
-    local size=state.ice and rand(4,9) or rand(3,7)
+    local size=state.ice and rand(5,10) or rand(4,8)
     p.tex:SetSize(size,size)
     return
    end
@@ -50,14 +50,14 @@ local function Make(entry)
   local ice=state.ice
   for _,m in ipairs(mist) do
    local t=state.elapsed+m.phase
-   local alpha=(ice and .19 or .27)*(.55+.45*math.sin(t*.85))
+   local alpha=(ice and .43 or .50)*(.72+.28*math.sin(t*.85))
    m.tex:SetAlpha(math.max(0,alpha)*math.min(1,state.elapsed))
-   m.tex:SetSize((ice and 95 or 130)*m.scale,(ice and 46 or 64)*m.scale)
+   m.tex:SetSize((ice and 205 or 235)*m.scale,(ice and 96 or 115)*m.scale)
    m.tex:ClearAllPoints()
-   m.tex:SetPoint("CENTER",entry.frame,"CENTER",m.x+math.sin(t*.48)*12,math.sin(t*.65)*9)
+   m.tex:SetPoint("CENTER",entry.frame,"CENTER",m.x+math.sin(t*.48)*12,16+math.sin(t*.65)*9)
   end
   state.spawn=state.spawn+dt
-  local interval=ice and .055 or .10
+  local interval=ice and .045 or .065
   if state.spawn>=interval then state.spawn=state.spawn-interval;Spawn() end
   for _,p in ipairs(particles) do
    if p.active then
@@ -71,7 +71,7 @@ local function Make(entry)
      p.tex:ClearAllPoints()
      p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x,p.y)
      local t=p.life/p.maxLife
-     p.tex:SetAlpha((ice and .78 or .49)*math.min(1,(1-t)/.45))
+     p.tex:SetAlpha((ice and .82 or .65)*math.min(1,(1-t)/.45))
     end
    end
   end
