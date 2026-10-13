@@ -57,9 +57,9 @@ local function make(entry)
    s.leafClock=0
    for _,l in ipairs(leaves) do
     if not l.active then
-     l.active=true;l.life=0;l.x=left-22
-     l.y=rand(-5,5);l.speed=rand(55,120);l.size=rand(10,22)
-     l.amp=rand(3,9);l.freq=rand(1.2,2.8);l.phase=rand(0,TAU)
+     l.active=true;l.life=0;l.x=left-12
+     l.y=rand(-5,5);l.speed=rand(55,120);l.size=rand(5,11)
+     l.amp=rand(2,5);l.freq=rand(1.2,2.8);l.phase=rand(0,TAU)
      l.vy=rand(-4,4);l.angle=rand(0,TAU)
      l.rotSpeed=rand(.8,2.8)*(math.random(2)==1 and 1 or -1)
      l.alpha=rand(.55,.9);l.tex:SetSize(l.size,l.size)
@@ -86,7 +86,7 @@ local function make(entry)
     if p.life<=0 then
      p.life=rand(.18,.35);p.x=rand(left,right);p.y=rand(-6,6)
      p.vx=rand(-9,9);p.vy=rand(-8,8)
-     local size=rand(6,12);p.tex:SetSize(size,size)
+     local size=rand(3,6);p.tex:SetSize(size,size)
      break
     end
    end
