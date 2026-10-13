@@ -12,10 +12,7 @@ end
 local function Make(entry)
  local holder=CreateFrame("Frame",nil,entry.foreground)
  holder:SetAllPoints(entry.frame)
- -- Scale the entire particle layer with the artwork, preserving tuned offsets and sizes.
- holder:SetScale(entry.particleScale or 1)
- entry.particleScaleFrames=entry.particleScaleFrames or {}
- entry.particleScaleFrames[#entry.particleScaleFrames+1]=holder
+ -- Arcane runes use frame-relative coordinates; avoid double-scaling this layer.
  holder:SetFrameLevel(math.max(0,entry.foreground:GetFrameLevel()-1))
  holder:EnableMouse(false);holder:Hide()
  local runes={}
@@ -44,10 +41,13 @@ local function Make(entry)
   s.clock=s.clock+dt
   local w=entry.lastWidth or entry.frame:GetWidth()
   if not w or w<20 then w=170 end
+  local scale=entry.particleScale or 1
   for i,r in ipairs(runes)do
    r.angle=r.angle+r.speed*dt
-   local x=(i==1 and -1 or 1)*(w*.53-5)
-   r.tex:ClearAllPoints();r.tex:SetPoint("CENTER",entry.frame,"CENTER",x,5)
+   -- Anchor to the live health bar ends, retaining the tuned 5px inward/upward offsets.
+   local x=(i==1 and -1 or 1)*(w*.53-5*scale)
+   r.tex:SetSize(60*scale,60*scale)
+   r.tex:ClearAllPoints();r.tex:SetPoint("CENTER",entry.frame,"CENTER",x,5*scale)
    r.tex:SetAlpha(.64+.20*(.5+.5*math.sin(s.clock*2+i)))
    rotate(r.tex,r.angle)
   end
@@ -60,7 +60,7 @@ local function Make(entry)
      p.angle=p.angle+p.speed*dt
      p.x=p.x+p.vx*dt
      local y=p.side*(p.ry+math.sin(p.angle)*p.amp)
-     p.tex:ClearAllPoints();p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x,y)
+     p.tex:ClearAllPoints();p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x,y*scale)
      p.tex:SetAlpha(p.alpha*math.min(1,t/.15,(1-t)/.3))
     end
    end
@@ -71,12 +71,12 @@ local function Make(entry)
    for _,p in ipairs(sparks)do
     if not p.active then
      p.active=true;p.life=0;p.duration=rand(.7,1.6)
-     p.x=rand(-w*.54,w*.54);p.vx=rand(-15,15)
+     p.x=rand(-w*.54,w*.54);p.vx=rand(-15,15)*scale
      p.side=math.random(2)==1 and -1 or 1
      p.ry=rand(12,21);p.amp=rand(3,8)
      p.angle=rand(0,TAU);p.speed=rand(1,2.7)
      p.alpha=rand(.35,.75)
-     local z=rand(1.5,3.5);p.tex:SetSize(z,z)
+     local z=rand(1.5,3.5)*scale;p.tex:SetSize(z,z)
      break
     end
    end
