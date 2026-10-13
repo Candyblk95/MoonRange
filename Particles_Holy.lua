@@ -24,13 +24,13 @@ local function Make(entry)
  local state={holder=holder,entry=entry,groups={},acc={0,0,0,0}}
  local definitions={
   -- original front fragments, spread along the nameplate instead of a cast front
-  {count=36,rate=.08,per=2,minSize=4,maxSize=15,minLife=.4,maxLife=.9,alpha=.78,kind="front"},
+  {count=28,rate=.12,per=1,minSize=3,maxSize=9,minLife=.4,maxLife=.9,alpha=.58,kind="front"},
   -- original ambient fragments
-  {count=55,rate=.12,per=3,minSize=3,maxSize=13,minLife=.6,maxLife=1.4,alpha=.56,kind="ambient"},
+  {count=42,rate=.16,per=2,minSize=3,maxSize=8,minLife=.6,maxLife=1.4,alpha=.43,kind="ambient"},
   -- original fine golden glow particles
-  {count=45,rate=.035,per=2,minSize=5,maxSize=9,minLife=.35,maxLife=.7,alpha=.78,kind="glow"},
+  {count=36,rate=.055,per=2,minSize=3,maxSize=6,minLife=.35,maxLife=.7,alpha=.60,kind="glow"},
   -- additional Holy stars: subtle, slow twinkling near the frame
-  {count=16,rate=.24,per=1,minSize=9,maxSize=15,minLife=1.0,maxLife=1.9,alpha=.62,kind="star"},
+  {count=12,rate=.34,per=1,minSize=5,maxSize=9,minLife=1.0,maxLife=1.9,alpha=.40,kind="star"},
  }
  for gi,d in ipairs(definitions) do
   local group={def=d,parts={}}
