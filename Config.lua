@@ -142,13 +142,13 @@ local function ToggleTest()
   root:SetScript("OnUpdate",function(self,dt)
    if not MR.db then return end
    local d=MR.db
-   local theme=(d.theme=="Herbalism" or d.theme=="Shadow" or d.theme=="Arcaneum" or d.theme=="Earth" or d.theme=="Frost" or d.theme=="Ice") and d.theme or "Moon"
+   local theme=(d.theme=="Herbalism" or d.theme=="Shadow" or d.theme=="Arcaneum" or d.theme=="Earth" or d.theme=="Frost" or d.theme=="Ice" or d.theme=="Holy") and d.theme or "Moon"
    if theme~=self.lastTheme then
     self.lastTheme=theme
     self.contour:SetShown(theme=="Frost" or theme=="Ice")
     if theme=="Frost" or theme=="Ice" then self.contour:SetTexture(MR.path.."frost\\"..(theme=="Frost" and "Contour_Frost" or "Contour_Ice")..".tga") end
-    self.background:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or (theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme).."\\"..((theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or "BG_Herbalism"))..".tga")
-    self.border:SetTexture(MR.path..((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme).."\\"..(theme=="Moon" and "Frame_Moon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or theme=="Earth" and "Frame_Earth" or (theme=="Frost" or theme=="Ice") and "Frame_Frost" or "Frame_Herbalism_01")..".tga")
+    self.background:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or (theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme).."\\"..((theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or "BG_Herbalism"))..".tga")
+    self.border:SetTexture(MR.path..((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme).."\\"..(theme=="Moon" and "Frame_Moon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or theme=="Earth" and "Frame_Earth" or (theme=="Frost" or theme=="Ice") and "Frame_Frost" or theme=="Holy" and "Frame_Holy" or "Frame_Herbalism_01")..".tga")
     self.hp:SetStatusBarColor((theme=="Frost" or theme=="Ice") and .67 or theme=="Moon" and .20 or theme=="Shadow" and .50 or theme=="Arcaneum" and .52 or .35,(theme=="Frost" or theme=="Ice") and .79 or theme=="Moon" and .50 or theme=="Shadow" and .22 or theme=="Arcaneum" and .43 or .55,(theme=="Frost" or theme=="Ice") and .88 or theme=="Moon" and .80 or theme=="Shadow" and .66 or theme=="Arcaneum" and .79 or .25)
    end
    self.clock=(self.clock+dt)%3
@@ -234,7 +234,7 @@ local function Build()
  local nameplate=MakePage("Nameplates")
  Section(nameplate,"- Nameplate Atelier",-8)
  Font(nameplate,"Theme",17,30,-55,355,C.ice)
- local themeRefresh=Dropdown(nameplate,"ThemePage",30,-80,290,{{label="Moon"},{label="Herbalism"},{label="Shadow"},{label="Arcaneum"},{label="Earth"},{label="Frost"},{label="Ice"}},function()return MR.db.theme end,function(v)MR.db.theme=v end)
+ local themeRefresh=Dropdown(nameplate,"ThemePage",30,-80,290,{{label="Moon"},{label="Herbalism"},{label="Shadow"},{label="Arcaneum"},{label="Earth"},{label="Frost"},{label="Ice"},{label="Holy"}},function()return MR.db.theme end,function(v)MR.db.theme=v end)
  Register(themeRefresh)
  Font(nameplate,"Font",17,30,-139,355,C.ice)
  local fonts={{label="Friz Quadrata",value="FRIZQT"},{label="Arial Narrow",value="ARIAL"},{label="Morpheus",value="MORPHEUS"},{label="Skurri",value="SKURRI"}}
@@ -257,22 +257,23 @@ local function Build()
  local mode="hostile"
  local modes={{label="Hostile NPC",value="hostile"},{label="Neutral NPC",value="neutral"},{label="Friendly Player",value="friendly"},{label="Hostile Player",value="enemy"}}
  Register(Dropdown(nameplate,"PreviewMode",30,-298,290,modes,function()return mode end,function(v)mode=v end))
- local colors={Frost={hostile={213/255,108/255,131/255},neutral={113/255,158/255,240/255},friendly={105/255,216/255,206/255},enemy={230/255,195/255,173/255}},Ice={hostile={150/255,61/255,92/255},neutral={52/255,84/255,163/255},friendly={35/255,127/255,133/255},enemy={169/255,119/255,104/255}},Earth={hostile={166/255,76/255,56/255},neutral={197/255,160/255,106/255},friendly={93/255,140/255,99/255},enemy={217/255,129/255,61/255}},Arcaneum={hostile={.78,.33,.69},neutral={.52,.43,.79},friendly={.37,.72,.83},enemy={.91,.56,.34}},Shadow={hostile={193/255,61/255,130/255},neutral={134/255,112/255,200/255},friendly={66/255,169/255,167/255},enemy={225/255,107/255,80/255}},Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},Moon={hostile={.70,.09,.39},neutral={.10,.40,.68},friendly={.45,.22,.65},enemy={.78,.30,.34}}}
+ local colors={Holy={hostile={.92,.52,.38},neutral={.89,.76,.44},friendly={.52,.79,.69},enemy={.76,.54,.84}},Frost={hostile={213/255,108/255,131/255},neutral={113/255,158/255,240/255},friendly={105/255,216/255,206/255},enemy={230/255,195/255,173/255}},Ice={hostile={150/255,61/255,92/255},neutral={52/255,84/255,163/255},friendly={35/255,127/255,133/255},enemy={169/255,119/255,104/255}},Earth={hostile={166/255,76/255,56/255},neutral={197/255,160/255,106/255},friendly={93/255,140/255,99/255},enemy={217/255,129/255,61/255}},Arcaneum={hostile={.78,.33,.69},neutral={.52,.43,.79},friendly={.37,.72,.83},enemy={.91,.56,.34}},Shadow={hostile={193/255,61/255,130/255},neutral={134/255,112/255,200/255},friendly={66/255,169/255,167/255},enemy={225/255,107/255,80/255}},Herbalism={hostile={117/255,70/255,67/255},neutral={190/255,147/255,57/255},friendly={62/255,102/255,65/255},enemy={225/255,141/255,1/255}},Moon={hostile={.70,.09,.39},neutral={.10,.40,.68},friendly={.45,.22,.65},enemy={.78,.30,.34}}}
  local fontPaths={FRIZQT="Fonts\\FRIZQT__.TTF",ARIAL="Fonts\\FRIZQT__.TTF",MORPHEUS="Fonts\\MORPHEUS.TTF",SKURRI="Fonts\\SKURRI.TTF"}
  local lastTheme,lastFont,lastNameSize,lastLevelSize
  local function UpdatePreview()
   if not MR.db then return end
-  local d=MR.db;local theme=(d.theme=="Herbalism" or d.theme=="Shadow" or d.theme=="Arcaneum" or d.theme=="Earth" or d.theme=="Frost" or d.theme=="Ice") and d.theme or "Moon"
+  local d=MR.db;local theme=(d.theme=="Herbalism" or d.theme=="Shadow" or d.theme=="Arcaneum" or d.theme=="Earth" or d.theme=="Frost" or d.theme=="Ice" or d.theme=="Holy") and d.theme or "Moon"
   if theme~=lastTheme then
    lastTheme=theme
    contour:SetShown(theme=="Frost" or theme=="Ice")
    if theme=="Frost" or theme=="Ice" then contour:SetTexture(MR.path.."frost\\"..(theme=="Frost" and "Contour_Frost" or "Contour_Ice")..".tga") end
-   bg:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or (theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme).."\\"..((theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or "BG_Herbalism"))..".tga")
-   border:SetTexture(MR.path..((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme).."\\"..(theme=="Moon" and "Frame_NoMoon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or theme=="Earth" and "Frame_Earth" or (theme=="Frost" or theme=="Ice") and "Frame_Frost" or "Frame_Herbalism_01")..".tga")
-   fill:SetTexture(MR.path..((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme).."\\"..(theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or "Fill_Herbalism")..".tga")
+   bg:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or (theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme).."\\"..((theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or "BG_Herbalism"))..".tga")
+   border:SetTexture(MR.path..((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme).."\\"..(theme=="Moon" and "Frame_NoMoon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or theme=="Earth" and "Frame_Earth" or (theme=="Frost" or theme=="Ice") and "Frame_Frost" or theme=="Holy" and "Frame_Holy" or "Frame_Herbalism_01")..".tga")
+   fill:SetTexture(MR.path..((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme).."\\"..(theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or "Fill_Herbalism")..".tga")
    if theme=="Moon" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("ADD");fill:SetAlpha(.45)
    elseif theme=="Arcaneum" then fill:SetTexCoord(182/1024,850/1024,201/512,271/512);fill:SetBlendMode("ADD");fill:SetAlpha(.65)
     elseif theme=="Frost" or theme=="Ice" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.35)
+    elseif theme=="Holy" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.40)
     elseif theme=="Earth" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.35)
      elseif theme=="Shadow" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.32)
    else fill:SetTexCoord(144/1024,905/1024,175/512,305/512);fill:SetBlendMode("BLEND");fill:SetAlpha(.20)end
