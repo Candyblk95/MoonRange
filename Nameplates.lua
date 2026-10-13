@@ -355,7 +355,7 @@ local function Update(unit, plate)
  local selected = UnitExists("target") and UnitIsUnit(unit, "target")
  local inRange = selected and MR:RangeState()
  if MR.ArcaneumFX then MR.ArcaneumFX:SetActive(entry,entry.theme=="Arcaneum" and selected==true) end
- if MR.ShadowFX then MR.ShadowFX:SetActive(entry,entry.theme=="Shadow" and selected==true) end
+ if MR.ShadowFX then MR.ShadowFX:SetActive(entry,entry.theme=="Shadow" and selected==true and inRange==true) end
  if entry.theme=="Arcaneum" then
   if entry.filename~="Frame_Arcaneum_Light" then
    entry.filename="Frame_Arcaneum_Light"
