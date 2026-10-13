@@ -24,13 +24,6 @@ local function Make(entry)
   t:SetAlpha(.36)
   runes[i]={tex=t,angle=rand(0,TAU),speed=(i==1 and .42 or -.35)}
  end
- local back=holder:CreateTexture(nil,"ARTWORK",nil,0)
- back:SetTexture(MR.path.."arcane\\Rune_Back.tga")
- back:SetBlendMode("ADD")
- back:SetVertexColor(.42,.23,.94)
- back:SetSize(165,62)
- back:SetPoint("CENTER",entry.frame,"CENTER",0,0)
- back:SetAlpha(.13)
  local sparks={}
  for i=1,38 do
   local t=holder:CreateTexture(nil,"ARTWORK",nil,2)
@@ -40,14 +33,13 @@ local function Make(entry)
   t:SetAlpha(0)
   sparks[i]={tex=t,active=false}
  end
- local s={holder=holder,runes=runes,back=back,sparks=sparks,active=false,clock=0,spawn=0}
+ local s={holder=holder,runes=runes,sparks=sparks,active=false,clock=0,spawn=0}
  holder:SetScript("OnUpdate",function(_,dt)
   if not s.active then return end
   dt=math.min(dt,.05)
   s.clock=s.clock+dt
   local w=entry.lastWidth or entry.frame:GetWidth()
   if not w or w<20 then w=170 end
-  back:SetAlpha(.09+.09*(.5+.5*math.sin(s.clock*1.5)))
   for i,r in ipairs(runes)do
    r.angle=r.angle+r.speed*dt
    local x=(i==1 and -1 or 1)*(w*.47)
