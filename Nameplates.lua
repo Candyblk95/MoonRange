@@ -1,6 +1,6 @@
 local _, MR = ...
 local active, elapsed = {}, 0
-local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true,Nature=true,Aim=true,Alliance=true,Arcane=true}
+local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true,Nature=true,Aim=true,Alliance=true,Arcane=true,Arctic=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
@@ -78,6 +78,11 @@ local function SetMoonColour(entry, unit)
   elseif colour==PURPLE then colour={105/255,216/255,206/255,1} -- friendly: turquoise
   elseif colour==PINK then colour={213/255,108/255,131/255,1} -- hostile mob: dusty rose #BA9D9B
   else colour={230/255,195/255,173/255,1} end -- hostile player: peach #E6C3AD
+ elseif entry.theme=="Arctic" then
+  if colour==BLUE then colour={.52,.72,.84,1}
+  elseif colour==PURPLE then colour={.39,.78,.76,1}
+  elseif colour==PINK then colour={.74,.37,.52,1}
+  else colour={.63,.50,.73,1} end
  elseif entry.theme=="Ice" then
   if colour==BLUE then colour={52/255,84/255,163/255,1} -- neutral: previous hostile blue
   elseif colour==PURPLE then colour={35/255,127/255,133/255,1} -- friendly: deep turquoise
@@ -125,7 +130,7 @@ local function SetMoonColour(entry, unit)
  -- Tint the Herbalism artwork too: at 88% opacity its original green
  -- otherwise masks the unit-type colour on the Blizzard fill below.
  if entry.shimmer then
-  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" or entry.theme=="Holy" or entry.theme=="Nature" or entry.theme=="Alliance" or entry.theme=="Arcane" then entry.shimmer:SetVertexColor(unpack(colour))
+  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" or entry.theme=="Holy" or entry.theme=="Nature" or entry.theme=="Alliance" or entry.theme=="Arcane" or entry.theme=="Arctic" then entry.shimmer:SetVertexColor(unpack(colour))
   else entry.shimmer:SetVertexColor(1,1,1,1) end
  end
 end
@@ -226,6 +231,48 @@ local function Setup(plate)
   UpdateFrostBloom()
  end)
 
+ -- Arctic selected-target frost and light grow outward once, without alpha fading.
+ local arcticBloom=CreateFrame("Frame",nil,art)
+ arcticBloom:SetAllPoints(art)
+ arcticBloom:SetFrameLevel(art:GetFrameLevel())
+ arcticBloom:EnableMouse(false)
+ local arcticFrost=arcticBloom:CreateTexture(nil,"ARTWORK",nil,1)
+ arcticFrost:SetTexture(Asset("arctic","FrostBG_Arctic"))
+ arcticFrost:SetBlendMode("BLEND")
+ arcticFrost:SetAlpha(1)
+ arcticFrost:SetPoint("CENTER",art,"CENTER",0,0)
+ local arcticLight=arcticBloom:CreateTexture(nil,"ARTWORK",nil,2)
+ arcticLight:SetTexture(Asset("arctic","Frame_Arctic_Light"))
+ arcticLight:SetBlendMode("BLEND")
+ arcticLight:SetAlpha(1)
+ arcticLight:SetPoint("CENTER",art,"CENTER",0,0)
+ arcticBloom:Hide()
+ local arcticBloomTime=0
+ local function UpdateArcticBloom()
+  local t=math.min(1,arcticBloomTime/2.4)
+  local eased=1-(1-t)^3
+  local w,h=art:GetSize()
+  arcticFrost:SetSize(w*(.82+.34*eased),h*(.82+.34*eased))
+  arcticLight:SetSize(w*(.86+.22*eased),h*(.86+.22*eased))
+ end
+ local function SetArcticBloom(active)
+  if active then
+   if not arcticBloom:IsShown() then
+    arcticBloomTime=0
+    UpdateArcticBloom()
+    arcticBloom:Show()
+   end
+  else arcticBloom:Hide() end
+ end
+ arcticBloom:SetScript("OnUpdate",function(_,dt)
+  if arcticBloomTime>=2.4 then return end
+  arcticBloomTime=math.min(2.4,arcticBloomTime+math.min(dt,.1))
+  UpdateArcticBloom()
+ end)
+ art:HookScript("OnShow",function()
+  if arcticBloom:IsShown() then arcticBloomTime=0;UpdateArcticBloom() end
+ end)
+
  local background = art:CreateTexture(nil, "BACKGROUND", nil, 0)
  background:SetAllPoints(art)
  background:SetTexture(Asset("Moon","BG_Moon"))
@@ -303,7 +350,7 @@ local function Setup(plate)
   allianceSapphireGlow:SetAlpha(.10+.24*wave)
  end)
 
- local entry = {frame=art, foreground=foreground, border=border, background=background, frostBackdrop=frostBackdrop, resetFrostBloom=function() frostBloomTime=0;UpdateFrostBloom() end, shimmer=shimmer,
+ local entry = {frame=art, foreground=foreground, border=border, background=background, frostBackdrop=frostBackdrop, arcticBloom=arcticBloom, setArcticBloom=SetArcticBloom, resetFrostBloom=function() frostBloomTime=0;UpdateFrostBloom() end, shimmer=shimmer,
                 allianceAccents=allianceAccents, arcaneRuneBack=arcaneRuneBack,
                 light=light, flame=flame, contour=contour, bar=bar, filename="", unit=nil}
  entry.castBar=FindCastBar(plate.UnitFrame)
@@ -376,9 +423,9 @@ local function ApplyTheme(entry)
   if theme=="Frost" or theme=="Ice" then entry.resetFrostBloom() end
  end
  if theme=="Frost" or theme=="Ice" then entry.contour:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost" or "Contour_Ice")) end
- entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or theme=="Alliance" and "BG_Alliance" or theme=="Arcane" and "BG_Arcane" or "BG_Herbalism"))
+ entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or theme=="Alliance" and "BG_Alliance" or theme=="Arctic" and "BG_Arctic" or theme=="Arcane" and "BG_Arcane" or "BG_Herbalism"))
  if entry.shimmer then
-  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Nature" and "nature" or theme=="Arcane" and "Moon" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or theme=="Nature" and "Fill_Nature" or theme=="Alliance" and "Fill_Alliance" or theme=="Arcane" and "Fill_Moon" or theme=="Aim" and "Fill_Aim_Neuteral_Mob" or "Fill_Herbalism"))
+  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Nature" and "nature" or theme=="Arcane" and "Moon" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or theme=="Nature" and "Fill_Nature" or theme=="Alliance" and "Fill_Alliance" or theme=="Arctic" and "Fill_Arctic" or theme=="Arcane" and "Fill_Moon" or theme=="Aim" and "Fill_Aim_Neuteral_Mob" or "Fill_Herbalism"))
   if theme=="Moon" then
    entry.shimmer:SetBlendMode("ADD")
    entry.shimmer:SetAlpha(0.45)
@@ -398,6 +445,10 @@ local function ApplyTheme(entry)
   elseif theme=="Holy" then
    entry.shimmer:SetBlendMode("BLEND")
    entry.shimmer:SetAlpha(.40)
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  elseif theme=="Arctic" then
+   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(.45)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   elseif theme=="Arcane" then
    entry.shimmer:SetBlendMode("ADD")
@@ -443,6 +494,10 @@ local function ApplyTheme(entry)
   entry.light:SetAlpha(1)
  elseif theme=="Holy" then
   entry.light:SetTexture(Asset("holy","Light_Holy"))
+  entry.light:SetBlendMode("BLEND")
+  entry.light:SetAlpha(1)
+ elseif theme=="Arctic" then
+  entry.light:SetTexture(Asset("arctic","Frame_Arctic_Light"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Arcane" then
@@ -526,6 +581,7 @@ local function Update(unit, plate)
    if MR.EarthFX then MR.EarthFX:SetActive(entry,false) end
   if entry.shimmer then entry.shimmer:Hide() end
   if entry.allianceAccents then entry.allianceAccents:Hide() end
+  if entry.setArcticBloom then entry.setArcticBloom(false) end
   if entry.arcaneRuneBack then entry.arcaneRuneBack:Hide() end
   if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
   if entry.blizzardLevel then entry.blizzardLevel:SetAlpha(1) end
@@ -556,6 +612,7 @@ local function Update(unit, plate)
   if entry.theme=="Alliance" and selected==true then entry.allianceAccents:Show()
   else entry.allianceAccents:Hide() end
  end
+ if entry.setArcticBloom then entry.setArcticBloom(entry.theme=="Arctic" and selected==true) end
  local inRange = selected and MR:RangeState()
  if MR.ArcaneumFX then MR.ArcaneumFX:SetActive(entry,entry.theme=="Arcaneum" and selected==true) end
  if MR.ShadowFX then MR.ShadowFX:SetActive(entry,entry.theme=="Shadow" and selected==true and inRange==true) end
@@ -588,6 +645,11 @@ local function Update(unit, plate)
   if entry.filename~="Frame_Holy" then
    entry.filename="Frame_Holy"
    entry.border:SetTexture(Asset("holy","Frame_Holy"))
+  end
+ elseif entry.theme=="Arctic" then
+  if entry.filename~="Frame_Arctic" then
+   entry.filename="Frame_Arctic"
+   entry.border:SetTexture(Asset("arctic","Frame_Arctic"))
   end
  elseif entry.theme=="Arcane" then
   if entry.filename~="Frame_Arcane" then
@@ -704,6 +766,7 @@ function MR:StartNameplates()
     if MR.EarthFX then MR.EarthFX:SetActive(e,false) end
     if e.shimmer then e.shimmer:Hide() end
     if e.allianceAccents then e.allianceAccents:Hide() end
+    if e.setArcticBloom then e.setArcticBloom(false) end
    end
    active[unit] = nil
   elseif event == "PLAYER_TARGET_CHANGED" then
