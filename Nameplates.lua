@@ -582,6 +582,7 @@ local function Update(unit, plate)
   if MR.HerbalismFX then MR.HerbalismFX:SetActive(entry,false) end
   if MR.MoonFX then MR.MoonFX:SetActive(entry,false) end
   if MR.FrostFX then MR.FrostFX:SetActive(entry,nil) end
+  if MR.ArcticFX then MR.ArcticFX:SetActive(entry,false) end
   if MR.HolyFX then MR.HolyFX:SetActive(entry,false) end
     if MR.NatureFX then MR.NatureFX:SetActive(entry,false) end
   if MR.AimFX then MR.AimFX:SetActive(entry,false) end
@@ -628,6 +629,7 @@ local function Update(unit, plate)
  if MR.MoonFX then MR.MoonFX:SetActive(entry,entry.theme=="Moon" and selected==true) end
  if MR.EarthFX then MR.EarthFX:SetActive(entry,entry.theme=="Earth" and selected==true) end
  if MR.FrostFX then MR.FrostFX:SetActive(entry,selected==true and (entry.theme=="Frost" or entry.theme=="Ice") and entry.theme or nil) end
+ if MR.ArcticFX then MR.ArcticFX:SetActive(entry,entry.theme=="Arctic" and selected==true) end
  if MR.HolyFX then MR.HolyFX:SetActive(entry,entry.theme=="Holy" and selected==true) end
  if MR.NatureFX then MR.NatureFX:SetActive(entry,entry.theme=="Nature" and selected==true) end
  if MR.AimFX then MR.AimFX:SetActive(entry,entry.theme=="Aim" and selected==true) end
@@ -767,6 +769,7 @@ function MR:StartNameplates()
     if MR.HerbalismFX then MR.HerbalismFX:SetActive(e,false) end
     if MR.MoonFX then MR.MoonFX:SetActive(e,false) end
     if MR.FrostFX then MR.FrostFX:SetActive(e,nil) end
+    if MR.ArcticFX then MR.ArcticFX:SetActive(e,false) end
     if MR.HolyFX then MR.HolyFX:SetActive(e,false) end
     if MR.NatureFX then MR.NatureFX:SetActive(e,false) end
     if MR.AimFX then MR.AimFX:SetActive(e,false) end
