@@ -6,5 +6,6 @@
 Core.lua
 Particles_Arcaneum.lua
 Particles_Shadow.lua
+Particles_Herbalism.lua
 Nameplates.lua
 Config.lua
