@@ -17,7 +17,7 @@ local function Make(entry)
  local holder=CreateFrame("Frame",nil,entry.foreground)
  holder:SetAllPoints(entry.frame)
  -- Scale the entire particle layer with the artwork, preserving tuned offsets and sizes.
- holder:SetScale(1)
+ holder:SetScale(entry.particleScale or 1)
  entry.particleScaleFrames=entry.particleScaleFrames or {}
  entry.particleScaleFrames[#entry.particleScaleFrames+1]=holder
  holder:SetFrameLevel(entry.foreground:GetFrameLevel()+1)
