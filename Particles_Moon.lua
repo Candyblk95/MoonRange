@@ -30,31 +30,34 @@ local function make(entry)
   if not s.active then return end
   dt=math.min(dt,.05)
   local w=entry.lastWidth or 190
+  -- Wide elliptical paths let cyan fragments pass above and below the frame.
   for _,p in ipairs(misc) do
    if p.life>0 then
     p.life=p.life-dt
     if p.life<=0 then p.tex:SetAlpha(0)
     else
-     p.x=p.x+p.vx*dt
-     p.y=p.y+p.vy*dt+math.sin(p.phase+p.life*4)*dt*2
+     p.theta=p.theta+p.speed*dt
+     local x=math.cos(p.theta)*p.rx
+     local y=math.sin(p.theta)*p.ry+math.sin(p.phase+p.life*3)*2
      p.tex:ClearAllPoints()
-     p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x,p.y)
+     p.tex:SetPoint("CENTER",entry.frame,"CENTER",x,y)
      p.tex:SetAlpha(p.alpha*math.min(1,p.life/.3))
     end
    end
   end
   s.miscClock=s.miscClock+dt
-  if s.miscClock>=.065 then
+  if s.miscClock>=.055 then
    s.miscClock=0
    for _,p in ipairs(misc) do
     if p.life<=0 then
-     p.life=rand(.55,1.25)
-     p.x=rand(-w*.46,w*.46)
-     p.y=rand(-13,13)
-     p.vx=rand(-9,9);p.vy=rand(-9,12)
-     p.phase=rand(0,6.283)
-     p.alpha=rand(.30,.65)
-     local size=rand(4,10);p.tex:SetSize(size,size)
+     p.life=rand(1.5,3.2)
+     p.theta=rand(0,math.pi*2)
+     p.speed=rand(.7,1.5)*(math.random(2)==1 and 1 or -1)
+     p.rx=rand(w*.30,w*.53)
+     p.ry=rand(15,25)
+     p.phase=rand(0,math.pi*2)
+     p.alpha=rand(.58,.95)
+     local size=rand(6,13);p.tex:SetSize(size,size)
      break
     end
    end
@@ -67,7 +70,7 @@ local function make(entry)
      p.x=p.x+p.vx*dt;p.y=p.y+p.vy*dt
      p.tex:ClearAllPoints()
      p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x,p.y)
-     p.tex:SetAlpha(.55*math.min(1,p.life/.14))
+     p.tex:SetAlpha(.75*math.min(1,p.life/.14))
     end
    end
   end
@@ -78,9 +81,9 @@ local function make(entry)
     if p.life<=0 then
      p.life=rand(.2,.45)
      p.x=rand(-w*.45,w*.45)
-     p.y=rand(-10,10)
+     p.y=(math.random(2)==1 and 1 or -1)*rand(13,23)
      p.vx=rand(-6,6);p.vy=rand(-7,9)
-     local size=rand(3,6);p.tex:SetSize(size,size)
+     local size=rand(4,8);p.tex:SetSize(size,size)
      break
     end
    end
