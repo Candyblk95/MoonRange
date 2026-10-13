@@ -90,26 +90,7 @@ local function Make(entry)
   end
   s.ashAcc=s.ashAcc+dt
   while s.ashAcc>=.05 do s.ashAcc=s.ashAcc-.05;SpawnAsh(w,h,1) end
-  for _,p in ipairs(glows) do
-   if p.active then
-    p.life=p.life+dt
-    local age=p.life/p.maxLife
-    if age>=1 then p.active=false;p.tex:SetAlpha(0)
-    else
-     p.vy=p.vy*.90
-     p.y=p.y+p.vy*dt+math.sin(p.life*10+p.phase)*.3
-     p.tex:SetSize(p.size*scale,p.size*scale)
-     p.tex:ClearAllPoints();p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x*scale,p.y*scale)
-     local env=age<.2 and age/.2 or age<.8 and 1 or (1-age)/.2
-     p.tex:SetAlpha(math.max(0,env)*.55)
-    end
-   end
-  end
-  s.glowAcc=s.glowAcc+dt
-  while s.glowAcc>=.02 do
-   s.glowAcc=s.glowAcc-.02
-   for i=1,math.random(2,4) do SpawnGlow(w,h,progress) end
-  end
+
  end)
  return s
 end
