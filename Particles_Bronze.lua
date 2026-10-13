@@ -114,45 +114,7 @@ local function Make(entry)
    s.sandAcc=s.sandAcc-.009
    for i=1,math.random(3,5) do SpawnSand(left,h) end
   end
-  for _,p in ipairs(tip) do
-   if p.active then
-    p.life=p.life+dt
-    local t=p.life/p.maxLife
-    if t>=1 then p.active=false;p.tex:SetAlpha(0)
-    else
-     p.vy=p.vy-80*dt;p.x=p.x+p.vx*dt;p.y=p.y+p.vy*dt
-     p.rot=p.rot+p.spin*dt;rotate(p.tex,p.rot)
-     p.tex:SetSize(p.texSize*scale,p.texSize*scale)
-     p.tex:ClearAllPoints();p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x*scale,p.y*scale)
-     p.tex:SetAlpha((t<.55 and 1 or math.max(0,(1-t)/.45))*.85)
-    end
-   end
-  end
-  if progress>.02 and progress<.87 then
-   s.tipAcc=s.tipAcc+dt
-   while s.tipAcc>=.027 do s.tipAcc=s.tipAcc-.027;SpawnTip(left+width*progress,h) end
-  else s.tipAcc=0 end
-  for _,p in ipairs(glow) do
-   if p.active then
-    p.life=p.life+dt
-    local t=p.life/p.maxLife
-    if t>=1 then p.active=false;p.tex:SetAlpha(0)
-    else
-     p.y=p.y+p.vy*dt;p.vy=p.vy*.88
-     p.tex:SetSize(p.texSize*scale,p.texSize*scale)
-     p.tex:ClearAllPoints();p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x*scale,p.y*scale)
-     local env=t<.25 and t/.25 or t<.75 and 1 or (1-t)/.25
-     p.tex:SetAlpha(math.max(0,env)*.60)
-    end
-   end
-  end
-  if progress>.02 and progress<.87 then
-   s.glowAcc=s.glowAcc+dt
-   while s.glowAcc>=.020 do
-    s.glowAcc=s.glowAcc-.020
-    for i=1,math.random(2,4) do SpawnGlow(left+width*progress,h) end
-   end
-  else s.glowAcc=0 end
+
  end)
  return s
 end
