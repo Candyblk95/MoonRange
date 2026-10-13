@@ -316,6 +316,7 @@ local function Update(unit, plate)
  if object or not MR.db.enabled then
   entry.frame:Hide();entry.foreground:Hide();entry.textLayer:Hide()
   if MR.ArcaneumFX then MR.ArcaneumFX:SetActive(entry,false) end
+  if MR.ShadowFX then MR.ShadowFX:SetActive(entry,false) end
   if entry.shimmer then entry.shimmer:Hide() end
   if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
   if entry.blizzardLevel then entry.blizzardLevel:SetAlpha(1) end
@@ -341,6 +342,7 @@ local function Update(unit, plate)
  local selected = UnitExists("target") and UnitIsUnit(unit, "target")
  local inRange = selected and MR:RangeState()
  if MR.ArcaneumFX then MR.ArcaneumFX:SetActive(entry,entry.theme=="Arcaneum" and selected==true) end
+ if MR.ShadowFX then MR.ShadowFX:SetActive(entry,entry.theme=="Shadow" and selected==true) end
  if entry.theme=="Arcaneum" then
   if entry.filename~="Frame_Arcaneum_Light" then
    entry.filename="Frame_Arcaneum_Light"
@@ -429,6 +431,7 @@ function MR:StartNameplates()
     local e=plate.moonRangeArt
     e.frame:Hide();e.foreground:Hide();e.textLayer:Hide()
     if MR.ArcaneumFX then MR.ArcaneumFX:SetActive(e,false) end
+    if MR.ShadowFX then MR.ShadowFX:SetActive(e,false) end
     if e.shimmer then e.shimmer:Hide() end
    end
    active[unit] = nil
