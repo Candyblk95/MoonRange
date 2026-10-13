@@ -102,6 +102,10 @@ end
 local function Make(entry)
  local holder=CreateFrame("Frame",nil,entry.frame)
  holder:SetAllPoints(entry.frame)
+ -- Scale the entire particle layer with the artwork, preserving tuned offsets and sizes.
+ holder:SetScale(1)
+ entry.particleScaleFrames=entry.particleScaleFrames or {}
+ entry.particleScaleFrames[#entry.particleScaleFrames+1]=holder
  holder:SetFrameLevel(math.max(0,entry.frame:GetFrameLevel()-1))
  holder:EnableMouse(false);holder:Hide()
  local state={holder=holder,entry=entry,mists={},parts={},spawn=0}
