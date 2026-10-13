@@ -1,6 +1,6 @@
 local _, MR = ...
 local active, elapsed = {}, 0
-local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true,Nature=true,Aim=true,Alliance=true,Arcane=true,Arctic=true,Bronze=true}
+local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true,Nature=true,Aim=true,Alliance=true,Arcane=true,Arctic=true,Bronze=true,Chaos=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
@@ -78,6 +78,11 @@ local function SetMoonColour(entry, unit)
   elseif colour==PURPLE then colour={105/255,216/255,206/255,1} -- friendly: turquoise
   elseif colour==PINK then colour={213/255,108/255,131/255,1} -- hostile mob: dusty rose #BA9D9B
   else colour={230/255,195/255,173/255,1} end -- hostile player: peach #E6C3AD
+ elseif entry.theme=="Chaos" then
+   if colour==BLUE then colour={.62,.78,.30,1}
+   elseif colour==PURPLE then colour={.35,.77,.57,1}
+   elseif colour==PINK then colour={.78,.36,.56,1}
+   else colour={.63,.43,.84,1} end
  elseif entry.theme=="Bronze" then
   if colour==BLUE then colour={.82,.63,.32,1} -- bronze gold neutral
   elseif colour==PURPLE then colour={.38,.69,.48,1} -- emerald friendly
@@ -135,7 +140,7 @@ local function SetMoonColour(entry, unit)
  -- Tint the Herbalism artwork too: at 88% opacity its original green
  -- otherwise masks the unit-type colour on the Blizzard fill below.
  if entry.shimmer then
-  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" or entry.theme=="Holy" or entry.theme=="Nature" or entry.theme=="Alliance" or entry.theme=="Arcane" or entry.theme=="Arctic" or entry.theme=="Bronze" then entry.shimmer:SetVertexColor(unpack(colour))
+  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" or entry.theme=="Holy" or entry.theme=="Nature" or entry.theme=="Alliance" or entry.theme=="Arcane" or entry.theme=="Arctic" or entry.theme=="Bronze" or entry.theme=="Chaos" then entry.shimmer:SetVertexColor(unpack(colour))
   else entry.shimmer:SetVertexColor(1,1,1,1) end
  end
 end
@@ -479,9 +484,9 @@ local function ApplyTheme(entry)
   if theme=="Frost" or theme=="Ice" then entry.resetFrostBloom() end
  end
  if theme=="Frost" or theme=="Ice" then entry.contour:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost" or "Contour_Ice")) end
- entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme=="Arctic" and "arctic" or theme=="Bronze" and "bronze" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or theme=="Alliance" and "BG_Alliance" or theme=="Arctic" and "BG_Arctic" or theme=="Bronze" and "BG_Bronze" or theme=="Arcane" and "BG_Arcane" or "BG_Herbalism"))
+ entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme=="Arctic" and "arctic" or theme=="Bronze" and "bronze" or theme=="Chaos" and "chaos" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or theme=="Alliance" and "BG_Alliance" or theme=="Arctic" and "BG_Arctic" or theme=="Bronze" and "BG_Bronze" or theme=="Chaos" and "BG_Chaos" or theme=="Arcane" and "BG_Arcane" or "BG_Herbalism"))
  if entry.shimmer then
-  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Nature" and "nature" or theme=="Arctic" and "arctic" or theme=="Bronze" and "bronze" or theme=="Arcane" and "Moon" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or theme=="Nature" and "Fill_Nature" or theme=="Alliance" and "Fill_Alliance" or theme=="Arctic" and "Fill_Arctic" or theme=="Bronze" and "Fill_Bronze" or theme=="Arcane" and "Fill_Moon" or theme=="Aim" and "Fill_Aim_Neuteral_Mob" or "Fill_Herbalism"))
+  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Nature" and "nature" or theme=="Arctic" and "arctic" or theme=="Bronze" and "bronze" or theme=="Chaos" and "chaos" or theme=="Arcane" and "Moon" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or theme=="Nature" and "Fill_Nature" or theme=="Alliance" and "Fill_Alliance" or theme=="Arctic" and "Fill_Arctic" or theme=="Bronze" and "Fill_Bronze" or theme=="Chaos" and "Fill_Chaos" or theme=="Arcane" and "Fill_Moon" or theme=="Aim" and "Fill_Aim_Neuteral_Mob" or "Fill_Herbalism"))
   if theme=="Moon" then
    entry.shimmer:SetBlendMode("ADD")
    entry.shimmer:SetAlpha(0.45)
@@ -501,6 +506,10 @@ local function ApplyTheme(entry)
   elseif theme=="Holy" then
    entry.shimmer:SetBlendMode("BLEND")
    entry.shimmer:SetAlpha(.40)
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  elseif theme=="Chaos" then
+   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(.45)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   elseif theme=="Bronze" then
    entry.shimmer:SetBlendMode("BLEND")
@@ -554,6 +563,10 @@ local function ApplyTheme(entry)
   entry.light:SetAlpha(1)
  elseif theme=="Holy" then
   entry.light:SetTexture(Asset("holy","Light_Holy"))
+  entry.light:SetBlendMode("BLEND")
+  entry.light:SetAlpha(1)
+ elseif theme=="Chaos" then
+  entry.light:SetTexture(Asset("chaos","Frame_Chaos_range"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Arctic" then
@@ -636,6 +649,7 @@ local function Update(unit, plate)
   if MR.FrostFX then MR.FrostFX:SetActive(entry,nil) end
   if MR.ArcticFX then MR.ArcticFX:SetActive(entry,false) end
   if MR.BronzeFX then MR.BronzeFX:SetActive(entry,false) end
+  if MR.ChaosFX then MR.ChaosFX:SetActive(entry,false) end
   if MR.HolyFX then MR.HolyFX:SetActive(entry,false) end
     if MR.NatureFX then MR.NatureFX:SetActive(entry,false) end
   if MR.AimFX then MR.AimFX:SetActive(entry,false) end
@@ -686,6 +700,7 @@ local function Update(unit, plate)
  if MR.FrostFX then MR.FrostFX:SetActive(entry,selected==true and (entry.theme=="Frost" or entry.theme=="Ice") and entry.theme or nil) end
  if MR.ArcticFX then MR.ArcticFX:SetActive(entry,entry.theme=="Arctic" and selected==true) end
  if MR.BronzeFX then MR.BronzeFX:SetActive(entry,entry.theme=="Bronze" and selected==true) end
+ if MR.ChaosFX then MR.ChaosFX:SetActive(entry,entry.theme=="Chaos" and selected==true) end
  if MR.HolyFX then MR.HolyFX:SetActive(entry,entry.theme=="Holy" and selected==true) end
  if MR.NatureFX then MR.NatureFX:SetActive(entry,entry.theme=="Nature" and selected==true) end
  if MR.AimFX then MR.AimFX:SetActive(entry,entry.theme=="Aim" and selected==true) end
@@ -711,6 +726,10 @@ local function Update(unit, plate)
   if entry.filename~="Frame_Holy" then
    entry.filename="Frame_Holy"
    entry.border:SetTexture(Asset("holy","Frame_Holy"))
+  end
+ elseif entry.theme=="Chaos" then
+  if entry.filename~="Frame_Chaos" then
+   entry.filename="Frame_Chaos";entry.border:SetTexture(Asset("chaos","Frame_Chaos"))
   end
  elseif entry.theme=="Bronze" then
   local kind=UnitColour(unit)
@@ -831,6 +850,7 @@ function MR:StartNameplates()
     if MR.MoonFX then MR.MoonFX:SetActive(e,false) end
     if MR.FrostFX then MR.FrostFX:SetActive(e,nil) end
     if MR.ArcticFX then MR.ArcticFX:SetActive(e,false) end
+    if MR.ChaosFX then MR.ChaosFX:SetActive(e,false) end
     if MR.HolyFX then MR.HolyFX:SetActive(e,false) end
     if MR.NatureFX then MR.NatureFX:SetActive(e,false) end
     if MR.AimFX then MR.AimFX:SetActive(e,false) end
