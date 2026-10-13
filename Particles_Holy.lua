@@ -1,5 +1,6 @@
 -- MoonRange Holy particles, adapted from Sleek Casting Bars Particles_Holy.lua.
 -- Light_Holy remains the existing independent range indicator.
+-- Draw the effects below the nameplate artwork, like the Frost/Ice FX.
 local _, MR = ...
 local FX = {}
 MR.HolyFX = FX
@@ -14,9 +15,9 @@ local function envelope(t,fadeIn,fadeOut)
 end
 
 local function Make(entry)
- local holder=CreateFrame("Frame",nil,entry.foreground)
+ local holder=CreateFrame("Frame",nil,entry.frame)
  holder:SetAllPoints(entry.frame)
- holder:SetFrameLevel(entry.foreground:GetFrameLevel()+1)
+ holder:SetFrameLevel(math.max(0,entry.frame:GetFrameLevel()-1))
  holder:EnableMouse(false)
  holder:Hide()
 
@@ -34,7 +35,7 @@ local function Make(entry)
  for gi,d in ipairs(definitions) do
   local group={def=d,parts={}}
   for i=1,d.count do
-   local tex=holder:CreateTexture(nil,"OVERLAY",nil,gi)
+   local tex=holder:CreateTexture(nil,"ARTWORK",nil,gi)
    if d.kind=="front" or d.kind=="ambient" then
     tex:SetTexture(MR.path.."holy\\Misc_Holy_0"..((i%2)+1)..".tga")
    elseif d.kind=="star" then
