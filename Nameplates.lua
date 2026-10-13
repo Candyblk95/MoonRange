@@ -337,6 +337,10 @@ local function ApplyTheme(entry)
  local theme=Theme()
  if entry.theme==theme then return end
  entry.theme=theme
+ -- Arcane artwork sits slightly high relative to Blizzard's health fill.
+ -- Shift the entire art canvas (and its attached rune/effect layers), not the bar.
+ entry.frame:ClearAllPoints()
+ entry.frame:SetPoint("CENTER",entry.bar,"CENTER",0,theme=="Arcane" and -5 or 0)
  entry.filename=""
  entry.flame:SetShown(theme=="Shadow")
  entry.contour:SetShown(theme=="Frost" or theme=="Ice")
