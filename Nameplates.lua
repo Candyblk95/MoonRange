@@ -201,11 +201,30 @@ local function Setup(plate)
 
  -- Extra Arctic frost backdrop for Frost and Ice, behind native health and frame.
  local frostBackdrop = art:CreateTexture(nil, "BACKGROUND", nil, 1)
- frostBackdrop:SetAllPoints(art)
+ frostBackdrop:SetPoint("CENTER",art,"CENTER",0,0)
  frostBackdrop:SetTexture(Asset("arctic","FrostBG_Arctic"))
  frostBackdrop:SetBlendMode("BLEND")
- frostBackdrop:SetAlpha(.70)
+ frostBackdrop:SetAlpha(0)
  frostBackdrop:Hide()
+ -- A one-shot frost bloom whenever the nameplate appears.
+ local frostBloomTime=0
+ local frostBloomDuration=2.4
+ local function UpdateFrostBloom()
+  local progress=math.min(1,frostBloomTime/frostBloomDuration)
+  local eased=1-(1-progress)^3
+  local width,height=art:GetSize()
+  frostBackdrop:SetSize(width*(.86+.30*eased),height*(.86+.30*eased))
+  frostBackdrop:SetAlpha(.38*eased)
+ end
+ art:HookScript("OnShow",function()
+  frostBloomTime=0
+  if frostBackdrop:IsShown() then UpdateFrostBloom() end
+ end)
+ art:SetScript("OnUpdate",function(_,dt)
+  if not frostBackdrop:IsShown() or frostBloomTime>=frostBloomDuration then return end
+  frostBloomTime=math.min(frostBloomDuration,frostBloomTime+math.min(dt,.1))
+  UpdateFrostBloom()
+ end)
 
  local background = art:CreateTexture(nil, "BACKGROUND", nil, 0)
  background:SetAllPoints(art)
@@ -284,7 +303,7 @@ local function Setup(plate)
   allianceSapphireGlow:SetAlpha(.10+.24*wave)
  end)
 
- local entry = {frame=art, foreground=foreground, border=border, background=background, frostBackdrop=frostBackdrop, shimmer=shimmer,
+ local entry = {frame=art, foreground=foreground, border=border, background=background, frostBackdrop=frostBackdrop, resetFrostBloom=function() frostBloomTime=0;UpdateFrostBloom() end, shimmer=shimmer,
                 allianceAccents=allianceAccents, arcaneRuneBack=arcaneRuneBack,
                 light=light, flame=flame, contour=contour, bar=bar, filename="", unit=nil}
  entry.castBar=FindCastBar(plate.UnitFrame)
@@ -352,7 +371,10 @@ local function ApplyTheme(entry)
  entry.filename=""
  entry.flame:SetShown(theme=="Shadow")
  entry.contour:SetShown(theme=="Frost" or theme=="Ice")
- if entry.frostBackdrop then entry.frostBackdrop:SetShown(theme=="Frost" or theme=="Ice") end
+ if entry.frostBackdrop then
+  entry.frostBackdrop:SetShown(theme=="Frost" or theme=="Ice")
+  if theme=="Frost" or theme=="Ice" then entry.resetFrostBloom() end
+ end
  if theme=="Frost" or theme=="Ice" then entry.contour:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost" or "Contour_Ice")) end
  entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or theme=="Alliance" and "BG_Alliance" or theme=="Arcane" and "BG_Arcane" or "BG_Herbalism"))
  if entry.shimmer then
