@@ -10,18 +10,18 @@ local function rotate(t,a)
  t:SetTexCoord(.5-.5*c+.5*s,.5-.5*s-.5*c,.5-.5*c-.5*s,.5-.5*s+.5*c,.5+.5*c+.5*s,.5+.5*s-.5*c,.5+.5*c-.5*s,.5+.5*s+.5*c)
 end
 local function Make(entry)
- local holder=CreateFrame("Frame",nil,entry.frame)
+ local holder=CreateFrame("Frame",nil,entry.foreground)
  holder:SetAllPoints(entry.frame)
- holder:SetFrameLevel(math.max(0,entry.frame:GetFrameLevel()-1))
+ holder:SetFrameLevel(math.max(0,entry.foreground:GetFrameLevel()-1))
  holder:EnableMouse(false);holder:Hide()
  local runes={}
  for i=1,2 do
   local t=holder:CreateTexture(nil,"ARTWORK",nil,1)
   t:SetTexture(MR.path.."arcane\\Rune_0"..i..".tga")
   t:SetBlendMode("ADD")
-  t:SetVertexColor(.65,.35,1)
-  t:SetSize(54,54)
-  t:SetAlpha(.36)
+  t:SetVertexColor(.86,.57,1)
+  t:SetSize(48,48)
+  t:SetAlpha(.72)
   runes[i]={tex=t,angle=rand(0,TAU),speed=(i==1 and .42 or -.35)}
  end
  local sparks={}
@@ -42,9 +42,9 @@ local function Make(entry)
   if not w or w<20 then w=170 end
   for i,r in ipairs(runes)do
    r.angle=r.angle+r.speed*dt
-   local x=(i==1 and -1 or 1)*(w*.47)
+   local x=(i==1 and -1 or 1)*(w*.53)
    r.tex:ClearAllPoints();r.tex:SetPoint("CENTER",entry.frame,"CENTER",x,0)
-   r.tex:SetAlpha(.28+.16*(.5+.5*math.sin(s.clock*2+i)))
+   r.tex:SetAlpha(.64+.20*(.5+.5*math.sin(s.clock*2+i)))
    rotate(r.tex,r.angle)
   end
   for _,p in ipairs(sparks)do
