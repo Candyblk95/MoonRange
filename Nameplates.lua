@@ -80,7 +80,7 @@ local function SetMoonColour(entry, unit)
   else colour={169/255,119/255,104/255,1} end -- hostile player: deeper peach
  elseif entry.theme=="Holy" then
   if colour==BLUE then colour={201/255,163/255,91/255,1} -- champagne neutral
-  elseif colour==PURPLE then colour={88/255,120/255,143/255,1} -- antique gold friendly player
+  elseif colour==PURPLE then colour={61/255,89/255,109/255,1} -- antique gold friendly player
   elseif colour==PINK then colour={143/255,77/255,64/255,1} -- rose bronze hostile mob
   else colour={93/255,23/255,9/255,1} end -- deep bronze hostile player
  elseif entry.theme=="Herbalism" then
