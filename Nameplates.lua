@@ -1,6 +1,6 @@
 local _, MR = ...
 local active, elapsed = {}, 0
-local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true}
+local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
@@ -74,7 +74,7 @@ local function SetMoonColour(entry, unit)
  -- Tint the Herbalism artwork too: at 88% opacity its original green
  -- otherwise masks the unit-type colour on the Blizzard fill below.
  if entry.shimmer then
-  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" then entry.shimmer:SetVertexColor(unpack(colour))
+  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" then entry.shimmer:SetVertexColor(unpack(colour))
   else entry.shimmer:SetVertexColor(1,1,1,1) end
  end
 end
@@ -247,9 +247,9 @@ local function ApplyTheme(entry)
  entry.theme=theme
  entry.filename=""
  entry.flame:SetShown(theme=="Shadow")
- entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset(theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or "BG_Herbalism"))
+ entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset(theme=="Earth" and "earth" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or "BG_Herbalism"))
  if entry.shimmer then
-  entry.shimmer:SetTexture(Asset(theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or "Fill_Herbalism"))
+  entry.shimmer:SetTexture(Asset(theme=="Earth" and "earth" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or "Fill_Herbalism"))
   if theme=="Moon" then
    entry.shimmer:SetBlendMode("ADD")
    entry.shimmer:SetAlpha(0.45)
