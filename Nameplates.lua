@@ -208,6 +208,14 @@ local function Setup(plate)
  foreground:SetFrameLevel(bar:GetFrameLevel() + 2)
  foreground:EnableMouse(false)
 
+ -- Arcane Rune_Back is part of the base frame, not target-only particles.
+ local arcaneRuneBack=foreground:CreateTexture(nil,"ARTWORK",nil,0)
+ arcaneRuneBack:SetAllPoints(art)
+ arcaneRuneBack:SetTexture(Asset("arcane","Rune_Back"))
+ arcaneRuneBack:SetBlendMode("ADD")
+ arcaneRuneBack:SetVertexColor(.58,.35,1)
+ arcaneRuneBack:SetAlpha(.32)
+ arcaneRuneBack:Hide()
  local border = foreground:CreateTexture(nil, "OVERLAY", nil, 2)
  border:SetAllPoints(art)
  border:SetTexture(Asset("Moon","Frame_NoMoon"))
@@ -267,7 +275,7 @@ local function Setup(plate)
  end)
 
  local entry = {frame=art, foreground=foreground, border=border, background=background, shimmer=shimmer,
-                allianceAccents=allianceAccents,
+                allianceAccents=allianceAccents, arcaneRuneBack=arcaneRuneBack,
                 light=light, flame=flame, contour=contour, bar=bar, filename="", unit=nil}
  entry.castBar=FindCastBar(plate.UnitFrame)
  plate.moonRangeArt = entry
@@ -481,6 +489,7 @@ local function Update(unit, plate)
    if MR.EarthFX then MR.EarthFX:SetActive(entry,false) end
   if entry.shimmer then entry.shimmer:Hide() end
   if entry.allianceAccents then entry.allianceAccents:Hide() end
+  if entry.arcaneRuneBack then entry.arcaneRuneBack:Hide() end
   if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
   if entry.blizzardLevel then entry.blizzardLevel:SetAlpha(1) end
   return
@@ -497,6 +506,9 @@ local function Update(unit, plate)
  entry.frame:Show()
  entry.foreground:Show()
  ApplyTheme(entry)
+ if entry.arcaneRuneBack then
+  if entry.theme=="Arcane" then entry.arcaneRuneBack:Show() else entry.arcaneRuneBack:Hide() end
+ end
  RefreshShimmer(entry)
  Resize(entry)
  SetMoonColour(entry, unit)
