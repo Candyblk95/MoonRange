@@ -37,7 +37,7 @@ local function Make(entry)
   t:SetTexture(MR.path.."arctic\\"..rockTexture((i-1)%12+1)..".tga")
   t:SetBlendMode("BLEND")
   local kind=i<=24 and 1 or i<=36 and 2 or 3
-  local size=kind==1 and rand(6,12) or kind==2 and rand(12,18) or rand(18,25)
+  local size=kind==1 and rand(5,10) or kind==2 and rand(10,15) or rand(15,21)
   t:SetSize(size,size)
   rocks[i]={tex=t,x=rand(-.48,.48),y=rand(-10,10),rise=rand(1,5),phase=rand(0,TAU),
    speed=rand(.5,1.5),rot=rand(0,TAU),spin=rand(-.45,.45),alpha=rand(.4,.75)}
@@ -46,7 +46,7 @@ local function Make(entry)
   local t=back:CreateTexture(nil,"ARTWORK",nil,2)
   t:SetTexture(MR.path.."arctic\\"..rockTexture((i-1)%12+1)..".tga")
   t:SetBlendMode("BLEND")
-  local size=rand(12,25)
+  local size=rand(10,21)
   t:SetSize(size,size)
   orbit[i]={tex=t,a=rand(0,TAU),rx=rand(85,125),ry=rand(14,30),
    speed=rand(.18,.38)*(i%2==0 and 1 or -1),rot=rand(0,TAU),spin=rand(-1.1,1.1),alpha=rand(.4,.7)}
@@ -65,7 +65,7 @@ local function Make(entry)
     p.active=true;p.life=0;p.duration=rand(.35,.8)
     p.x=rand(-65,65);p.y=rand(-6,6)
     p.vx=rand(-28,28);p.vy=rand(30,90)
-    local sz=rand(5,11)
+    local sz=rand(4,9)
     p.tex:SetSize(sz,sz)
     return
    end
