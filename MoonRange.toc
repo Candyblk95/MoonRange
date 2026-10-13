@@ -11,5 +11,6 @@ Particles_Moon.lua
 Particles_Earth.lua
 Particles_Frost.lua
 Particles_Holy.lua
+Particles_Nature.lua
 Nameplates.lua
 Config.lua
