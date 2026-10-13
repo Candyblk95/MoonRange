@@ -21,7 +21,7 @@ local function make(entry)
   local t=f:CreateTexture(nil,"ARTWORK",nil,1)
   t:SetTexture(MR.path.."shadow\\Circle_Shadow.tga")
   t:SetBlendMode("BLEND")
-  t:SetSize(48,48)
+  t:SetSize(25,25)
   circles[i]={tex=t,angle=rand(0,TAU),pulse=rand(0,TAU)}
  end
  for i=1,40 do
@@ -45,7 +45,7 @@ local function make(entry)
   t:SetTexture(MR.path.."Shadow\\"..string.format("Flame_Shadow_%02d",i)..".tga")
   t:SetBlendMode("ADD")
   t:SetVertexColor(.35,.15,.45)
-  t:SetSize(200,100)
+  t:SetSize(160,45)
   t:SetPoint("CENTER",entry.frame,"CENTER")
   t:SetAlpha(0)
   flames[i]=t
@@ -56,23 +56,23 @@ local function make(entry)
   dt=math.min(dt,.05)
   s.time=s.time+dt
   local width=entry.lastWidth or 185
-  local xoff=math.min(95,math.max(48,width*.33))
+  local xoff=width*.5 + 2
   local centers={-xoff,xoff}
   for i,c in ipairs(circles) do
    c.angle=c.angle-1.6*dt
    c.pulse=c.pulse+2*dt
-   local size=53*(1+math.sin(c.pulse)*.07)
+   local size=25*(1+math.sin(c.pulse)*.07)
    c.tex:SetSize(size,size)
    c.tex:ClearAllPoints()
-   c.tex:SetPoint("CENTER",entry.frame,"CENTER",centers[i],7)
+   c.tex:SetPoint("CENTER",entry.frame,"CENTER",centers[i],2)
    rotate(c.tex,c.angle)
-   c.tex:SetAlpha(.8)
+   c.tex:SetAlpha(.9)
   end
   local cycle=s.time/.65
   for i,t in ipairs(flames) do
    local phase=(cycle+(i-1)/5)%1
    local envelope=math.min(1,phase/.2,(1-phase)/.2)
-   t:SetAlpha(math.max(0,envelope)*.30)
+   t:SetAlpha(math.max(0,envelope)*.18)
   end
   for _,o in ipairs(orbs) do
    if o.life>0 then
@@ -82,7 +82,7 @@ local function make(entry)
     if o.life<=0 or o.r<=2 then o.life=0;o.tex:SetAlpha(0)
     else
      o.tex:ClearAllPoints()
-     o.tex:SetPoint("CENTER",entry.frame,"CENTER",centers[o.side]+math.cos(o.angle)*o.r,7+math.sin(o.angle)*o.r)
+     o.tex:SetPoint("CENTER",entry.frame,"CENTER",centers[o.side]+math.cos(o.angle)*o.r,2+math.sin(o.angle)*o.r)
      o.tex:SetAlpha(.7*math.min(1,o.r/15))
     end
    end
@@ -94,7 +94,7 @@ local function make(entry)
     for _,o in ipairs(orbs) do
      if o.side==side and o.life<=0 then
       o.angle=rand(0,TAU);o.r=rand(22,48);o.life=o.r/20
-      local size=rand(4,9);o.tex:SetSize(size,size)
+      local size=rand(3,7);o.tex:SetSize(size,size)
       break
      end
     end
