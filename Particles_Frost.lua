@@ -13,13 +13,13 @@ local function Make(entry)
  holder:EnableMouse(false)
  holder:Hide()
  local mist={}
- for i=1,3 do
+ for i=1,6 do
   local tex=holder:CreateTexture(nil,"ARTWORK",nil,1)
   tex:SetTexture(MR.path.."frost\\Mist_Frost_01.tga")
   tex:SetBlendMode("ADD")
   tex:SetSize(338,169)
   tex:SetAlpha(0)
-  mist[i]={tex=tex,x=(i-2)*65,phase=(i-1)*1.65,scale=rand(.86,1.12),cycle=rand(5.2,6.5)}
+  mist[i]={tex=tex,x=((i-1)%3-1)*65,lower=i>3,phase=(i-1)*1.15,scale=rand(.72,.95),cycle=rand(5.2,6.5)}
  end
  local particles={}
  for i=1,42 do
@@ -58,12 +58,12 @@ local function Make(entry)
    if phase<1.6 then fade=phase/1.6
    elseif phase<m.cycle-1.35 then fade=1
    else fade=(m.cycle-phase)/1.35 end
-   local alpha=(ice and .55 or .60)*fade
+   local alpha=(ice and .52 or .58)*fade
    m.tex:SetAlpha(math.max(0,alpha)*math.min(1,state.elapsed*2))
    local pulse=1+math.sin(t*.42)*.06
-   m.tex:SetSize(338*m.scale*pulse,169*m.scale*pulse)
+   m.tex:SetSize(285*m.scale*pulse,120*m.scale*pulse)
    m.tex:ClearAllPoints()
-   m.tex:SetPoint("CENTER",entry.frame,"CENTER",m.x+math.sin(t*.30)*15,38+math.sin(t*.43)*8)
+   m.tex:SetPoint("CENTER",entry.frame,"CENTER",m.x+math.sin(t*.30)*15,(m.lower and -29 or 29)+math.sin(t*.43)*7)
   end
   state.spawn=state.spawn+dt
   local interval=ice and .045 or .065
