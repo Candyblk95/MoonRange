@@ -36,33 +36,32 @@ local function make(entry)
   local w=entry.lastWidth or 190
   local left=-w*.5
   local right=w*.5
+  -- Leaves orbit the bar in shallow elliptical spirals instead of crossing its fill.
   for _,l in ipairs(leaves) do
    if l.active then
     l.life=l.life+dt
-    l.x=l.x+l.speed*dt
+    l.theta=l.theta+l.speed*dt
     l.angle=l.angle+l.rotSpeed*dt
-    local y=l.y+math.sin(l.life*l.freq+l.phase)*l.amp+l.vy*l.life
-    if l.x>right+l.size*2 then l.active=false;l.tex:SetAlpha(0)
-    else
-     l.tex:ClearAllPoints()
-     l.tex:SetPoint("CENTER",entry.frame,"CENTER",l.x,y)
-     rotate(l.tex,l.angle)
-     local fade=math.min(1,l.life/.5,math.max(0,(right+l.size*2-l.x)/40))
-     l.tex:SetAlpha(l.alpha*fade)
-    end
+    local x=math.cos(l.theta)*l.rx
+    local y=math.sin(l.theta)*l.ry + math.sin(l.life*2+l.phase)*2
+    l.tex:ClearAllPoints()
+    l.tex:SetPoint("CENTER",entry.frame,"CENTER",x,y)
+    rotate(l.tex,l.angle)
+    l.tex:SetAlpha(l.alpha*(.75+.25*math.sin(l.theta)^2))
    end
   end
   s.leafClock=s.leafClock+dt
-  if s.leafClock>=.12 then
+  if s.leafClock>=.20 then
    s.leafClock=0
    for _,l in ipairs(leaves) do
     if not l.active then
-     l.active=true;l.life=0;l.x=left-12
-     l.y=rand(-5,5);l.speed=rand(55,120);l.size=rand(5,11)
-     l.amp=rand(2,5);l.freq=rand(1.2,2.8);l.phase=rand(0,TAU)
-     l.vy=rand(-4,4);l.angle=rand(0,TAU)
+     l.active=true;l.life=0
+     l.theta=rand(0,TAU);l.speed=rand(.45,1.1)*(math.random(2)==1 and 1 or -1)
+     l.rx=rand(w*.35,w*.54);l.ry=rand(12,22)
+     l.phase=rand(0,TAU);l.angle=rand(0,TAU)
      l.rotSpeed=rand(.8,2.8)*(math.random(2)==1 and 1 or -1)
-     l.alpha=rand(.55,.9);l.tex:SetSize(l.size,l.size)
+     l.size=rand(5,10);l.alpha=rand(.40,.78)
+     l.tex:SetSize(l.size,l.size)
      break
     end
    end
@@ -84,7 +83,7 @@ local function make(entry)
    s.glowClock=0
    for _,p in ipairs(glows) do
     if p.life<=0 then
-     p.life=rand(.18,.35);p.x=rand(left,right);p.y=rand(-6,6)
+     p.life=rand(.18,.35);p.x=rand(left,right);p.y=(math.random(2)==1 and 1 or -1)*rand(10,19)
      p.vx=rand(-9,9);p.vy=rand(-8,8)
      local size=rand(3,6);p.tex:SetSize(size,size)
      break
