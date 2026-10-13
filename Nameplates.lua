@@ -395,6 +395,7 @@ local function Update(unit, plate)
   if MR.MoonFX then MR.MoonFX:SetActive(entry,false) end
   if MR.FrostFX then MR.FrostFX:SetActive(entry,nil) end
   if MR.HolyFX then MR.HolyFX:SetActive(entry,false) end
+    if MR.NatureFX then MR.NatureFX:SetActive(entry,false) end
    if MR.EarthFX then MR.EarthFX:SetActive(entry,false) end
   if entry.shimmer then entry.shimmer:Hide() end
   if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
@@ -427,6 +428,7 @@ local function Update(unit, plate)
  if MR.EarthFX then MR.EarthFX:SetActive(entry,entry.theme=="Earth" and selected==true) end
  if MR.FrostFX then MR.FrostFX:SetActive(entry,selected==true and (entry.theme=="Frost" or entry.theme=="Ice") and entry.theme or nil) end
  if MR.HolyFX then MR.HolyFX:SetActive(entry,entry.theme=="Holy" and selected==true) end
+ if MR.NatureFX then MR.NatureFX:SetActive(entry,entry.theme=="Nature" and selected==true) end
  if entry.theme=="Arcaneum" then
   if entry.filename~="Frame_Arcaneum_Light" then
    entry.filename="Frame_Arcaneum_Light"
@@ -450,7 +452,8 @@ local function Update(unit, plate)
    entry.border:SetTexture(Asset("holy","Frame_Holy"))
   end
  elseif entry.theme=="Nature" then
-  local frameNumber=math.floor((GetTime()*6)%3)+1
+  local frameSequence={1,2,3,2}
+  local frameNumber=frameSequence[math.floor(GetTime()*7)%4+1]
   local frameName=string.format("Frame_Nature_%02d",frameNumber)
   if entry.filename~=frameName then
    entry.filename=frameName
@@ -542,6 +545,7 @@ function MR:StartNameplates()
     if MR.MoonFX then MR.MoonFX:SetActive(e,false) end
     if MR.FrostFX then MR.FrostFX:SetActive(e,nil) end
     if MR.HolyFX then MR.HolyFX:SetActive(e,false) end
+    if MR.NatureFX then MR.NatureFX:SetActive(e,false) end
     if MR.EarthFX then MR.EarthFX:SetActive(e,false) end
     if e.shimmer then e.shimmer:Hide() end
    end
