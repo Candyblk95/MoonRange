@@ -1,6 +1,6 @@
 local _, MR = ...
 local active, elapsed = {}, 0
-local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true}
+local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
@@ -78,6 +78,11 @@ local function SetMoonColour(entry, unit)
   elseif colour==PURPLE then colour={35/255,127/255,133/255,1} -- friendly: deep turquoise
   elseif colour==PINK then colour={150/255,61/255,92/255,1} -- hostile mob: deeper dusty rose
   else colour={169/255,119/255,104/255,1} end -- hostile player: deeper peach
+ elseif entry.theme=="Holy" then
+  if colour==BLUE then colour={.89,.76,.44,1}
+  elseif colour==PURPLE then colour={.52,.79,.69,1}
+  elseif colour==PINK then colour={.92,.52,.38,1}
+  else colour={.76,.54,.84,1} end
  elseif entry.theme=="Herbalism" then
   if colour==BLUE then colour=HERB_BLUE
   elseif colour==PURPLE then colour=HERB_PURPLE
@@ -89,7 +94,7 @@ local function SetMoonColour(entry, unit)
  -- Tint the Herbalism artwork too: at 88% opacity its original green
  -- otherwise masks the unit-type colour on the Blizzard fill below.
  if entry.shimmer then
-  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" then entry.shimmer:SetVertexColor(unpack(colour))
+  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" or entry.theme=="Holy" then entry.shimmer:SetVertexColor(unpack(colour))
   else entry.shimmer:SetVertexColor(1,1,1,1) end
  end
 end
@@ -266,9 +271,9 @@ local function ApplyTheme(entry)
  entry.flame:SetShown(theme=="Shadow")
  entry.contour:SetShown(theme=="Frost" or theme=="Ice")
  if theme=="Frost" or theme=="Ice" then entry.contour:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost" or "Contour_Ice")) end
- entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or "BG_Herbalism"))
+ entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or "BG_Herbalism"))
  if entry.shimmer then
-  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or "Fill_Herbalism"))
+  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or "Fill_Herbalism"))
   if theme=="Moon" then
    entry.shimmer:SetBlendMode("ADD")
    entry.shimmer:SetAlpha(0.45)
@@ -284,6 +289,10 @@ local function ApplyTheme(entry)
   elseif theme=="Frost" or theme=="Ice" then
    entry.shimmer:SetBlendMode("BLEND")
    entry.shimmer:SetAlpha(.35)
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  elseif theme=="Holy" then
+   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(.40)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   elseif theme=="Earth" then
    entry.shimmer:SetBlendMode("BLEND")
@@ -308,6 +317,10 @@ local function ApplyTheme(entry)
   entry.light:SetAlpha(1)
  elseif theme=="Frost" or theme=="Ice" then
   entry.light:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost_range" or "Contour_Ice_range"))
+  entry.light:SetBlendMode("BLEND")
+  entry.light:SetAlpha(1)
+ elseif theme=="Holy" then
+  entry.light:SetTexture(Asset("holy","Light_Holy"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Earth" then
@@ -415,6 +428,11 @@ local function Update(unit, plate)
   if entry.filename~="Frame_Frost" then
    entry.filename="Frame_Frost"
    entry.border:SetTexture(Asset("frost","Frame_Frost"))
+  end
+ elseif entry.theme=="Holy" then
+  if entry.filename~="Frame_Holy" then
+   entry.filename="Frame_Holy"
+   entry.border:SetTexture(Asset("holy","Frame_Holy"))
   end
  elseif entry.theme=="Earth" then
   if entry.filename~="Frame_Earth" then
