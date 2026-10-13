@@ -74,10 +74,10 @@ local function SpawnParticle(state)
    p.active=true;p.life=0;p.maxLife=rand(1.8,3.3)
    p.angle=rand(0,TAU)
    p.speed=rand(.7,1.5)*(math.random(2)==1 and 1 or -1)
-   p.rx=rand(.31,.49)
-   p.ry=rand(12,24)
+   p.rx=rand(.40,.62)
+   p.ry=rand(19,35)
    p.phase=rand(0,TAU)
-   local size=rand(3.5,6.5)
+   local size=rand(5,8)
    p.tex:SetSize(size,size);p.tex:SetAlpha(0)
    return
   end
@@ -92,7 +92,7 @@ local function UpdateParticle(p,dt,entry)
  p.angle=p.angle+p.speed*dt
  local w=entry.lastWidth or 150
  local x=math.cos(p.angle)*w*p.rx
- local y=math.sin(p.angle)*p.ry+math.sin(p.angle*2+p.phase)*3
+ local y=math.sin(p.angle)*p.ry+math.sin(p.angle*2+p.phase)*5
  p.tex:ClearAllPoints()
  p.tex:SetPoint("CENTER",entry.frame,"CENTER",x,y)
  local fade=math.min(1,t/.22,(1-t)/.28)
