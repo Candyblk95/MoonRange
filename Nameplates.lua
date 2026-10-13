@@ -497,7 +497,7 @@ local function ApplyTheme(entry)
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Arctic" then
-  entry.light:SetTexture(Asset("arctic","Frame_Arctic_Light"))
+  entry.light:SetTexture(Asset("arctic","Frame_Arctic_Range"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Arcane" then
