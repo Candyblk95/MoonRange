@@ -241,11 +241,18 @@ local function Setup(plate)
  arcticFrost:SetBlendMode("BLEND")
  arcticFrost:SetAlpha(1)
  arcticFrost:SetPoint("CENTER",art,"CENTER",0,0)
- local arcticLight=arcticBloom:CreateTexture(nil,"ARTWORK",nil,2)
+ -- Separate foreground frame: the light must overlay Frame_Arctic,
+ -- while the frost remains behind the health bar and frame.
+ local arcticLightLayer=CreateFrame("Frame",nil,plate.UnitFrame)
+ arcticLightLayer:SetAllPoints(art)
+ arcticLightLayer:SetFrameLevel(bar:GetFrameLevel()+3)
+ arcticLightLayer:EnableMouse(false)
+ local arcticLight=arcticLightLayer:CreateTexture(nil,"OVERLAY",nil,1)
  arcticLight:SetTexture(Asset("arctic","Frame_Arctic_Light"))
  arcticLight:SetBlendMode("BLEND")
  arcticLight:SetAlpha(1)
  arcticLight:SetPoint("CENTER",art,"CENTER",0,0)
+ arcticLightLayer:Hide()
  arcticBloom:Hide()
  local arcticBloomTime=0
  local function UpdateArcticBloom()
@@ -261,8 +268,9 @@ local function Setup(plate)
     arcticBloomTime=0
     UpdateArcticBloom()
     arcticBloom:Show()
+    arcticLightLayer:Show()
    end
-  else arcticBloom:Hide() end
+  else arcticBloom:Hide();arcticLightLayer:Hide() end
  end
  arcticBloom:SetScript("OnUpdate",function(_,dt)
   if arcticBloomTime>=2.4 then return end
