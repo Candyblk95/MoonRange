@@ -28,9 +28,9 @@ local function Make(entry)
   -- original ambient fragments
   {count=55,rate=.12,per=3,minSize=3,maxSize=13,minLife=.6,maxLife=1.4,alpha=.56,kind="ambient"},
   -- original fine golden glow particles
-  {count=45,rate=.035,per=2,minSize=3,maxSize=7,minLife=.25,maxLife=.55,alpha=.58,kind="glow"},
+  {count=45,rate=.035,per=2,minSize=5,maxSize=9,minLife=.35,maxLife=.7,alpha=.78,kind="glow"},
   -- additional Holy stars: subtle, slow twinkling near the frame
-  {count=16,rate=.24,per=1,minSize=6,maxSize=12,minLife=1.0,maxLife=1.9,alpha=.42,kind="star"},
+  {count=16,rate=.24,per=1,minSize=9,maxSize=15,minLife=1.0,maxLife=1.9,alpha=.62,kind="star"},
  }
  for gi,d in ipairs(definitions) do
   local group={def=d,parts={}}
@@ -60,19 +60,19 @@ local function Make(entry)
     if w<20 then w=170 end
     if d.kind=="front" then
      -- Original casting-front fragments, now distributed across the bar.
-     p.x=rand(-w*.46,w*.46);p.y=rand(-9,9)
+     p.x=rand(-w*.62,w*.62);p.y=rand(-21,21)
      p.vx=rand(-10,10);p.vy=rand(-18,4)
     elseif d.kind=="ambient" then
      -- Three-random-average distribution from the original effect.
      local function gauss(r) return (rand(-r,r)+rand(-r,r)+rand(-r,r))/3 end
-     p.x=gauss(w*.5+5);p.y=gauss(19)
+     p.x=gauss(w*.75+12);p.y=gauss(40)
      p.vx=rand(-6,6);p.vy=rand(-4,8)
     elseif d.kind=="glow" then
-     p.x=rand(-w*.47,w*.47);p.y=rand(-11,11)
+     p.x=rand(-w*.64,w*.64);p.y=rand(-27,27)
      p.vx=rand(-5,5);p.vy=rand(-8,8)
     else
-     p.x=rand(-w*.52,w*.52)
-     p.y=(math.random(2)==1 and -1 or 1)*rand(10,25)
+     p.x=rand(-w*.68,w*.68)
+     p.y=(math.random(2)==1 and -1 or 1)*rand(18,42)
      p.vx=rand(-5,5);p.vy=rand(-3,5)
     end
     p.phase=rand(0,TAU)
