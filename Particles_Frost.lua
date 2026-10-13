@@ -17,9 +17,9 @@ local function Make(entry)
   local tex=holder:CreateTexture(nil,"ARTWORK",nil,1)
   tex:SetTexture(MR.path.."frost\\Mist_Frost_01.tga")
   tex:SetBlendMode("ADD")
-  tex:SetSize(225,110)
+  tex:SetSize(338,169)
   tex:SetAlpha(0)
-  mist[i]={tex=tex,x=(i-2)*55,phase=(i-1)*2.1,scale=rand(.88,1.12)}
+  mist[i]={tex=tex,x=(i-2)*65,phase=(i-1)*1.65,scale=rand(.86,1.12),cycle=rand(5.2,6.5)}
  end
  local particles={}
  for i=1,42 do
@@ -50,11 +50,20 @@ local function Make(entry)
   local ice=state.ice
   for _,m in ipairs(mist) do
    local t=state.elapsed+m.phase
-   local alpha=(ice and .43 or .50)*(.72+.28*math.sin(t*.85))
-   m.tex:SetAlpha(math.max(0,alpha)*math.min(1,state.elapsed))
-   m.tex:SetSize((ice and 205 or 235)*m.scale,(ice and 96 or 115)*m.scale)
+   -- Original Frost mist is a large, slow fade-in/hold/fade-out cloud.
+   -- Keep its full source dimensions: shrinking the entire TGA made the
+   -- visible wisps almost disappear against the bright ice frame.
+   local phase=t % m.cycle
+   local fade
+   if phase<1.6 then fade=phase/1.6
+   elseif phase<m.cycle-1.35 then fade=1
+   else fade=(m.cycle-phase)/1.35 end
+   local alpha=(ice and .55 or .60)*fade
+   m.tex:SetAlpha(math.max(0,alpha)*math.min(1,state.elapsed*2))
+   local pulse=1+math.sin(t*.42)*.06
+   m.tex:SetSize(338*m.scale*pulse,169*m.scale*pulse)
    m.tex:ClearAllPoints()
-   m.tex:SetPoint("CENTER",entry.frame,"CENTER",m.x+math.sin(t*.48)*12,16+math.sin(t*.65)*9)
+   m.tex:SetPoint("CENTER",entry.frame,"CENTER",m.x+math.sin(t*.30)*15,38+math.sin(t*.43)*8)
   end
   state.spawn=state.spawn+dt
   local interval=ice and .045 or .065
