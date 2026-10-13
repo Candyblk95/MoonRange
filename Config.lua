@@ -145,7 +145,7 @@ local function ToggleTest()
    if theme~=self.lastTheme then
     self.lastTheme=theme
     self.background:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or theme=="Earth" and "earth" or theme).."\\"..((theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or "BG_Herbalism"))..".tga")
-    self.border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_Moon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or theme=="Earth" and "Frame_Earth" or "Frame_Herbalism_01")..".tga")
+    self.border:SetTexture(MR.path..(theme=="Earth" and "earth" or theme).."\\"..(theme=="Moon" and "Frame_Moon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or theme=="Earth" and "Frame_Earth" or "Frame_Herbalism_01")..".tga")
     self.hp:SetStatusBarColor(theme=="Moon" and .20 or theme=="Shadow" and .50 or theme=="Arcaneum" and .52 or .35,theme=="Moon" and .50 or theme=="Shadow" and .22 or theme=="Arcaneum" and .43 or .55,theme=="Moon" and .80 or theme=="Shadow" and .66 or theme=="Arcaneum" and .79 or .25)
    end
    self.clock=(self.clock+dt)%3
@@ -262,7 +262,7 @@ local function Build()
   if theme~=lastTheme then
    lastTheme=theme
    bg:SetTexture(MR.path..(theme=="Arcaneum" and "Moon" or theme=="Earth" and "earth" or theme).."\\"..((theme=="Moon" or theme=="Arcaneum") and "BG_Moon" or (theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or "BG_Herbalism"))..".tga")
-   border:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Frame_NoMoon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or theme=="Earth" and "Frame_Earth" or "Frame_Herbalism_01")..".tga")
+   border:SetTexture(MR.path..(theme=="Earth" and "earth" or theme).."\\"..(theme=="Moon" and "Frame_NoMoon" or theme=="Shadow" and "Frame_Shadow" or theme=="Arcaneum" and "Frame_Arcaneum_Light" or theme=="Earth" and "Frame_Earth" or "Frame_Herbalism_01")..".tga")
    fill:SetTexture(MR.path..theme.."\\"..(theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or "Fill_Herbalism")..".tga")
    if theme=="Moon" then fill:SetTexCoord(129/1024,886/1024,203/512,281/512);fill:SetBlendMode("ADD");fill:SetAlpha(.45)
    elseif theme=="Arcaneum" then fill:SetTexCoord(182/1024,850/1024,201/512,271/512);fill:SetBlendMode("ADD");fill:SetAlpha(.65)
