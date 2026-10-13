@@ -209,8 +209,10 @@ local function Setup(plate)
  foreground:EnableMouse(false)
 
  -- Arcane Rune_Back is part of the base frame, not target-only particles.
- local arcaneRuneBack=foreground:CreateTexture(nil,"OVERLAY",nil,4)
- arcaneRuneBack:SetAllPoints(art)
+ -- Rune_Back sits BEHIND the health bar, raised so its circle crowns the bar.
+ local arcaneRuneBack=art:CreateTexture(nil,"ARTWORK",nil,1)
+ arcaneRuneBack:SetSize(200,100)
+ arcaneRuneBack:SetPoint("CENTER",art,"CENTER",0,28)
  arcaneRuneBack:SetTexture(Asset("arcane","Rune_Back"))
  arcaneRuneBack:SetBlendMode("ADD")
  arcaneRuneBack:SetVertexColor(1,.75,1)
