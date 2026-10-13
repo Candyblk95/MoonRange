@@ -477,6 +477,7 @@ local function Update(unit, plate)
   if MR.HolyFX then MR.HolyFX:SetActive(entry,false) end
     if MR.NatureFX then MR.NatureFX:SetActive(entry,false) end
   if MR.AimFX then MR.AimFX:SetActive(entry,false) end
+  if MR.ArcaneFX then MR.ArcaneFX:SetActive(entry,false) end
    if MR.EarthFX then MR.EarthFX:SetActive(entry,false) end
   if entry.shimmer then entry.shimmer:Hide() end
   if entry.allianceAccents then entry.allianceAccents:Hide() end
@@ -516,6 +517,7 @@ local function Update(unit, plate)
  if MR.HolyFX then MR.HolyFX:SetActive(entry,entry.theme=="Holy" and selected==true) end
  if MR.NatureFX then MR.NatureFX:SetActive(entry,entry.theme=="Nature" and selected==true) end
  if MR.AimFX then MR.AimFX:SetActive(entry,entry.theme=="Aim" and selected==true) end
+ if MR.ArcaneFX then MR.ArcaneFX:SetActive(entry,entry.theme=="Arcane" and selected==true) end
  if entry.theme=="Arcaneum" then
   if entry.filename~="Frame_Arcaneum_Light" then
    entry.filename="Frame_Arcaneum_Light"
@@ -649,6 +651,7 @@ function MR:StartNameplates()
     if MR.HolyFX then MR.HolyFX:SetActive(e,false) end
     if MR.NatureFX then MR.NatureFX:SetActive(e,false) end
     if MR.AimFX then MR.AimFX:SetActive(e,false) end
+    if MR.ArcaneFX then MR.ArcaneFX:SetActive(e,false) end
     if MR.EarthFX then MR.EarthFX:SetActive(e,false) end
     if e.shimmer then e.shimmer:Hide() end
     if e.allianceAccents then e.allianceAccents:Hide() end
