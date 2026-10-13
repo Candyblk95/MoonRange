@@ -60,7 +60,7 @@ local function make(entry)
      l.rx=rand(w*.35,w*.54);l.ry=rand(12,22)
      l.phase=rand(0,TAU);l.angle=rand(0,TAU)
      l.rotSpeed=rand(.8,2.8)*(math.random(2)==1 and 1 or -1)
-     l.size=rand(5,10);l.alpha=rand(.40,.78)
+     l.size=rand(6,12);l.alpha=rand(.40,.78)
      l.tex:SetSize(l.size,l.size)
      break
     end
