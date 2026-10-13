@@ -89,6 +89,13 @@ local function Make(entry)
   local w=entry.lastWidth or entry.bar:GetWidth()
   if not w or w<20 then w=170 end
   local x=(fraction-.5)*w
+  -- Match the current nameplate health fill, including custom unit colours.
+  local red,green,blue=entry.bar:GetStatusBarColor()
+  if type(red)=="number" and type(green)=="number" and type(blue)=="number" then
+   for _,pool in ipairs({sparks,glows,flashes}) do
+    for _,p in ipairs(pool) do p.tex:SetVertexColor(red,green,blue) end
+   end
+  end
   -- Smooth tiny changes; jump immediately on major damage/healing.
   s.lastFraction=fraction
   for _,p in ipairs(sparks) do
@@ -116,7 +123,7 @@ local function Make(entry)
     end
    end
   end
-  if fraction>0 and fraction<1 then
+  if fraction>0 then
    s.sparkClock=s.sparkClock+dt
    if s.sparkClock>=.065 then s.sparkClock=s.sparkClock-.065;spawn(sparks,x,false) end
    s.glowClock=s.glowClock+dt
@@ -128,7 +135,7 @@ local function Make(entry)
     p.clock=0;p.x=x+rand(-8,8);p.y=rand(-6,6)
     p.tex:SetSize(rand(6,12),rand(6,12))
    end
-   if fraction<=0 or fraction>=1 then p.tex:SetAlpha(0)
+   if fraction<=0 then p.tex:SetAlpha(0)
    else
     p.tex:ClearAllPoints();p.tex:SetPoint("CENTER",entry.bar,"CENTER",p.x or x,p.y or 0)
     p.tex:SetAlpha(.5*math.max(0,1-p.clock/.24))
