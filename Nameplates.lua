@@ -1,6 +1,6 @@
 local _, MR = ...
 local active, elapsed = {}, 0
-local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true}
+local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
@@ -68,6 +68,11 @@ local function SetMoonColour(entry, unit)
   elseif colour==PURPLE then colour={93/255,140/255,99/255,1} -- moss friendly player
   elseif colour==PINK then colour={166/255,76/255,56/255,1} -- terracotta hostile mob
   else colour={217/255,129/255,61/255,1} end -- copper hostile player
+ elseif entry.theme=="Frost" or entry.theme=="Ice" then
+  if colour==BLUE then colour={.67,.79,.88,1}
+  elseif colour==PURPLE then colour={.30,.76,.78,1}
+  elseif colour==PINK then colour={.29,.48,.85,1}
+  else colour={.57,.46,.86,1} end
  elseif entry.theme=="Herbalism" then
   if colour==BLUE then colour=HERB_BLUE
   elseif colour==PURPLE then colour=HERB_PURPLE
@@ -79,7 +84,7 @@ local function SetMoonColour(entry, unit)
  -- Tint the Herbalism artwork too: at 88% opacity its original green
  -- otherwise masks the unit-type colour on the Blizzard fill below.
  if entry.shimmer then
-  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" then entry.shimmer:SetVertexColor(unpack(colour))
+  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" then entry.shimmer:SetVertexColor(unpack(colour))
   else entry.shimmer:SetVertexColor(1,1,1,1) end
  end
 end
@@ -166,6 +171,8 @@ local function Setup(plate)
  border:SetAllPoints(art)
  border:SetTexture(Asset("Moon","Frame_NoMoon"))
 
+ local contour = foreground:CreateTexture(nil,"OVERLAY",nil,3)
+ contour:SetAllPoints(art);contour:Hide()
  local flame = foreground:CreateTexture(nil,"OVERLAY",nil,1)
  flame:SetAllPoints(art);flame:Hide()
  local rangeLayer = CreateFrame("Frame", nil, foreground)
@@ -191,7 +198,7 @@ local function Setup(plate)
  end
 
  local entry = {frame=art, foreground=foreground, border=border, background=background, shimmer=shimmer,
-                light=light, flame=flame, bar=bar, filename="", unit=nil}
+                light=light, flame=flame, contour=contour, bar=bar, filename="", unit=nil}
  entry.castBar=FindCastBar(plate.UnitFrame)
  plate.moonRangeArt = entry
 
@@ -252,9 +259,11 @@ local function ApplyTheme(entry)
  entry.theme=theme
  entry.filename=""
  entry.flame:SetShown(theme=="Shadow")
- entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset(theme=="Earth" and "earth" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or "BG_Herbalism"))
+ entry.contour:SetShown(theme=="Frost" or theme=="Ice")
+ if theme=="Frost" or theme=="Ice" then entry.contour:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost" or "Contour_Ice")) end
+ entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or "BG_Herbalism"))
  if entry.shimmer then
-  entry.shimmer:SetTexture(Asset(theme=="Earth" and "earth" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or "Fill_Herbalism"))
+  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or "Fill_Herbalism"))
   if theme=="Moon" then
    entry.shimmer:SetBlendMode("ADD")
    entry.shimmer:SetAlpha(0.45)
@@ -266,6 +275,10 @@ local function ApplyTheme(entry)
   elseif theme=="Shadow" then
    entry.shimmer:SetBlendMode("BLEND")
    entry.shimmer:SetAlpha(0.32)
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  elseif theme=="Frost" or theme=="Ice" then
+   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(.35)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   elseif theme=="Earth" then
    entry.shimmer:SetBlendMode("BLEND")
@@ -286,6 +299,10 @@ local function ApplyTheme(entry)
   entry.light:SetAlpha(1)
  elseif theme=="Arcaneum" then
   entry.light:SetTexture(Asset("Arcaneum","Frame_Arcaneum_Range"))
+  entry.light:SetBlendMode("BLEND")
+  entry.light:SetAlpha(1)
+ elseif theme=="Frost" or theme=="Ice" then
+  entry.light:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost_range" or "Contour_Ice_range"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Earth" then
@@ -386,6 +403,11 @@ local function Update(unit, plate)
   if entry.filename~=flameName then
    entry.filename=flameName
    entry.flame:SetTexture(Asset("Shadow",flameName))
+  end
+ elseif entry.theme=="Frost" or entry.theme=="Ice" then
+  if entry.filename~="Frame_Frost" then
+   entry.filename="Frame_Frost"
+   entry.border:SetTexture(Asset("frost","Frame_Frost"))
   end
  elseif entry.theme=="Earth" then
   if entry.filename~="Frame_Earth" then
