@@ -143,6 +143,12 @@ local function Resize(entry)
  if entry.lastWidth == width then return end
  entry.lastWidth = width
  entry.frame:SetSize(canvasWidth, canvasWidth / 2)
+ -- Particle layers use the original 200px artwork as their design coordinate space.
+ -- Resize them with Blizzard nameplates instead of leaving textures at fixed pixels.
+ entry.particleScale=canvasWidth/200
+ if entry.particleScaleFrames then
+  for _,layer in ipairs(entry.particleScaleFrames) do layer:SetScale(entry.particleScale) end
+ end
 end
 
 local function FindCastBar(frame)
