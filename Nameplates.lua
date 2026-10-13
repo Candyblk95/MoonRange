@@ -79,10 +79,10 @@ local function SetMoonColour(entry, unit)
   elseif colour==PINK then colour={213/255,108/255,131/255,1} -- hostile mob: dusty rose #BA9D9B
   else colour={230/255,195/255,173/255,1} end -- hostile player: peach #E6C3AD
  elseif entry.theme=="Arctic" then
-  if colour==BLUE then colour={.52,.72,.84,1}
-  elseif colour==PURPLE then colour={.39,.78,.76,1}
-  elseif colour==PINK then colour={.74,.37,.52,1}
-  else colour={.63,.50,.73,1} end
+  if colour==BLUE then colour={133/255,184/255,214/255,1}
+  elseif colour==PURPLE then colour={99/255,199/255,194/255,1}
+  elseif colour==PINK then colour={189/255,94/255,133/255,1}
+  else colour={161/255,128/255,186/255,1} end
  elseif entry.theme=="Ice" then
   if colour==BLUE then colour={52/255,84/255,163/255,1} -- neutral: previous hostile blue
   elseif colour==PURPLE then colour={35/255,127/255,133/255,1} -- friendly: deep turquoise
