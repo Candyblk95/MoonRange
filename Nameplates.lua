@@ -381,6 +381,7 @@ local function Update(unit, plate)
   if MR.HerbalismFX then MR.HerbalismFX:SetActive(entry,false) end
   if MR.MoonFX then MR.MoonFX:SetActive(entry,false) end
   if MR.FrostFX then MR.FrostFX:SetActive(entry,nil) end
+  if MR.HolyFX then MR.HolyFX:SetActive(entry,false) end
    if MR.EarthFX then MR.EarthFX:SetActive(entry,false) end
   if entry.shimmer then entry.shimmer:Hide() end
   if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
@@ -412,6 +413,7 @@ local function Update(unit, plate)
  if MR.MoonFX then MR.MoonFX:SetActive(entry,entry.theme=="Moon" and selected==true) end
  if MR.EarthFX then MR.EarthFX:SetActive(entry,entry.theme=="Earth" and selected==true) end
  if MR.FrostFX then MR.FrostFX:SetActive(entry,selected==true and (entry.theme=="Frost" or entry.theme=="Ice") and entry.theme or nil) end
+ if MR.HolyFX then MR.HolyFX:SetActive(entry,entry.theme=="Holy" and selected==true) end
  if entry.theme=="Arcaneum" then
   if entry.filename~="Frame_Arcaneum_Light" then
    entry.filename="Frame_Arcaneum_Light"
@@ -519,6 +521,7 @@ function MR:StartNameplates()
     if MR.HerbalismFX then MR.HerbalismFX:SetActive(e,false) end
     if MR.MoonFX then MR.MoonFX:SetActive(e,false) end
     if MR.FrostFX then MR.FrostFX:SetActive(e,nil) end
+    if MR.HolyFX then MR.HolyFX:SetActive(e,false) end
     if MR.EarthFX then MR.EarthFX:SetActive(e,false) end
     if e.shimmer then e.shimmer:Hide() end
    end
