@@ -286,11 +286,11 @@ local function ApplyTheme(entry)
   entry.light:SetAlpha(1)
  elseif theme=="Arcaneum" then
   entry.light:SetTexture(Asset("Arcaneum","Frame_Arcaneum_Range"))
-  entry.light:SetBlendMode("ADD")
+  entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Earth" then
   entry.light:SetTexture(Asset("earth","Frame_Earth_Range"))
-  entry.light:SetBlendMode("ADD")
+  entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Shadow" then
   entry.light:SetTexture(Asset("Arcaneum","Frame_Arcaneum_Range"))
