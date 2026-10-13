@@ -20,7 +20,7 @@ local function Make(entry)
   t:SetTexture(MR.path.."arcane\\Rune_0"..i..".tga")
   t:SetBlendMode("ADD")
   t:SetVertexColor(.86,.57,1)
-  t:SetSize(54,54)
+  t:SetSize(60,60)
   t:SetAlpha(.72)
   runes[i]={tex=t,angle=rand(0,TAU),speed=(i==1 and .42 or -.35)}
  end
@@ -42,7 +42,7 @@ local function Make(entry)
   if not w or w<20 then w=170 end
   for i,r in ipairs(runes)do
    r.angle=r.angle+r.speed*dt
-   local x=(i==1 and -1 or 1)*(w*.53)
+   local x=(i==1 and -1 or 1)*(w*.53-5)
    r.tex:ClearAllPoints();r.tex:SetPoint("CENTER",entry.frame,"CENTER",x,5)
    r.tex:SetAlpha(.64+.20*(.5+.5*math.sin(s.clock*2+i)))
    rotate(r.tex,r.angle)
