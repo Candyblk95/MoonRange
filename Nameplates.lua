@@ -1,6 +1,6 @@
 local _, MR = ...
 local active, elapsed = {}, 0
-local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true,Nature=true}
+local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true,Nature=true,Aim=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
@@ -93,6 +93,22 @@ local function SetMoonColour(entry, unit)
   elseif colour==PURPLE then colour=HERB_PURPLE
   elseif colour==PINK then colour=HERB_PINK
   else colour=HERB_CORAL end
+ end
+ if entry.theme=="Aim" then
+  -- Aim ships four finished fills: preserve their baked-in colours.
+  local kind=UnitColour(unit)
+  local file=kind==BLUE and "Fill_Aim_Neuteral_Mob"
+    or kind==PINK and "Fill_Aim_Hostile_Mob"
+    or kind==PURPLE and "Fill_Aim_Friendly_Player"
+    or "Fill_Aim_Hostile_Player"
+  if entry.shimmer and entry.aimFill~=file then
+   entry.aimFill=file
+   entry.shimmer:SetTexture(Asset("Aim",file))
+  end
+  local native=entry.bar:GetStatusBarTexture()
+  if native then native:SetVertexColor(.12,.12,.12,1) end
+  if entry.shimmer then entry.shimmer:SetVertexColor(1,1,1,1) end
+  return
  end
  local texture = entry.bar:GetStatusBarTexture()
  if texture then texture:SetVertexColor(unpack(colour)) end
@@ -276,9 +292,9 @@ local function ApplyTheme(entry)
  entry.flame:SetShown(theme=="Shadow")
  entry.contour:SetShown(theme=="Frost" or theme=="Ice")
  if theme=="Frost" or theme=="Ice" then entry.contour:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost" or "Contour_Ice")) end
- entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or "BG_Herbalism"))
+ entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or "BG_Herbalism"))
  if entry.shimmer then
-  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Nature" and "nature" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or theme=="Nature" and "Fill_Nature" or "Fill_Herbalism"))
+  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Nature" and "nature" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or theme=="Nature" and "Fill_Nature" or theme=="Aim" and "Fill_Aim_Neuteral_Mob" or "Fill_Herbalism"))
   if theme=="Moon" then
    entry.shimmer:SetBlendMode("ADD")
    entry.shimmer:SetAlpha(0.45)
@@ -298,6 +314,11 @@ local function ApplyTheme(entry)
   elseif theme=="Holy" then
    entry.shimmer:SetBlendMode("BLEND")
    entry.shimmer:SetAlpha(.40)
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  elseif theme=="Aim" then
+   entry.aimFill=nil
+   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(1)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   elseif theme=="Nature" then
    entry.shimmer:SetBlendMode("BLEND")
@@ -330,6 +351,10 @@ local function ApplyTheme(entry)
   entry.light:SetAlpha(1)
  elseif theme=="Holy" then
   entry.light:SetTexture(Asset("holy","Light_Holy"))
+  entry.light:SetBlendMode("BLEND")
+  entry.light:SetAlpha(1)
+ elseif theme=="Aim" then
+  entry.light:SetTexture(Asset("Aim","Frame_Aim_Range"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Nature" then
@@ -450,6 +475,11 @@ local function Update(unit, plate)
   if entry.filename~="Frame_Holy" then
    entry.filename="Frame_Holy"
    entry.border:SetTexture(Asset("holy","Frame_Holy"))
+  end
+ elseif entry.theme=="Aim" then
+  if entry.filename~="Frame_Aim" then
+   entry.filename="Frame_Aim"
+   entry.border:SetTexture(Asset("Aim","Frame_Aim"))
   end
  elseif entry.theme=="Nature" then
   local frameSequence={1,2,3,2}
