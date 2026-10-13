@@ -276,15 +276,15 @@ local function ApplyTheme(entry)
   entry.light:SetBlendMode("ADD")
   entry.light:SetAlpha(1)
  elseif theme=="Shadow" then
-  entry.light:SetTexture(MR.path.."shadow\\Range_Shadow.tga")
+  entry.light:SetTexture(Asset("Arcaneum","Frame_Arcaneum_Range"))
   -- The actual icon occupies only the left quarter of this 1024x512 image.
   -- Crop the transparent canvas and anchor the icon to the left bar endpoint.
   entry.light:ClearAllPoints()
   entry.light:SetPoint("CENTER",entry.bar,"LEFT",0,0)
   entry.light:SetSize(32,32)
-  entry.light:SetTexCoord(47/1024,281/1024,136/512,376/512)
+  entry.light:SetTexCoord(0,1,0,1)
   entry.light:SetBlendMode("ADD")
-  entry.light:SetAlpha(0.85)
+  entry.light:SetAlpha(1)
  else
   -- User-supplied standalone range indicator, above all animation frames.
   entry.light:SetTexture(Asset("Herbalism","Frame_Range"))
