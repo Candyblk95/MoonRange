@@ -199,7 +199,15 @@ local function Setup(plate)
  art:SetFrameLevel(math.max(0, bar:GetFrameLevel() - 1))
  art:EnableMouse(false)
 
- local background = art:CreateTexture(nil, "BACKGROUND")
+ -- Extra Arctic frost backdrop for Frost and Ice, behind native health and frame.
+ local frostBackdrop = art:CreateTexture(nil, "BACKGROUND", nil, 1)
+ frostBackdrop:SetAllPoints(art)
+ frostBackdrop:SetTexture(Asset("arctic","FrostBG_Arctic"))
+ frostBackdrop:SetBlendMode("BLEND")
+ frostBackdrop:SetAlpha(.70)
+ frostBackdrop:Hide()
+
+ local background = art:CreateTexture(nil, "BACKGROUND", nil, 0)
  background:SetAllPoints(art)
  background:SetTexture(Asset("Moon","BG_Moon"))
 
@@ -276,7 +284,7 @@ local function Setup(plate)
   allianceSapphireGlow:SetAlpha(.10+.24*wave)
  end)
 
- local entry = {frame=art, foreground=foreground, border=border, background=background, shimmer=shimmer,
+ local entry = {frame=art, foreground=foreground, border=border, background=background, frostBackdrop=frostBackdrop, shimmer=shimmer,
                 allianceAccents=allianceAccents, arcaneRuneBack=arcaneRuneBack,
                 light=light, flame=flame, contour=contour, bar=bar, filename="", unit=nil}
  entry.castBar=FindCastBar(plate.UnitFrame)
@@ -344,6 +352,7 @@ local function ApplyTheme(entry)
  entry.filename=""
  entry.flame:SetShown(theme=="Shadow")
  entry.contour:SetShown(theme=="Frost" or theme=="Ice")
+ if entry.frostBackdrop then entry.frostBackdrop:SetShown(theme=="Frost" or theme=="Ice") end
  if theme=="Frost" or theme=="Ice" then entry.contour:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost" or "Contour_Ice")) end
  entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or theme=="Alliance" and "BG_Alliance" or theme=="Arcane" and "BG_Arcane" or "BG_Herbalism"))
  if entry.shimmer then
