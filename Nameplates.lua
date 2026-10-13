@@ -273,7 +273,7 @@ local function ApplyTheme(entry)
   entry.light:SetBlendMode("ADD")
   entry.light:SetAlpha(1)
  elseif theme=="Shadow" then
-  entry.light:SetTexture(Asset("Shadow","Circle_Shadow"))
+  entry.light:SetTexture(MR.path.."shadow\\Range_Shadow.tga")
   entry.light:SetBlendMode("ADD")
   entry.light:SetAlpha(0.85)
  else
