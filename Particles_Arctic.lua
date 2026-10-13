@@ -39,7 +39,7 @@ local function Make(entry)
   local kind=i<=24 and 1 or i<=36 and 2 or 3
   local size=kind==1 and rand(5,10) or kind==2 and rand(10,15) or rand(15,21)
   t:SetSize(size,size)
-  rocks[i]={tex=t,x=rand(-.48,.48),y=rand(-10,10),rise=rand(1,5),phase=rand(0,TAU),
+  rocks[i]={tex=t,size=size,x=rand(-.48,.48),y=rand(-10,10),rise=rand(1,5),phase=rand(0,TAU),
    speed=rand(.5,1.5),rot=rand(0,TAU),spin=rand(-.45,.45),alpha=rand(.4,.75)}
  end
  for i=1,10 do
@@ -48,7 +48,7 @@ local function Make(entry)
   t:SetBlendMode("BLEND")
   local size=rand(10,21)
   t:SetSize(size,size)
-  orbit[i]={tex=t,a=rand(0,TAU),rx=rand(85,125),ry=rand(14,30),
+  orbit[i]={tex=t,size=size,a=rand(0,TAU),rx=rand(85,125),ry=rand(14,30),
    speed=rand(.18,.38)*(i%2==0 and 1 or -1),rot=rand(0,TAU),spin=rand(-1.1,1.1),alpha=rand(.4,.7)}
  end
  for i=1,48 do
@@ -66,7 +66,7 @@ local function Make(entry)
     p.x=rand(-65,65);p.y=rand(-6,6)
     p.vx=rand(-28,28);p.vy=rand(30,90)
     local sz=rand(4,9)
-    p.tex:SetSize(sz,sz)
+    p.size=sz
     return
    end
   end
@@ -75,22 +75,26 @@ local function Make(entry)
   dt=math.min(dt,.05)
   state.elapsed=state.elapsed+dt
   state.clock=state.clock+dt
-  local w=entry.lastWidth or 150
+  -- Scale relative to the Blizzard health bar width, including live size changes.
+  local w=entry.bar:GetWidth()
+  if not w or w<=0 then w=entry.lastWidth or 150 end
+  local scale=w/150
   for _,m in ipairs(mists) do
    m.phase=m.phase+m.speed*dt
    m.tex:ClearAllPoints()
-   m.tex:SetPoint("CENTER",entry.frame,"CENTER",(m.x-.5)*w,math.sin(m.phase)*3)
-   m.tex:SetSize(165+math.sin(m.phase*.5)*12,75+math.sin(m.phase*.5)*6)
+   m.tex:SetPoint("CENTER",entry.frame,"CENTER",(m.x-.5)*w,math.sin(m.phase)*3*scale)
+   m.tex:SetSize((165+math.sin(m.phase*.5)*12)*scale,(75+math.sin(m.phase*.5)*6)*scale)
    m.tex:SetAlpha(.10+.12*(.5+.5*math.sin(m.phase)))
    rotate(m.tex,m.rot)
   end
   for _,r in ipairs(rocks) do
    r.phase=r.phase+r.speed*dt
    r.rot=r.rot+r.spin*dt
-   local x=r.x*w+math.sin(r.phase*.7)*3
-   local y=r.y+math.sin(r.phase)*4+math.min(16,state.elapsed*r.rise)
+   local x=r.x*w+math.sin(r.phase*.7)*3*scale
+   local y=(r.y+math.sin(r.phase)*4+math.min(16,state.elapsed*r.rise))*scale
    r.tex:ClearAllPoints()
    r.tex:SetPoint("CENTER",entry.frame,"CENTER",x,y)
+   r.tex:SetSize(r.size*scale,r.size*scale)
    r.tex:SetAlpha(r.alpha*math.min(1,state.elapsed/1.4))
    rotate(r.tex,r.rot)
   end
@@ -98,7 +102,8 @@ local function Make(entry)
    r.a=r.a+r.speed*TAU*dt
    r.rot=r.rot+r.spin*dt
    r.tex:ClearAllPoints()
-   r.tex:SetPoint("CENTER",entry.frame,"CENTER",math.cos(r.a)*r.rx,math.sin(r.a)*r.ry)
+   r.tex:SetPoint("CENTER",entry.frame,"CENTER",math.cos(r.a)*r.rx*scale,math.sin(r.a)*r.ry*scale)
+   r.tex:SetSize(r.size*scale,r.size*scale)
    r.tex:SetAlpha(r.alpha*math.min(1,state.elapsed))
    rotate(r.tex,r.rot)
   end
@@ -112,7 +117,8 @@ local function Make(entry)
      p.vy=p.vy-110*dt
      p.x=p.x+p.vx*dt;p.y=p.y+p.vy*dt
      p.tex:ClearAllPoints()
-     p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x,p.y)
+     p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x*scale,p.y*scale)
+     p.tex:SetSize(p.size*scale,p.size*scale)
      p.tex:SetAlpha(.75*math.min(1,(1-p.life/p.duration)/.55))
     end
    end
