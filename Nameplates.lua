@@ -211,7 +211,7 @@ local function Setup(plate)
  -- Arcane Rune_Back is part of the base frame, not target-only particles.
  -- Rune_Back sits BEHIND the health bar, raised so its circle crowns the bar.
  local arcaneRuneBack=art:CreateTexture(nil,"ARTWORK",nil,1)
- arcaneRuneBack:SetSize(200,100)
+ arcaneRuneBack:SetSize(130,130) -- keep the circular rune artwork square
  arcaneRuneBack:SetPoint("CENTER",art,"CENTER",0,28)
  arcaneRuneBack:SetTexture(Asset("arcane","Rune_Back"))
  arcaneRuneBack:SetBlendMode("ADD")
