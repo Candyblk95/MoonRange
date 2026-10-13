@@ -262,6 +262,10 @@ local function ApplyTheme(entry)
    entry.shimmer:SetBlendMode("BLEND")
    entry.shimmer:SetAlpha(0.32)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  elseif theme=="Earth" then
+   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(.35)
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   else
    -- The original Herbalism fill is green artwork. Blend it over a dark\n   -- green native fill instead of adding it over pink/purple solid colours.\n   entry.shimmer:SetBlendMode("BLEND")
    entry.shimmer:SetAlpha(0.20)
@@ -277,6 +281,10 @@ local function ApplyTheme(entry)
   entry.light:SetAlpha(1)
  elseif theme=="Arcaneum" then
   entry.light:SetTexture(Asset("Arcaneum","Frame_Arcaneum_Range"))
+  entry.light:SetBlendMode("ADD")
+  entry.light:SetAlpha(1)
+ elseif theme=="Earth" then
+  entry.light:SetTexture(Asset("earth","Frame_Earth_Range"))
   entry.light:SetBlendMode("ADD")
   entry.light:SetAlpha(1)
  elseif theme=="Shadow" then
@@ -371,6 +379,11 @@ local function Update(unit, plate)
   if entry.filename~=flameName then
    entry.filename=flameName
    entry.flame:SetTexture(Asset("Shadow",flameName))
+  end
+ elseif entry.theme=="Earth" then
+  if entry.filename~="Frame_Earth" then
+   entry.filename="Frame_Earth"
+   entry.border:SetTexture(Asset("earth","Frame_Earth"))
   end
  elseif entry.theme=="Herbalism" then
   -- Three supplied animation frames, cycling in order.
