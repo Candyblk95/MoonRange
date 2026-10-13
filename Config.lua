@@ -64,11 +64,40 @@ local function Slider(parent,key,label,min,max,x,y,width)
  s:SetMinMaxValues(min,max);s:SetValueStep(1)
  if s.SetObeyStepOnDrag then s:SetObeyStepOnDrag(true)end
  _G[s:GetName().."Low"]:SetText("");_G[s:GetName().."High"]:SetText("")
- local value=Font(parent,"",15,x+(width or 195)-28,y-23,44,C.ice)
- s:SetScript("OnValueChanged",function(_,v)
-  v=math.floor(v+0.5);if MR.db then MR.db[key]=v end;value:SetText(tostring(v))
+ -- Editable number alongside the slider for precise pixel placement.
+ local edit=CreateFrame("EditBox",nil,parent,"InputBoxTemplate")
+ edit:SetSize(43,22)
+ edit:SetPoint("TOPLEFT",parent,"TOPLEFT",x+(width or 195)-36,y-19)
+ edit:SetAutoFocus(false)
+ edit:SetMaxLetters(5)
+ edit:SetNumeric(false) -- negative offsets must be allowed
+ edit:SetTextInsets(3,3,0,0)
+ local function Commit()
+  local n=tonumber(edit:GetText())
+  if n then
+   n=math.max(min,math.min(max,math.floor(n+0.5)))
+   s:SetValue(n)
+  end
+  edit:SetText(tostring(math.floor(s:GetValue()+0.5)))
+  edit:ClearFocus()
+ end
+ edit:SetScript("OnEnterPressed",Commit)
+ edit:SetScript("OnEscapePressed",function(self)
+  self:SetText(tostring(math.floor(s:GetValue()+0.5)))
+  self:ClearFocus()
  end)
- return function()local v=MR.db[key] or min;s:SetValue(v);value:SetText(tostring(v))end
+ edit:SetScript("OnEditFocusLost",Commit)
+ s:SetScript("OnValueChanged",function(_,v)
+  v=math.floor(v+0.5)
+  if MR.db then MR.db[key]=v end
+  if not edit:HasFocus() then edit:SetText(tostring(v)) end
+ end)
+ return function()
+  local v=MR.db[key]
+  if v==nil then v=min end
+  s:SetValue(v)
+  if not edit:HasFocus() then edit:SetText(tostring(v)) end
+ end
 end
 local function MakePage(name)
  if name=="Nameplates" then
