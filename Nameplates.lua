@@ -1,6 +1,6 @@
 local _, MR = ...
 local active, elapsed = {}, 0
-local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true,Nature=true,Aim=true}
+local THEMES={Moon=true,Herbalism=true,Shadow=true,Arcaneum=true,Earth=true,Frost=true,Ice=true,Holy=true,Nature=true,Aim=true,Alliance=true}
 local function Theme() return MR.db and THEMES[MR.db.theme] and MR.db.theme or "Moon" end
 local function Asset(theme,file) return MR.path..theme.."\\"..file..".tga" end
 local FONT_PATHS={FRIZQT="Fonts\\FRIZQT__.TTF", ARIAL="Fonts\\FRIZQT__.TTF", MORPHEUS="Fonts\\MORPHEUS.TTF", SKURRI="Fonts\\SKURRI.TTF"}
@@ -83,6 +83,11 @@ local function SetMoonColour(entry, unit)
   elseif colour==PURPLE then colour={61/255,89/255,109/255,1} -- antique gold friendly player
   elseif colour==PINK then colour={143/255,77/255,64/255,1} -- rose bronze hostile mob
   else colour={93/255,23/255,9/255,1} end -- deep bronze hostile player
+ elseif entry.theme=="Alliance" then
+  if colour==BLUE then colour={.73,.62,.35,1} -- heraldic gold, neutral NPC
+  elseif colour==PURPLE then colour={.31,.57,.83,1} -- sapphire blue, friendly player
+  elseif colour==PINK then colour={.70,.29,.32,1} -- royal crimson, hostile NPC
+  else colour={.56,.37,.66,1} end -- regal violet, hostile player
  elseif entry.theme=="Nature" then
   if colour==BLUE then colour={185/255,163/255,90/255,1} -- Golden Moss neutral
   elseif colour==PURPLE then colour={66/255,127/255,114/255,1} -- Forest Teal friendly player
@@ -115,7 +120,7 @@ local function SetMoonColour(entry, unit)
  -- Tint the Herbalism artwork too: at 88% opacity its original green
  -- otherwise masks the unit-type colour on the Blizzard fill below.
  if entry.shimmer then
-  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" or entry.theme=="Holy" or entry.theme=="Nature" then entry.shimmer:SetVertexColor(unpack(colour))
+  if entry.theme=="Herbalism" or entry.theme=="Shadow" or entry.theme=="Arcaneum" or entry.theme=="Earth" or entry.theme=="Frost" or entry.theme=="Ice" or entry.theme=="Holy" or entry.theme=="Nature" or entry.theme=="Alliance" then entry.shimmer:SetVertexColor(unpack(colour))
   else entry.shimmer:SetVertexColor(1,1,1,1) end
  end
 end
@@ -208,7 +213,7 @@ local function Setup(plate)
  flame:SetAllPoints(art);flame:Hide()
  local rangeLayer = CreateFrame("Frame", nil, foreground)
  rangeLayer:SetAllPoints(art)
- rangeLayer:SetFrameLevel(foreground:GetFrameLevel()+3)
+ rangeLayer:SetFrameLevel(foreground:GetFrameLevel()+8)
  rangeLayer:EnableMouse(false)
  local light = rangeLayer:CreateTexture(nil, "OVERLAY", nil, 3)
  light:SetAllPoints(art)
@@ -228,7 +233,36 @@ local function Setup(plate)
   shimmer:SetBlendMode("ADD")
  end
 
+ -- Alliance-only selected-target accents. Keep both beneath the range layer.
+ local allianceAccents=CreateFrame("Frame",nil,foreground)
+ allianceAccents:SetAllPoints(art)
+ allianceAccents:SetFrameLevel(foreground:GetFrameLevel()+1)
+ allianceAccents:EnableMouse(false)
+ local allianceLight=allianceAccents:CreateTexture(nil,"ARTWORK",nil,1)
+ allianceLight:SetAllPoints(art)
+ allianceLight:SetTexture(Asset("alliance","BG_Alliance_Light"))
+ allianceLight:SetBlendMode("ADD")
+ local allianceSapphire=allianceAccents:CreateTexture(nil,"ARTWORK",nil,2)
+ allianceSapphire:SetAllPoints(art)
+ allianceSapphire:SetTexture(Asset("alliance","Saphir_Alliance"))
+ allianceSapphire:SetBlendMode("BLEND")
+ local allianceSapphireGlow=allianceAccents:CreateTexture(nil,"ARTWORK",nil,3)
+ allianceSapphireGlow:SetAllPoints(art)
+ allianceSapphireGlow:SetTexture(Asset("alliance","Saphir_Alliance"))
+ allianceSapphireGlow:SetBlendMode("ADD")
+ allianceSapphireGlow:SetVertexColor(.34,.68,1)
+ allianceAccents:Hide()
+ local allianceClock=0
+ allianceAccents:SetScript("OnUpdate",function(_,dt)
+  allianceClock=allianceClock+math.min(dt,.05)
+  local wave=.5+.5*math.sin(allianceClock*2.7)
+  allianceLight:SetAlpha(.13+.16*wave)
+  allianceSapphire:SetAlpha(.76+.20*wave)
+  allianceSapphireGlow:SetAlpha(.10+.24*wave)
+ end)
+
  local entry = {frame=art, foreground=foreground, border=border, background=background, shimmer=shimmer,
+                allianceAccents=allianceAccents,
                 light=light, flame=flame, contour=contour, bar=bar, filename="", unit=nil}
  entry.castBar=FindCastBar(plate.UnitFrame)
  plate.moonRangeArt = entry
@@ -292,9 +326,9 @@ local function ApplyTheme(entry)
  entry.flame:SetShown(theme=="Shadow")
  entry.contour:SetShown(theme=="Frost" or theme=="Ice")
  if theme=="Frost" or theme=="Ice" then entry.contour:SetTexture(Asset("frost",theme=="Frost" and "Contour_Frost" or "Contour_Ice")) end
- entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or "BG_Herbalism"))
+ entry.background:SetTexture(theme=="Arcaneum" and Asset("Moon","BG_Moon") or Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Holy" and "holy" or theme=="Nature" and "nature" or theme,theme=="Moon" and "BG_Moon" or theme=="Shadow" and "BG_Shadow" or theme=="Earth" and "BG_Earth" or (theme=="Frost" or theme=="Ice") and "BG_Frost" or theme=="Holy" and "BG_Holy" or theme=="Nature" and "BG_Nature" or theme=="Aim" and "BG_Aim" or theme=="Alliance" and "BG_Alliance" or "BG_Herbalism"))
  if entry.shimmer then
-  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Nature" and "nature" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or theme=="Nature" and "Fill_Nature" or theme=="Aim" and "Fill_Aim_Neuteral_Mob" or "Fill_Herbalism"))
+  entry.shimmer:SetTexture(Asset((theme=="Frost" or theme=="Ice") and "frost" or theme=="Earth" and "earth" or theme=="Nature" and "nature" or theme,theme=="Moon" and "Fill_Moon" or theme=="Shadow" and "Fill_Shadow" or theme=="Arcaneum" and "Fill_Arcaneum" or theme=="Earth" and "Fill_Earth" or (theme=="Frost" or theme=="Ice") and "Fill_Frost" or theme=="Holy" and "Fill_Holy" or theme=="Nature" and "Fill_Nature" or theme=="Alliance" and "Fill_Alliance" or theme=="Aim" and "Fill_Aim_Neuteral_Mob" or "Fill_Herbalism"))
   if theme=="Moon" then
    entry.shimmer:SetBlendMode("ADD")
    entry.shimmer:SetAlpha(0.45)
@@ -314,6 +348,10 @@ local function ApplyTheme(entry)
   elseif theme=="Holy" then
    entry.shimmer:SetBlendMode("BLEND")
    entry.shimmer:SetAlpha(.40)
+   entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
+  elseif theme=="Alliance" then
+   entry.shimmer:SetBlendMode("BLEND")
+   entry.shimmer:SetAlpha(.38)
    entry.shimmer:SetTexCoord(129/1024,886/1024,203/512,281/512)
   elseif theme=="Aim" then
    entry.aimFill=nil
@@ -351,6 +389,10 @@ local function ApplyTheme(entry)
   entry.light:SetAlpha(1)
  elseif theme=="Holy" then
   entry.light:SetTexture(Asset("holy","Light_Holy"))
+  entry.light:SetBlendMode("BLEND")
+  entry.light:SetAlpha(1)
+ elseif theme=="Alliance" then
+  entry.light:SetTexture(Asset("alliance","Frame_Alliance_Range"))
   entry.light:SetBlendMode("BLEND")
   entry.light:SetAlpha(1)
  elseif theme=="Aim" then
@@ -424,6 +466,7 @@ local function Update(unit, plate)
   if MR.AimFX then MR.AimFX:SetActive(entry,false) end
    if MR.EarthFX then MR.EarthFX:SetActive(entry,false) end
   if entry.shimmer then entry.shimmer:Hide() end
+  if entry.allianceAccents then entry.allianceAccents:Hide() end
   if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
   if entry.blizzardLevel then entry.blizzardLevel:SetAlpha(1) end
   return
@@ -446,6 +489,10 @@ local function Update(unit, plate)
  PositionCastBar(entry)
 
  local selected = UnitExists("target") and UnitIsUnit(unit, "target")
+ if entry.allianceAccents then
+  if entry.theme=="Alliance" and selected==true then entry.allianceAccents:Show()
+  else entry.allianceAccents:Hide() end
+ end
  local inRange = selected and MR:RangeState()
  if MR.ArcaneumFX then MR.ArcaneumFX:SetActive(entry,entry.theme=="Arcaneum" and selected==true) end
  if MR.ShadowFX then MR.ShadowFX:SetActive(entry,entry.theme=="Shadow" and selected==true and inRange==true) end
@@ -477,6 +524,11 @@ local function Update(unit, plate)
   if entry.filename~="Frame_Holy" then
    entry.filename="Frame_Holy"
    entry.border:SetTexture(Asset("holy","Frame_Holy"))
+  end
+ elseif entry.theme=="Alliance" then
+  if entry.filename~="Frame_Alliance" then
+   entry.filename="Frame_Alliance"
+   entry.border:SetTexture(Asset("alliance","Frame_Alliance"))
   end
  elseif entry.theme=="Aim" then
   if entry.filename~="Frame_Aim" then
@@ -581,6 +633,7 @@ function MR:StartNameplates()
     if MR.AimFX then MR.AimFX:SetActive(e,false) end
     if MR.EarthFX then MR.EarthFX:SetActive(e,false) end
     if e.shimmer then e.shimmer:Hide() end
+    if e.allianceAccents then e.allianceAccents:Hide() end
    end
    active[unit] = nil
   elseif event == "PLAYER_TARGET_CHANGED" then
