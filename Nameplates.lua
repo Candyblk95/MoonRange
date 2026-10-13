@@ -143,6 +143,13 @@ local function Resize(entry)
  if entry.lastWidth == width then return end
  entry.lastWidth = width
  entry.frame:SetSize(canvasWidth, canvasWidth / 2)
+ -- Keep Arcane Rune_Back at its original 200x70 aspect ratio and 28px lift.
+ if entry.arcaneRuneBack then
+  local factor=canvasWidth/200
+  entry.arcaneRuneBack:SetSize(200*factor,70*factor)
+  entry.arcaneRuneBack:ClearAllPoints()
+  entry.arcaneRuneBack:SetPoint("CENTER",entry.frame,"CENTER",0,28*factor)
+ end
  -- Particle layers use the original 200px artwork as their design coordinate space.
  -- Resize them with Blizzard nameplates instead of leaving textures at fixed pixels.
  entry.particleScale=canvasWidth/200
