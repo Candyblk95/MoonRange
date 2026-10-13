@@ -33,7 +33,7 @@ local function Make(entry)
  holder:SetScale(entry.particleScale or 1)
  entry.particleScaleFrames=entry.particleScaleFrames or {}
  entry.particleScaleFrames[#entry.particleScaleFrames+1]=holder
- holder:SetFrameLevel(math.max(0,entry.frame:GetFrameLevel()-1))
+ holder:SetFrameLevel(entry.foreground:GetFrameLevel()+3)
  holder:EnableMouse(false)
  holder:Hide()
  local sparks,glows,flashes={},{},{}
