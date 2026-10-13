@@ -12,6 +12,10 @@ end
 local function Make(entry)
  local holder=CreateFrame("Frame",nil,entry.foreground)
  holder:SetAllPoints(entry.frame)
+ -- Scale the entire particle layer with the artwork, preserving tuned offsets and sizes.
+ holder:SetScale(1)
+ entry.particleScaleFrames=entry.particleScaleFrames or {}
+ entry.particleScaleFrames[#entry.particleScaleFrames+1]=holder
  holder:SetFrameLevel(math.max(0,entry.foreground:GetFrameLevel()-1))
  holder:EnableMouse(false);holder:Hide()
  local runes={}
