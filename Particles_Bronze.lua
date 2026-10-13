@@ -1,81 +1,158 @@
--- Bronze: shimmering sand orbiting the glass ends, with grains falling below the frame.
+-- Bronze particles adapted from the original supplied Sleek Casting Bars effect.
+-- Preserves the 380 sinuous sand grains, wind gusts, 50 tip sparks and 60 glow sparks.
+-- Each nameplate owns its own particles; coordinates follow the Bronze frame.
 local _,MR=...
 local FX={}
 MR.BronzeFX=FX
-local TAU=math.pi*2
-local function rand(a,b) return a+math.random()*(b-a) end
+local sin,cos,pi=math.sin,math.cos,math.pi
+local function rand(a,b)return a+math.random()*(b-a)end
+local COLS={{1,.88,.22},{1,.72,.12},{1,.95,.55},{.95,.78,.18},{1,.62,.10}}
+local function rotate(tex,a)
+ local c,s=cos(a),sin(a)
+ tex:SetTexCoord(.5-.5*c+.5*s,.5-.5*s-.5*c,.5-.5*c-.5*s,.5-.5*s+.5*c,
+                 .5+.5*c+.5*s,.5+.5*s-.5*c,.5+.5*c-.5*s,.5+.5*s+.5*c)
+end
 local function Make(entry)
  local holder=CreateFrame("Frame",nil,entry.foreground)
  holder:SetAllPoints(entry.frame)
  holder:SetFrameLevel(entry.foreground:GetFrameLevel()+1)
- holder:EnableMouse(false)
- holder:Hide()
- local orbit={}
- for i=1,30 do
+ holder:EnableMouse(false);holder:Hide()
+ local sand,tip,glow={},{},{}
+ for i=1,380 do
   local t=holder:CreateTexture(nil,"OVERLAY")
   t:SetTexture("Interface\\Buttons\\WHITE8X8")
-  t:SetBlendMode("ADD")
-  t:SetVertexColor(rand(.83,1),rand(.55,.85),rand(.20,.47))
-  orbit[i]={tex=t,side=i%2==0 and 1 or -1,angle=rand(0,TAU),
-   speed=rand(.65,1.5)*(i%3==0 and -1 or 1),rx=rand(9,20),ry=rand(8,19),
-   size=rand(1.1,2.7),alpha=rand(.40,.86),phase=rand(0,TAU)}
+  t:SetBlendMode("ADD");t:SetAlpha(0)
+  sand[i]={tex=t,active=false}
  end
- local falling={}
- for i=1,42 do
+ for i=1,50 do
   local t=holder:CreateTexture(nil,"OVERLAY")
-  t:SetTexture("Interface\\Buttons\\WHITE8X8")
-  t:SetBlendMode("ADD")
-  t:SetVertexColor(rand(.86,1),rand(.58,.85),rand(.23,.48))
-  t:SetAlpha(0)
-  falling[i]={tex=t,active=false}
+  t:SetTexture(MR.path.."frost\\Particle_Frost_0"..((i-1)%2+1)..".tga")
+  t:SetBlendMode("ADD");t:SetAlpha(0)
+  tip[i]={tex=t,active=false}
  end
- local s={holder=holder,orbit=orbit,falling=falling,clock=0,spawn=0}
- local function Emit()
-  for _,p in ipairs(falling) do
+ for i=1,60 do
+  local t=holder:CreateTexture(nil,"OVERLAY")
+  t:SetTexture(MR.path.."frost\\Particle_Frost_0"..((i-1)%2+1)..".tga")
+  t:SetBlendMode("ADD");t:SetAlpha(0)
+  glow[i]={tex=t,active=false}
+ end
+ local s={holder=holder,sand=sand,tip=tip,glow=glow,clock=0,wind=0,sandAcc=0,tipAcc=0,glowAcc=0}
+ local function SpawnSand(left,h)
+  for _,g in ipairs(sand) do
+   if not g.active then
+    local col=COLS[math.random(#COLS)]
+    g.active=true;g.x=left-2;g.y0=rand(-h*.18,h*.18)
+    g.vx=rand(45,120);g.amp=rand(6,22);g.frq=rand(.3,1.2)
+    g.phase=rand(0,pi*2);g.drift=rand(-15,15)
+    g.windOff=rand(0,1.8);g.life=0;g.deadX=0
+    local a=math.random();g.maxAlpha=a*a*.75+.08
+    local size=math.random(2);g.texSize=size;g.tex:SetSize(size,size)
+    g.tex:SetVertexColor(col[1],col[2],col[3])
+    g.tex:SetAlpha(0)
+    return
+   end
+  end
+ end
+ local function SpawnTip(front,h)
+  for _,p in ipairs(tip) do
    if not p.active then
-    p.active=true;p.life=0;p.duration=rand(.65,1.65)
-    p.side=math.random(2)==1 and -1 or 1
-    p.x=rand(-12,12);p.y=rand(-6,4)
-    p.vx=rand(-14,14);p.vy=rand(-13,-29)
-    p.size=rand(.9,2.6);p.alpha=rand(.45,.9)
+    local col=COLS[math.random(#COLS)]
+    local angle=math.rad(rand(50,130));local speed=rand(35,95)
+    p.active=true;p.life=0;p.maxLife=rand(.35,.75)
+    p.x=front+rand(-4,4);p.y=rand(-h*.18,h*.18)
+    p.vx=cos(angle)*speed;p.vy=sin(angle)*speed
+    local z=rand(4,9);p.texSize=z;p.tex:SetSize(z,z)
+    p.tex:SetVertexColor(col[1],col[2],col[3]);p.tex:SetAlpha(.85)
+    p.rot=rand(0,pi*2);p.spin=rand(-5,5)
+    return
+   end
+  end
+ end
+ local function SpawnGlow(front,h)
+  for _,p in ipairs(glow) do
+   if not p.active then
+    local col=COLS[math.random(#COLS)]
+    p.active=true;p.life=0;p.maxLife=rand(.18,.38)
+    p.x=front+rand(-3,3);p.y=rand(-h*.15,h*.15)
+    p.vy=rand(-18,18)
+    local z=rand(4,10);p.texSize=z;p.tex:SetSize(z,z)
+    p.tex:SetVertexColor(col[1],col[2],col[3]);p.tex:SetAlpha(0)
     return
    end
   end
  end
  holder:SetScript("OnUpdate",function(_,dt)
   dt=math.min(dt,.05)
-  s.clock=s.clock+dt
+  s.clock=s.clock+dt;s.wind=(s.wind+dt)%1.8
   local scale=entry.particleScale or 1
-  -- Keep each swirl centered on the actual health-bar ends as the bar resizes.
-  local half=(entry.lastWidth or 150)*.53
-  for _,o in ipairs(orbit) do
-   o.angle=o.angle+o.speed*dt
-   local x=o.side*half+math.cos(o.angle)*o.rx*scale
-   local y=math.sin(o.angle)*o.ry*scale
-   o.tex:ClearAllPoints()
-   o.tex:SetPoint("CENTER",entry.frame,"CENTER",x,y)
-   local z=o.size*scale
-   o.tex:SetSize(z,z)
-   o.tex:SetAlpha(o.alpha*(.68+.32*math.sin(s.clock*4+o.phase)^2))
-  end
-  s.spawn=s.spawn+dt
-  while s.spawn>=.055 do s.spawn=s.spawn-.055;Emit() end
-  for _,p in ipairs(falling) do
-   if p.active then
-    p.life=p.life+dt
-    if p.life>=p.duration then
-     p.active=false;p.tex:SetAlpha(0)
+  local width=(entry.lastWidth or 150)/scale
+  local h=20 -- reference height in original particle design space
+  local left,right=-width*.5,width*.5
+  local progress=(s.clock%3)/3 -- original tip/glow progression, looped for a persistent target
+  for _,g in ipairs(sand) do
+   if g.active then
+    g.life=g.life+dt
+    local phase=((s.wind+g.windOff)%1.8)/1.8
+    local gust=phase<.28 and phase/.28 or 1-(phase-.28)/.72
+    g.x=g.x+(g.vx+60*gust*.45)*dt
+    local y=g.y0+sin(g.life*g.frq+g.phase)*g.amp+g.drift*g.life
+    if g.deadX==0 then g.deadX=right+4 end
+    local distance=g.deadX-g.x
+    if g.x>=g.deadX or g.life>5 then
+     g.active=false;g.tex:SetAlpha(0)
     else
-     p.vy=p.vy-32*dt
-     p.x=p.x+p.vx*dt;p.y=p.y+p.vy*dt
-     p.tex:ClearAllPoints()
-     p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.side*half+p.x*scale,p.y*scale)
-     p.tex:SetSize(p.size*scale,p.size*scale)
-     local t=p.life/p.duration
-     p.tex:SetAlpha(p.alpha*math.min(1,t/.12,(1-t)/.45))
+     g.tex:SetAlpha(g.maxAlpha*math.min(g.life/.12,1)*math.min(1,math.max(0,distance/22)))
+     g.tex:ClearAllPoints();g.tex:SetPoint("CENTER",entry.frame,"CENTER",g.x*scale,y*scale)
+     local z=(g.texSize or 1)
+     -- Native sizes are retained; scale explicitly rather than scaling the frame twice.
+     g.tex:SetSize(z*scale,z*scale)
     end
    end
   end
+  s.sandAcc=s.sandAcc+dt
+  while s.sandAcc>=.009 do
+   s.sandAcc=s.sandAcc-.009
+   for i=1,math.random(3,5) do SpawnSand(left,h) end
+  end
+  for _,p in ipairs(tip) do
+   if p.active then
+    p.life=p.life+dt
+    local t=p.life/p.maxLife
+    if t>=1 then p.active=false;p.tex:SetAlpha(0)
+    else
+     p.vy=p.vy-80*dt;p.x=p.x+p.vx*dt;p.y=p.y+p.vy*dt
+     p.rot=p.rot+p.spin*dt;rotate(p.tex,p.rot)
+     p.tex:SetSize(p.texSize*scale,p.texSize*scale)
+     p.tex:ClearAllPoints();p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x*scale,p.y*scale)
+     p.tex:SetAlpha((t<.55 and 1 or math.max(0,(1-t)/.45))*.85)
+    end
+   end
+  end
+  if progress>.02 and progress<.87 then
+   s.tipAcc=s.tipAcc+dt
+   while s.tipAcc>=.027 do s.tipAcc=s.tipAcc-.027;SpawnTip(left+width*progress,h) end
+  else s.tipAcc=0 end
+  for _,p in ipairs(glow) do
+   if p.active then
+    p.life=p.life+dt
+    local t=p.life/p.maxLife
+    if t>=1 then p.active=false;p.tex:SetAlpha(0)
+    else
+     p.y=p.y+p.vy*dt;p.vy=p.vy*.88
+     p.tex:SetSize(p.texSize*scale,p.texSize*scale)
+     p.tex:ClearAllPoints();p.tex:SetPoint("CENTER",entry.frame,"CENTER",p.x*scale,p.y*scale)
+     local env=t<.25 and t/.25 or t<.75 and 1 or (1-t)/.25
+     p.tex:SetAlpha(math.max(0,env)*.60)
+    end
+   end
+  end
+  if progress>.02 and progress<.87 then
+   s.glowAcc=s.glowAcc+dt
+   while s.glowAcc>=.020 do
+    s.glowAcc=s.glowAcc-.020
+    for i=1,math.random(2,4) do SpawnGlow(left+width*progress,h) end
+   end
+  else s.glowAcc=0 end
  end)
  return s
 end
@@ -88,8 +165,10 @@ function FX:SetActive(entry,enabled)
  end
  if not s then s=Make(entry);entry.bronzeFX=s end
  if not s.holder:IsShown() then
-  s.clock=0;s.spawn=0
-  for _,p in ipairs(s.falling) do p.active=false;p.tex:SetAlpha(0) end
+  s.clock=0;s.wind=0;s.sandAcc=0;s.tipAcc=0;s.glowAcc=0
+  for _,group in ipairs({s.sand,s.tip,s.glow}) do
+   for _,p in ipairs(group) do p.active=false;p.tex:SetAlpha(0) end
+  end
   s.holder:Show()
  end
 end
