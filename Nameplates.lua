@@ -345,6 +345,7 @@ local function Update(unit, plate)
   if MR.ShadowFX then MR.ShadowFX:SetActive(entry,false) end
   if MR.HerbalismFX then MR.HerbalismFX:SetActive(entry,false) end
   if MR.MoonFX then MR.MoonFX:SetActive(entry,false) end
+   if MR.EarthFX then MR.EarthFX:SetActive(entry,false) end
   if entry.shimmer then entry.shimmer:Hide() end
   if entry.blizzardName then entry.blizzardName:SetAlpha(1) end
   if entry.blizzardLevel then entry.blizzardLevel:SetAlpha(1) end
@@ -373,6 +374,7 @@ local function Update(unit, plate)
  if MR.ShadowFX then MR.ShadowFX:SetActive(entry,entry.theme=="Shadow" and selected==true and inRange==true) end
  if MR.HerbalismFX then MR.HerbalismFX:SetActive(entry,entry.theme=="Herbalism" and selected==true) end
  if MR.MoonFX then MR.MoonFX:SetActive(entry,entry.theme=="Moon" and selected==true) end
+ if MR.EarthFX then MR.EarthFX:SetActive(entry,entry.theme=="Earth" and selected==true) end
  if entry.theme=="Arcaneum" then
   if entry.filename~="Frame_Arcaneum_Light" then
    entry.filename="Frame_Arcaneum_Light"
